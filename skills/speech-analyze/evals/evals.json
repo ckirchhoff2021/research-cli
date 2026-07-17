@@ -1,0 +1,23 @@
+{
+  "skill_name": "speech-analyze",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "帮我把这个音频里的内容转成文本：[YOUR_SKILLS_DIR]/speech-analyze/assets/sonvoice.mp3",
+      "expected_output": "输出带标点的古诗《画》的完整文本，无多余内容",
+      "files": ["[YOUR_SKILLS_DIR]/speech-analyze/assets/sonvoice.mp3"]
+    },
+    {
+      "id": 2,
+      "prompt": "分析一下这个音频里的背景声音是什么：[YOUR_SKILLS_DIR]/speech-analyze/assets/sonvoice.mp3",
+      "expected_output": "识别出背景是古筝古风伴奏，说明其特点和音量特征",
+      "files": ["[YOUR_SKILLS_DIR]/speech-analyze/assets/sonvoice.mp3"]
+    },
+    {
+      "id": 3,
+      "prompt": "处理一下这个音频，告诉我里面说了什么，还有背景有什么声音：[YOUR_SKILLS_DIR]/speech-analyze/assets/sonvoice.mp3",
+      "expected_output": "先输出古诗转写文本，再输出背景音效的详细分析",
+      "files": ["[YOUR_SKILLS_DIR]/speech-analyze/assets/sonvoice.mp3"]
+    }
+  ]
+}

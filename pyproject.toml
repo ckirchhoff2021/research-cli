@@ -1,0 +1,19 @@
+[project]
+name = "research-cli"
+version = "0.1.0"
+description = " A command line interface for daily research"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "deepagents>=0.6.12",
+    "faiss-cpu>=1.14.3",
+    "httpx>=0.28.1",
+    "langchain>=1.3.13",
+    "langchain-openai>=1.3.5",
+    "markdownify>=1.2.3",
+    "openai>=2.45.0",
+    "pillow>=12.3.0",
+    "python-dotenv>=1.2.2",
+    "rich>=15.0.0",
+    "tavily-python>=0.7.26",
+]

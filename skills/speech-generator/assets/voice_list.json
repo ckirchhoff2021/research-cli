@@ -1,0 +1,2090 @@
+[
+  {
+    "音色名称": "湾区大叔",
+    "推荐场景": "趣味方言",
+    "语种": "中文",
+    "voice_type": "zh_female_wanqudashu_moon_bigtts"
+  },
+  {
+    "音色名称": "呆萌川妹",
+    "推荐场景": "趣味方言",
+    "语种": "中文",
+    "voice_type": "zh_female_daimengchuanmei_moon_bigtts"
+  },
+  {
+    "音色名称": "广州德哥",
+    "推荐场景": "趣味方言",
+    "语种": "中文",
+    "voice_type": "zh_male_guozhoudege_moon_bigtts"
+  },
+  {
+    "音色名称": "北京小爷",
+    "推荐场景": "趣味方言",
+    "语种": "中文",
+    "voice_type": "zh_male_beijingxiaoye_moon_bigtts"
+  },
+  {
+    "音色名称": "少年梓辛/Brayan",
+    "推荐场景": "通用场景",
+    "语种": "中/英",
+    "voice_type": "zh_male_shaonianzixin_moon_bigtts"
+  },
+  {
+    "音色名称": "魅力女友",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "zh_female_meilinvyou_moon_bigtts"
+  },
+  {
+    "音色名称": "深夜播客",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "zh_male_shenyeboke_moon_bigtts"
+  },
+  {
+    "音色名称": "柔美女友",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "zh_female_sajiaonvyou_moon_bigtts"
+  },
+  {
+    "音色名称": "撒娇学妹",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "zh_female_yuanqinvyou_moon_bigtts"
+  },
+  {
+    "音色名称": "浩宇小哥",
+    "推荐场景": "趣味方言",
+    "语种": "中文",
+    "voice_type": "zh_male_haoyuxiaoge_moon_bigtts"
+  },
+  {
+    "音色名称": "广西远舟",
+    "推荐场景": "趣味方言",
+    "语种": "中文",
+    "voice_type": "zh_male_guangxiyuanzhou_moon_bigtts"
+  },
+  {
+    "音色名称": "妹坨洁儿",
+    "推荐场景": "趣味方言",
+    "语种": "中文",
+    "voice_type": "zh_female_meituojieer_moon_bigtts"
+  },
+  {
+    "音色名称": "豫州子轩",
+    "推荐场景": "趣味方言",
+    "语种": "中文",
+    "voice_type": "zh_male_yuzhouzixuan_moon_bigtts"
+  },
+  {
+    "音色名称": "邻家女孩",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "zh_female_linjianvhai_moon_bigtts"
+  },
+  {
+    "音色名称": "高冷御姐",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "zh_female_gaolengyujie_moon_bigtts"
+  },
+  {
+    "音色名称": "渊博小叔",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "zh_male_yuanboxiaoshu_moon_bigtts"
+  },
+  {
+    "音色名称": "阳光青年",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "zh_male_yangguangqingnian_moon_bigtts"
+  },
+  {
+    "音色名称": "傲娇霸总",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "zh_male_aojiaobazong_moon_bigtts"
+  },
+  {
+    "音色名称": "京腔侃爷/Harmony",
+    "推荐场景": "趣味方言",
+    "语种": "中/英",
+    "voice_type": "zh_male_jingqiangkanye_moon_bigtts"
+  },
+  {
+    "音色名称": "爽快思思/Skye",
+    "推荐场景": "通用场景",
+    "语种": "中/英",
+    "voice_type": "zh_female_shuangkuaisisi_moon_bigtts"
+  },
+  {
+    "音色名称": "温暖阿虎/Alvin",
+    "推荐场景": "通用场景",
+    "语种": "中/英",
+    "voice_type": "zh_male_wennuanahu_moon_bigtts"
+  },
+  {
+    "音色名称": "湾湾小何",
+    "推荐场景": "趣味方言",
+    "语种": "中文",
+    "voice_type": "zh_female_wanwanxiaohe_moon_bigtts"
+  },
+  {
+    "音色名称": "はるこ/Esmeralda",
+    "推荐场景": "多语种",
+    "语种": "日/西",
+    "voice_type": "multi_female_shuangkuaisisi_moon_bigtts"
+  },
+  {
+    "音色名称": "かずね/Javier or Álvaro",
+    "推荐场景": "多语种",
+    "语种": "日/西",
+    "voice_type": "multi_male_jingqiangkanye_moon_bigtts"
+  },
+  {
+    "音色名称": "あけみ",
+    "推荐场景": "多语种",
+    "语种": "日语",
+    "voice_type": "multi_female_gaolengyujie_moon_bigtts"
+  },
+  {
+    "音色名称": "ひろし/Roberto",
+    "推荐场景": "多语种",
+    "语种": "日/西",
+    "voice_type": "multi_male_wanqudashu_moon_bigtts"
+  },
+  {
+    "音色名称": "病弱少女",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_bingruoshaonv_tob"
+  },
+  {
+    "音色名称": "活泼女孩",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_huoponvhai_tob"
+  },
+  {
+    "音色名称": "和蔼奶奶",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_heainainai_tob"
+  },
+  {
+    "音色名称": "邻居阿姨",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_linjuayi_tob"
+  },
+  {
+    "音色名称": "温柔小雅",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "zh_female_wenrouxiaoya_moon_bigtts"
+  },
+  {
+    "音色名称": "甜美小源",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "zh_female_tianmeixiaoyuan_moon_bigtts"
+  },
+  {
+    "音色名称": "清澈梓梓",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "zh_female_qingchezizi_moon_bigtts"
+  },
+  {
+    "音色名称": "东方浩然",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "zh_male_dongfanghaoran_moon_bigtts"
+  },
+  {
+    "音色名称": "解说小明",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "zh_male_jieshuoxiaoming_moon_bigtts"
+  },
+  {
+    "音色名称": "开朗姐姐",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "zh_female_kailangjiejie_moon_bigtts"
+  },
+  {
+    "音色名称": "邻家男孩",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "zh_male_linjiananhai_moon_bigtts"
+  },
+  {
+    "音色名称": "甜美悦悦",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "zh_female_tianmeiyueyue_moon_bigtts"
+  },
+  {
+    "音色名称": "心灵鸡汤",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "zh_female_xinlingjitang_moon_bigtts"
+  },
+  {
+    "音色名称": "灿灿",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "zh_female_cancan_mars_bigtts"
+  },
+  {
+    "音色名称": "Anna",
+    "推荐场景": "播报解说",
+    "语种": "英文",
+    "voice_type": "en_female_anna_mars_bigtts"
+  },
+  {
+    "音色名称": "天才童声",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "zh_male_tiancaitongsheng_mars_bigtts"
+  },
+  {
+    "音色名称": "奶气萌娃",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "zh_male_naiqimengwa_mars_bigtts"
+  },
+  {
+    "音色名称": "猴哥",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "zh_male_sunwukong_mars_bigtts"
+  },
+  {
+    "音色名称": "熊二",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "zh_male_xionger_mars_bigtts"
+  },
+  {
+    "音色名称": "佩奇猪",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "zh_female_peiqi_mars_bigtts"
+  },
+  {
+    "音色名称": "知性女声",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "zh_female_zhixingnvsheng_mars_bigtts"
+  },
+  {
+    "音色名称": "清新女声",
+    "推荐场景": "通用场景",
+    "语种": "中/英",
+    "voice_type": "zh_female_qingxinnvsheng_mars_bigtts"
+  },
+  {
+    "音色名称": "悬疑解说",
+    "推荐场景": "播报解说",
+    "语种": "中文",
+    "voice_type": "zh_male_changtianyi_mars_bigtts"
+  },
+  {
+    "音色名称": "婆婆",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "zh_female_popo_mars_bigtts"
+  },
+  {
+    "音色名称": "武则天",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "zh_female_wuzetian_mars_bigtts"
+  },
+  {
+    "音色名称": "邻家小妹",
+    "推荐场景": "通用场景",
+    "语种": "中/英",
+    "voice_type": "zh_female_linjia_mars_bigtts"
+  },
+  {
+    "音色名称": "少儿故事",
+    "推荐场景": "角色扮演",
+    "语种": "中/英",
+    "voice_type": "zh_female_shaoergushi_mars_bigtts"
+  },
+  {
+    "音色名称": "四郎",
+    "推荐场景": "角色扮演",
+    "语种": "中/英",
+    "voice_type": "zh_male_silang_mars_bigtts"
+  },
+  {
+    "音色名称": "顾姐",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "zh_female_gujie_mars_bigtts"
+  },
+  {
+    "音色名称": "樱桃丸子",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "zh_female_yingtaowanzi_mars_bigtts"
+  },
+  {
+    "音色名称": "磁性解说男声",
+    "推荐场景": "播报解说",
+    "语种": "中/英",
+    "voice_type": "zh_male_jieshuonansheng_mars_bigtts"
+  },
+  {
+    "音色名称": "鸡汤妹妹",
+    "推荐场景": "播报解说",
+    "语种": "中/英",
+    "voice_type": "zh_female_jitangmeimei_mars_bigtts"
+  },
+  {
+    "音色名称": "广告解说",
+    "推荐场景": "播报解说",
+    "语种": "中文",
+    "voice_type": "zh_male_chunhui_mars_bigtts"
+  },
+  {
+    "音色名称": "清爽男大",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "zh_male_qingshuangnanda_mars_bigtts"
+  },
+  {
+    "音色名称": "贴心女声",
+    "推荐场景": "通用场景",
+    "语种": "中/英",
+    "voice_type": "zh_female_tiexinnvsheng_mars_bigtts"
+  },
+  {
+    "音色名称": "俏皮女声",
+    "推荐场景": "角色扮演",
+    "语种": "中/英",
+    "voice_type": "zh_female_qiaopinvsheng_mars_bigtts"
+  },
+  {
+    "音色名称": "萌丫头",
+    "推荐场景": "角色扮演",
+    "语种": "中/英",
+    "voice_type": "zh_female_mengyatou_mars_bigtts"
+  },
+  {
+    "音色名称": "Adam",
+    "推荐场景": "多语种",
+    "语种": "英语",
+    "voice_type": "en_male_adam_mars_bigtts"
+  },
+  {
+    "音色名称": "Sarah",
+    "推荐场景": "多语种",
+    "语种": "英语",
+    "voice_type": "en_female_sarah_mars_bigtts"
+  },
+  {
+    "音色名称": "Dryw",
+    "推荐场景": "多语种",
+    "语种": "英语",
+    "voice_type": "en_male_dryw_mars_bigtts"
+  },
+  {
+    "音色名称": "Smith",
+    "推荐场景": "多语种",
+    "语种": "英语",
+    "voice_type": "en_male_smith_mars_bigtts"
+  },
+  {
+    "音色名称": "儒雅青年",
+    "推荐场景": "有声阅读",
+    "语种": "中文",
+    "voice_type": "zh_male_ruyaqingnian_mars_bigtts"
+  },
+  {
+    "音色名称": "霸气青叔",
+    "推荐场景": "有声阅读",
+    "语种": "中文",
+    "voice_type": "zh_male_baqiqingshu_mars_bigtts"
+  },
+  {
+    "音色名称": "擎苍",
+    "推荐场景": "有声阅读",
+    "语种": "中文",
+    "voice_type": "zh_male_qingcang_mars_bigtts"
+  },
+  {
+    "音色名称": "活力小哥",
+    "推荐场景": "有声阅读",
+    "语种": "中文",
+    "voice_type": "zh_male_yangguangqingnian_mars_bigtts"
+  },
+  {
+    "音色名称": "古风少御",
+    "推荐场景": "有声阅读",
+    "语种": "中文",
+    "voice_type": "zh_female_gufengshaoyu_mars_bigtts"
+  },
+  {
+    "音色名称": "温柔淑女",
+    "推荐场景": "有声阅读",
+    "语种": "中文",
+    "voice_type": "zh_female_wenroushunv_mars_bigtts"
+  },
+  {
+    "音色名称": "知性温婉",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_zhixingwenwan_tob"
+  },
+  {
+    "音色名称": "绿茶小哥",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_lvchaxiaoge_tob"
+  },
+  {
+    "音色名称": "娇弱萝莉",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_jiaoruoluoli_tob"
+  },
+  {
+    "音色名称": "冷淡疏离",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_lengdanshuli_tob"
+  },
+  {
+    "音色名称": "暖心体贴",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_nuanxintitie_tob"
+  },
+  {
+    "音色名称": "憨厚敦实",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_hanhoudunshi_tob"
+  },
+  {
+    "音色名称": "温柔文雅",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_wenrouwenya_tob"
+  },
+  {
+    "音色名称": "傲气凌人",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_aiqilingren_tob"
+  },
+  {
+    "音色名称": "开朗轻快",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_kailangqingkuai_tob"
+  },
+  {
+    "音色名称": "活泼刁蛮",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_huopodiaoman_tob"
+  },
+  {
+    "音色名称": "固执病娇",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_guzhibingjiao_tob"
+  },
+  {
+    "音色名称": "活泼爽朗",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_huoposhuanglang_tob"
+  },
+  {
+    "音色名称": "撒娇粘人",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_sajiaonianren_tob"
+  },
+  {
+    "音色名称": "傲慢娇声",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_aomanjiaosheng_tob"
+  },
+  {
+    "音色名称": "潇洒随性",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_xiaosasuixing_tob"
+  },
+  {
+    "音色名称": "腹黑公子",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_fuheigongzi_tob"
+  },
+  {
+    "音色名称": "诡异神秘",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_guiyishenmi_tob"
+  },
+  {
+    "音色名称": "儒雅才俊",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_ruyacaijun_tob"
+  },
+  {
+    "音色名称": "病娇白莲",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_bingjiaobailian_tob"
+  },
+  {
+    "音色名称": "正直青年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_zhengzhiqingnian_tob"
+  },
+  {
+    "音色名称": "率真小伙",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_shuaizhenxiaohuo_tob"
+  },
+  {
+    "音色名称": "娇憨女王",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_jiaohannvwang_tob"
+  },
+  {
+    "音色名称": "病娇萌妹",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_bingjiaomengmei_tob"
+  },
+  {
+    "音色名称": "青涩小生",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_qingsenaigou_tob"
+  },
+  {
+    "音色名称": "纯真学弟",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_chunzhenxuedi_tob"
+  },
+  {
+    "音色名称": "暖心学姐",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_nuanxinxuejie_tob"
+  },
+  {
+    "音色名称": "可爱女生",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_keainvsheng_tob"
+  },
+  {
+    "音色名称": "成熟姐姐",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_chengshujiejie_tob"
+  },
+  {
+    "音色名称": "病娇姐姐",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_bingjiaojiejie_tob"
+  },
+  {
+    "音色名称": "优柔帮主",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_youroubangzhu_tob"
+  },
+  {
+    "音色名称": "优柔公子",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_yourougongzi_tob"
+  },
+  {
+    "音色名称": "妩媚御姐",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_wumeiyujie_tob"
+  },
+  {
+    "音色名称": "调皮公主",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_tiaopigongzhu_tob"
+  },
+  {
+    "音色名称": "傲娇女友",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_aojiaonvyou_tob"
+  },
+  {
+    "音色名称": "贴心男友",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_tiexinnanyou_tob"
+  },
+  {
+    "音色名称": "少年将军",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_shaonianjiangjun_tob"
+  },
+  {
+    "音色名称": "贴心女友",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_tiexinnvyou_tob"
+  },
+  {
+    "音色名称": "病娇哥哥",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_bingjiaogege_tob"
+  },
+  {
+    "音色名称": "学霸男同桌",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_xuebanantongzhuo_tob"
+  },
+  {
+    "音色名称": "幽默叔叔",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_youmoshushu_tob"
+  },
+  {
+    "音色名称": "性感御姐",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_xingganyujie_tob"
+  },
+  {
+    "音色名称": "假小子",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_jiaxiaozi_tob"
+  },
+  {
+    "音色名称": "冷峻上司",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_lengjunshangsi_tob"
+  },
+  {
+    "音色名称": "温柔男同桌",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_wenrounantongzhuo_tob"
+  },
+  {
+    "音色名称": "病娇弟弟",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_bingjiaodidi_tob"
+  },
+  {
+    "音色名称": "幽默大爷",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_youmodaye_tob"
+  },
+  {
+    "音色名称": "傲慢少爷",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_aomanshaoye_tob"
+  },
+  {
+    "音色名称": "神秘法师",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_shenmifashi_tob"
+  },
+  {
+    "音色名称": "反卷青年",
+    "推荐场景": "有声阅读",
+    "语种": "中文",
+    "voice_type": "zh_male_fanjuanqingnian_mars_bigtts"
+  },
+  {
+    "音色名称": "Jackson",
+    "推荐场景": "多语种",
+    "语种": "英语",
+    "voice_type": "en_male_jackson_mars_bigtts"
+  },
+  {
+    "音色名称": "Amanda",
+    "推荐场景": "多语种",
+    "语种": "英语",
+    "voice_type": "en_female_amanda_mars_bigtts"
+  },
+  {
+    "音色名称": "亮嗓萌仔",
+    "推荐场景": "视频配音",
+    "语种": "中文",
+    "voice_type": "zh_male_dongmanhaimian_mars_bigtts"
+  },
+  {
+    "音色名称": "温柔小哥",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "zh_male_wenrouxiaoge_mars_bigtts"
+  },
+  {
+    "音色名称": "懒音绵宝",
+    "推荐场景": "视频配音",
+    "语种": "中文",
+    "voice_type": "zh_male_lanxiaoyang_mars_bigtts"
+  },
+  {
+    "音色名称": "北京小爷（多情感）",
+    "推荐场景": "多情感",
+    "语种": "中文",
+    "voice_type": "zh_male_beijingxiaoye_emo_v2_mars_bigtts"
+  },
+  {
+    "音色名称": "柔美女友（多情感）",
+    "推荐场景": "多情感",
+    "语种": "中文",
+    "voice_type": "zh_female_roumeinvyou_emo_v2_mars_bigtts"
+  },
+  {
+    "音色名称": "阳光青年（多情感）",
+    "推荐场景": "多情感",
+    "语种": "中文",
+    "voice_type": "zh_male_yangguangqingnian_emo_v2_mars_bigtts"
+  },
+  {
+    "音色名称": "魅力女友（多情感）",
+    "推荐场景": "多情感",
+    "语种": "中文",
+    "voice_type": "zh_female_meilinvyou_emo_v2_mars_bigtts"
+  },
+  {
+    "音色名称": "爽快思思（多情感）",
+    "推荐场景": "多情感",
+    "语种": "中文",
+    "voice_type": "zh_female_shuangkuaisisi_emo_v2_mars_bigtts"
+  },
+  {
+    "音色名称": "甜美桃子",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "zh_female_tianmeitaozi_mars_bigtts"
+  },
+  {
+    "音色名称": "暖阳女声",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "zh_female_kefunvsheng_mars_bigtts"
+  },
+  {
+    "音色名称": "妩媚可人",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_ganli_v1_tob"
+  },
+  {
+    "音色名称": "儒雅公子",
+    "推荐场景": "通用场景、有声阅读、视频配音",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_flc_v1_tob"
+  },
+  {
+    "音色名称": "性感魅惑",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_luoqing_v1_tob"
+  },
+  {
+    "音色名称": "亲切女声",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "zh_female_qinqienvsheng_moon_bigtts"
+  },
+  {
+    "音色名称": "冷酷哥哥",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_lengkugege_v1_tob"
+  },
+  {
+    "音色名称": "まさお（正男）/Daníel",
+    "推荐场景": "多语种",
+    "语种": "日/西",
+    "voice_type": "multi_male_xudong_conversation_wvae_bigtts"
+  },
+  {
+    "音色名称": "さとみ（智美）/Sofía",
+    "推荐场景": "多语种",
+    "语种": "日/西",
+    "voice_type": "multi_female_sophie_conversation_wvae_bigtts"
+  },
+  {
+    "音色名称": "悠悠君子/Lucas",
+    "推荐场景": "多语种",
+    "语种": "中/英",
+    "voice_type": "zh_male_M100_conversation_wvae_bigtts"
+  },
+  {
+    "音色名称": "快乐小东/Daniel",
+    "推荐场景": "多语种",
+    "语种": "中/英",
+    "voice_type": "zh_male_xudong_conversation_wvae_bigtts"
+  },
+  {
+    "音色名称": "文静毛毛",
+    "推荐场景": "通用场景、视频配音",
+    "语种": "中文",
+    "voice_type": "zh_female_maomao_conversation_wvae_bigtts"
+  },
+  {
+    "音色名称": "阳光阿辰",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "zh_male_qingyiyuxuan_mars_bigtts"
+  },
+  {
+    "音色名称": "魅力苏菲/Sophie",
+    "推荐场景": "多语种",
+    "语种": "中/英",
+    "voice_type": "zh_female_sophie_conversation_wvae_bigtts"
+  },
+  {
+    "音色名称": "邪魅女王",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_bingjiao3_tob"
+  },
+  {
+    "音色名称": "Emily",
+    "推荐场景": "多语种",
+    "语种": "英文",
+    "voice_type": "en_female_emily_mars_bigtts"
+  },
+  {
+    "音色名称": "ひかる（光）",
+    "推荐场景": "多语种",
+    "语种": "日文",
+    "voice_type": "multi_zh_male_youyoujunzi_moon_bigtts"
+  },
+  {
+    "音色名称": "Cartoon Chef",
+    "推荐场景": "多语种",
+    "语种": "英文",
+    "voice_type": "ICL_en_male_cc_sha_v1_tob"
+  },
+  {
+    "音色名称": "温暖少年",
+    "推荐场景": "通用场景、有声阅读",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_yangyang_v1_tob"
+  },
+  {
+    "音色名称": "知心姐姐",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_wenyinvsheng_v1_tob"
+  },
+  {
+    "音色名称": "咆哮小哥",
+    "推荐场景": "角色扮演、视频配音",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_BV144_paoxiaoge_v1_tob"
+  },
+  {
+    "音色名称": "俊朗男友（多情感）",
+    "推荐场景": "多情感",
+    "语种": "中文",
+    "voice_type": "zh_male_junlangnanyou_emo_v2_mars_bigtts"
+  },
+  {
+    "音色名称": "儒雅男友",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "zh_male_ruyayichen_emo_v2_mars_bigtts"
+  },
+  {
+    "音色名称": "Alastor",
+    "推荐场景": "多语种、角色扮演",
+    "语种": "英式英语",
+    "voice_type": "ICL_en_male_cc_alastor_tob"
+  },
+  {
+    "音色名称": "Charlie",
+    "推荐场景": "多语种、视频配音",
+    "语种": "英文",
+    "voice_type": "ICL_en_female_cc_cm_v1_tob"
+  },
+  {
+    "音色名称": "Noah",
+    "推荐场景": "多语种、视频配音",
+    "语种": "英文",
+    "voice_type": "ICL_en_male_cc_dracula_v1_tob"
+  },
+  {
+    "音色名称": "Xavier",
+    "推荐场景": "多语种、视频配音",
+    "语种": "英文",
+    "voice_type": "ICL_en_male_xavier1_v1_tob"
+  },
+  {
+    "音色名称": "Clown Man",
+    "推荐场景": "多语种、视频配音",
+    "语种": "英文",
+    "voice_type": "ICL_en_male_cc_penny_v1_tob"
+  },
+  {
+    "音色名称": "Chucky",
+    "推荐场景": "多语种、视频配音",
+    "语种": "英文",
+    "voice_type": "ICL_en_male_cc_chucky_tob"
+  },
+  {
+    "音色名称": "Ethan",
+    "推荐场景": "多语种",
+    "语种": "澳洲英语",
+    "voice_type": "ICL_en_male_aussie_v1_tob"
+  },
+  {
+    "音色名称": "Jigsaw",
+    "推荐场景": "多语种、角色扮演、视频配音",
+    "语种": "英文",
+    "voice_type": "ICL_en_male_cc_jigsaw_tob"
+  },
+  {
+    "音色名称": "Zayne",
+    "推荐场景": "多语种、视频配音",
+    "语种": "英文",
+    "voice_type": "ICL_en_male_zayne_tob"
+  },
+  {
+    "音色名称": "The Grinch",
+    "推荐场景": "多语种、角色扮演",
+    "语种": "英文",
+    "voice_type": "ICL_en_male_grinch2_tob"
+  },
+  {
+    "音色名称": "Frosty Man",
+    "推荐场景": "多语种、角色扮演",
+    "语种": "英文",
+    "voice_type": "ICL_en_male_frosty1_tob"
+  },
+  {
+    "音色名称": "Big Boogie",
+    "推荐场景": "多语种、角色扮演",
+    "语种": "英文",
+    "voice_type": "ICL_en_male_oogie2_tob"
+  },
+  {
+    "音色名称": "Michael",
+    "推荐场景": "多语种",
+    "语种": "英文",
+    "voice_type": "ICL_en_male_michael_tob"
+  },
+  {
+    "音色名称": "病弱公子",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_bingruogongzi_tob"
+  },
+  {
+    "音色名称": "Kevin McCallister",
+    "推荐场景": "视频配音",
+    "语种": "英文",
+    "voice_type": "ICL_en_male_kevin2_tob"
+  },
+  {
+    "音色名称": "开朗学长",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "en_male_jason_conversation_wvae_bigtts"
+  },
+  {
+    "音色名称": "Owen",
+    "推荐场景": "多语种",
+    "语种": "英文",
+    "voice_type": "en_male_charlie_conversation_wvae_bigtts"
+  },
+  {
+    "音色名称": "Luna",
+    "推荐场景": "多语种",
+    "语种": "英文",
+    "voice_type": "en_female_sarah_new_conversation_wvae_bigtts"
+  },
+  {
+    "音色名称": "双节棍小哥",
+    "推荐场景": "角色扮演",
+    "语种": "中文-台湾口音",
+    "voice_type": "zh_male_zhoujielun_emo_v2_mars_bigtts"
+  },
+  {
+    "音色名称": "优柔公子（多情感）",
+    "推荐场景": "多情感",
+    "语种": "中文",
+    "voice_type": "zh_male_yourougongzi_emo_v2_mars_bigtts"
+  },
+  {
+    "音色名称": "邻居阿姨（多情感）",
+    "推荐场景": "多情感",
+    "语种": "中文",
+    "voice_type": "zh_female_linjuayi_emo_v2_mars_bigtts"
+  },
+  {
+    "音色名称": "京腔侃爷（多情感）",
+    "推荐场景": "多情感",
+    "语种": "中文",
+    "voice_type": "zh_male_jingqiangkanye_emo_mars_bigtts"
+  },
+  {
+    "音色名称": "广州德哥（多情感）",
+    "推荐场景": "多情感",
+    "语种": "中文",
+    "voice_type": "zh_male_guangzhoudege_emo_mars_bigtts"
+  },
+  {
+    "音色名称": "傲娇霸总（多情感）",
+    "推荐场景": "多情感",
+    "语种": "中文",
+    "voice_type": "zh_male_aojiaobazong_emo_v2_mars_bigtts"
+  },
+  {
+    "音色名称": "甜心小美（多情感）",
+    "推荐场景": "多情感",
+    "语种": "中文",
+    "voice_type": "zh_female_tianxinxiaomei_emo_v2_mars_bigtts"
+  },
+  {
+    "音色名称": "高冷御姐（多情感）",
+    "推荐场景": "多情感",
+    "语种": "中文",
+    "voice_type": "zh_female_gaolengyujie_emo_v2_mars_bigtts"
+  },
+  {
+    "音色名称": "元气甜妹",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_wuxi_tob"
+  },
+  {
+    "音色名称": "油腻大叔",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_you_tob"
+  },
+  {
+    "音色名称": "嚣张小哥",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_ms_tob"
+  },
+  {
+    "音色名称": "贴心妹妹",
+    "推荐场景": "通用场景、视频配音",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_yilin_tob"
+  },
+  {
+    "音色名称": "温柔白月光",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_yry_tob"
+  },
+  {
+    "音色名称": "贴心闺蜜",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_xnx_tob"
+  },
+  {
+    "音色名称": "初恋女友",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_yuxin_v1_tob"
+  },
+  {
+    "音色名称": "倾心少女",
+    "推荐场景": "角色扮演、视频配音",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_qiuling_v1_tob"
+  },
+  {
+    "音色名称": "机灵小伙",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_shenmi_v1_tob"
+  },
+  {
+    "音色名称": "胡子叔叔",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_huzi_v1_tob"
+  },
+  {
+    "音色名称": "醇厚低音",
+    "推荐场景": "角色扮演、视频配音、有声阅读",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_buyan_v1_tob"
+  },
+  {
+    "音色名称": "纯澈女生",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_feicui_v1_tob"
+  },
+  {
+    "音色名称": "Daisy",
+    "推荐场景": "多语种",
+    "语种": "英文",
+    "voice_type": "en_female_dacey_conversation_wvae_bigtts"
+  },
+  {
+    "音色名称": "邪魅御姐",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_xiangliangya_v1_tob"
+  },
+  {
+    "音色名称": "孤傲公子",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_guaogongzi_v1_tob"
+  },
+  {
+    "音色名称": "枕边低语",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_asmryexiu_tob"
+  },
+  {
+    "音色名称": "つき（月）/Diana",
+    "推荐场景": "多语种",
+    "语种": "日/西",
+    "voice_type": "multi_female_maomao_conversation_wvae_bigtts"
+  },
+  {
+    "音色名称": "Lucía",
+    "推荐场景": "多语种",
+    "语种": "西语",
+    "voice_type": "multi_male_M100_conversation_wvae_bigtts"
+  },
+  {
+    "音色名称": "傲慢青年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_aomanqingnian_tob"
+  },
+  {
+    "音色名称": "醋精男友",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_cujingnanyou_tob"
+  },
+  {
+    "音色名称": "醋精男生",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_cujingnansheng_tob"
+  },
+  {
+    "音色名称": "爽朗少年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_shuanglangshaonian_tob"
+  },
+  {
+    "音色名称": "撒娇男友",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_sajiaonanyou_tob"
+  },
+  {
+    "音色名称": "温柔男友",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_wenrounanyou_tob"
+  },
+  {
+    "音色名称": "温顺少年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_wenshunshaonian_tob"
+  },
+  {
+    "音色名称": "粘人男友",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_naigounanyou_tob"
+  },
+  {
+    "音色名称": "撒娇男生",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_sajiaonansheng_tob"
+  },
+  {
+    "音色名称": "活泼男友",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_huoponanyou_tob"
+  },
+  {
+    "音色名称": "甜系男友",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_tianxinanyou_tob"
+  },
+  {
+    "音色名称": "活力青年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_huoliqingnian_tob"
+  },
+  {
+    "音色名称": "开朗青年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_kailangqingnian_tob"
+  },
+  {
+    "音色名称": "冷漠兄长",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_lengmoxiongzhang_tob"
+  },
+  {
+    "音色名称": "天才同桌",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_tiancaitongzhuo_tob"
+  },
+  {
+    "音色名称": "傲娇精英",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_aojiaojingying_tob"
+  },
+  {
+    "音色名称": "翩翩公子",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_pianpiangongzi_tob"
+  },
+  {
+    "音色名称": "懵懂青年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_mengdongqingnian_tob"
+  },
+  {
+    "音色名称": "冷脸兄长",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_lenglianxiongzhang_tob"
+  },
+  {
+    "音色名称": "病娇少年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_bingjiaoshaonian_tob"
+  },
+  {
+    "音色名称": "病娇男友",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_bingjiaonanyou_tob"
+  },
+  {
+    "音色名称": "病弱少年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_bingruoshaonian_tob"
+  },
+  {
+    "音色名称": "意气少年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_yiqishaonian_tob"
+  },
+  {
+    "音色名称": "干净少年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_ganjingshaonian_tob"
+  },
+  {
+    "音色名称": "冷漠男友",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_lengmonanyou_tob"
+  },
+  {
+    "音色名称": "精英青年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_jingyingqingnian_tob"
+  },
+  {
+    "音色名称": "风发少年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_fengfashaonian_tob"
+  },
+  {
+    "音色名称": "热血少年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_rexueshaonian_tob"
+  },
+  {
+    "音色名称": "清爽少年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_qingshuangshaonian_tob"
+  },
+  {
+    "音色名称": "中二青年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_zhongerqingnian_tob"
+  },
+  {
+    "音色名称": "凌云青年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_lingyunqingnian_tob"
+  },
+  {
+    "音色名称": "自负青年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_zifuqingnian_tob"
+  },
+  {
+    "音色名称": "不羁青年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_bujiqingnian_tob"
+  },
+  {
+    "音色名称": "儒雅君子",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_ruyajunzi_tob"
+  },
+  {
+    "音色名称": "低音沉郁",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_diyinchenyu_tob"
+  },
+  {
+    "音色名称": "冷脸学霸",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_lenglianxueba_tob"
+  },
+  {
+    "音色名称": "儒雅总裁",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_ruyazongcai_tob"
+  },
+  {
+    "音色名称": "深沉总裁",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_shenchenzongcai_tob"
+  },
+  {
+    "音色名称": "小侯爷",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_xiaohouye_tob"
+  },
+  {
+    "音色名称": "孤高公子",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_gugaogongzi_tob"
+  },
+  {
+    "音色名称": "仗剑君子",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_zhangjianjunzi_tob"
+  },
+  {
+    "音色名称": "温润学者",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_wenrunxuezhe_tob"
+  },
+  {
+    "音色名称": "亲切青年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_qinqieqingnian_tob"
+  },
+  {
+    "音色名称": "温柔学长",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_wenrouxuezhang_tob"
+  },
+  {
+    "音色名称": "磁性男嗓",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_cixingnansang_tob"
+  },
+  {
+    "音色名称": "高冷总裁",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_gaolengzongcai_tob"
+  },
+  {
+    "音色名称": "冷峻高智",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_lengjungaozhi_tob"
+  },
+  {
+    "音色名称": "孱弱少爷",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_chanruoshaoye_tob"
+  },
+  {
+    "音色名称": "自信青年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_zixinqingnian_tob"
+  },
+  {
+    "音色名称": "青涩青年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_qingseqingnian_tob"
+  },
+  {
+    "音色名称": "学霸同桌",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_xuebatongzhuo_tob"
+  },
+  {
+    "音色名称": "冷傲总裁",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_lengaozongcai_tob"
+  },
+  {
+    "音色名称": "霸道少爷",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_badaoshaoye_tob"
+  },
+  {
+    "音色名称": "元气少年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_yuanqishaonian_tob"
+  },
+  {
+    "音色名称": "洒脱青年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_satuoqingnian_tob"
+  },
+  {
+    "音色名称": "直率青年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_zhishuaiqingnian_tob"
+  },
+  {
+    "音色名称": "斯文青年",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_siwenqingnian_tob"
+  },
+  {
+    "音色名称": "成熟总裁",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_chengshuzongcai_tob"
+  },
+  {
+    "音色名称": "俊逸公子",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_junyigongzi_tob"
+  },
+  {
+    "音色名称": "傲娇公子",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_aojiaogongzi_tob"
+  },
+  {
+    "音色名称": "仗剑侠客",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_zhangjianxiake_tob"
+  },
+  {
+    "音色名称": "机甲智能",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_jijiaozhineng_tob"
+  },
+  {
+    "音色名称": "冷酷哥哥（多情感）",
+    "推荐场景": "多情感",
+    "语种": "中文",
+    "voice_type": "zh_male_lengkugege_emo_v2_mars_bigtts"
+  },
+  {
+    "音色名称": "霸道总裁",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_badaozongcai_v1_tob"
+  },
+  {
+    "音色名称": "Energetic Male II",
+    "推荐场景": "多语种",
+    "语种": "美式英语",
+    "voice_type": "en_male_campaign_jamal_moon_bigtts"
+  },
+  {
+    "音色名称": "Gotham Hero",
+    "推荐场景": "多语种",
+    "语种": "美式英语",
+    "voice_type": "en_male_chris_moon_bigtts"
+  },
+  {
+    "音色名称": "Delicate Girl",
+    "推荐场景": "多语种",
+    "语种": "英式英语",
+    "voice_type": "en_female_daisy_moon_bigtts"
+  },
+  {
+    "音色名称": "Flirty Female",
+    "推荐场景": "多语种",
+    "语种": "美式英语",
+    "voice_type": "en_female_product_darcie_moon_bigtts"
+  },
+  {
+    "音色名称": "Peaceful Female",
+    "推荐场景": "多语种",
+    "语种": "美式英语",
+    "voice_type": "en_female_emotional_moon_bigtts"
+  },
+  {
+    "音色名称": "Bruce",
+    "推荐场景": "多语种",
+    "语种": "美式英语",
+    "voice_type": "en_male_bruce_moon_bigtts"
+  },
+  {
+    "音色名称": "Dave",
+    "推荐场景": "多语种",
+    "语种": "英式英语",
+    "voice_type": "en_male_dave_moon_bigtts"
+  },
+  {
+    "音色名称": "Hades",
+    "推荐场景": "多语种",
+    "语种": "英式英语",
+    "voice_type": "en_male_hades_moon_bigtts"
+  },
+  {
+    "音色名称": "Michael",
+    "推荐场景": "多语种",
+    "语种": "美式英语",
+    "voice_type": "en_male_michael_moon_bigtts"
+  },
+  {
+    "音色名称": "Onez",
+    "推荐场景": "多语种",
+    "语种": "英式英语",
+    "voice_type": "en_female_onez_moon_bigtts"
+  },
+  {
+    "音色名称": "Nara",
+    "推荐场景": "多语种",
+    "语种": "美式英语",
+    "voice_type": "en_female_nara_moon_bigtts"
+  },
+  {
+    "音色名称": "Candice",
+    "推荐场景": "多语种",
+    "语种": "美式英语",
+    "voice_type": "en_female_candice_emo_v2_mars_bigtts"
+  },
+  {
+    "音色名称": "Corey",
+    "推荐场景": "多语种",
+    "语种": "英式英语",
+    "voice_type": "en_male_corey_emo_v2_mars_bigtts"
+  },
+  {
+    "音色名称": "Glen",
+    "推荐场景": "多语种",
+    "语种": "美式英语",
+    "voice_type": "en_male_glen_emo_v2_mars_bigtts"
+  },
+  {
+    "音色名称": "Nadia1",
+    "推荐场景": "多语种",
+    "语种": "英式英语",
+    "voice_type": "en_female_nadia_tips_emo_v2_mars_bigtts"
+  },
+  {
+    "音色名称": "Nadia2",
+    "推荐场景": "多语种",
+    "语种": "美式英语",
+    "voice_type": "en_female_nadia_poetry_emo_v2_mars_bigtts"
+  },
+  {
+    "音色名称": "Sylus",
+    "推荐场景": "多语种",
+    "语种": "美式英语",
+    "voice_type": "en_male_sylus_emo_v2_mars_bigtts"
+  },
+  {
+    "音色名称": "Serena",
+    "推荐场景": "多语种",
+    "语种": "美式英语",
+    "voice_type": "en_female_skye_emo_v2_mars_bigtts"
+  },
+  {
+    "音色名称": "Tina老师",
+    "推荐场景": "教育场景",
+    "语种": "中/英",
+    "voice_type": "zh_female_yingyujiaoyu_mars_bigtts"
+  },
+  {
+    "音色名称": "Vivi",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "zh_female_vv_mars_bigtts"
+  },
+  {
+    "音色名称": "黯刃秦主",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_anrenqinzhu_cd62e63dcdab_tob"
+  },
+  {
+    "音色名称": "温柔女神",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_wenrounvshen_239eff5e8ffa_tob"
+  },
+  {
+    "音色名称": "内敛才俊",
+    "推荐场景": "有声阅读",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_neiliancaijun_e991be511569_tob"
+  },
+  {
+    "音色名称": "纯真少女",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_chunzhenshaonv_e588402fb8ad_tob"
+  },
+  {
+    "音色名称": "奶气小生",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_xiaonaigou_edf58cf28b8b_tob"
+  },
+  {
+    "音色名称": "精灵向导",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_jinglingxiangdao_1beb294a9e3e_tob"
+  },
+  {
+    "音色名称": "闷油瓶小哥",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_menyoupingxiaoge_ffed9fc2fee7_tob"
+  },
+  {
+    "音色名称": "甜美小雨",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_tianmeixiaoyu_cs_tob"
+  },
+  {
+    "音色名称": "热情艾娜",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_reqingaina_cs_tob"
+  },
+  {
+    "音色名称": "甜美小橘",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_tianmeixiaoju_cs_tob"
+  },
+  {
+    "音色名称": "沉稳明仔",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_chenwenmingzai_cs_tob"
+  },
+  {
+    "音色名称": "亲切小卓",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_qinqiexiaozhuo_cs_tob"
+  },
+  {
+    "音色名称": "灵动欣欣",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_lingdongxinxin_cs_tob"
+  },
+  {
+    "音色名称": "乖巧可儿",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_guaiqiaokeer_cs_tob"
+  },
+  {
+    "音色名称": "暖心茜茜",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_nuanxinqianqian_cs_tob"
+  },
+  {
+    "音色名称": "软萌团子",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_ruanmengtuanzi_cs_tob"
+  },
+  {
+    "音色名称": "阳光洋洋",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_yangguangyangyang_cs_tob"
+  },
+  {
+    "音色名称": "软萌糖糖",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_ruanmengtangtang_cs_tob"
+  },
+  {
+    "音色名称": "秀丽倩倩",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_xiuliqianqian_cs_tob"
+  },
+  {
+    "音色名称": "开心小鸿",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_kaixinxiaohong_cs_tob"
+  },
+  {
+    "音色名称": "轻盈朵朵",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_qingyingduoduo_cs_tob"
+  },
+  {
+    "音色名称": "Lauren",
+    "推荐场景": "多语种",
+    "语种": "美式英文",
+    "voice_type": "en_female_lauren_moon_bigtts"
+  },
+  {
+    "音色名称": "理性圆子",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_lixingyuanzi_cs_tob"
+  },
+  {
+    "音色名称": "清甜桃桃",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_qingtiantaotao_cs_tob"
+  },
+  {
+    "音色名称": "清晰小雪",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_qingxixiaoxue_cs_tob"
+  },
+  {
+    "音色名称": "清甜莓莓",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_qingtianmeimei_cs_tob"
+  },
+  {
+    "音色名称": "开朗婷婷",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_kailangtingting_cs_tob"
+  },
+  {
+    "音色名称": "清新沐沐",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_qingxinmumu_cs_tob"
+  },
+  {
+    "音色名称": "爽朗小阳",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_shuanglangxiaoyang_cs_tob"
+  },
+  {
+    "音色名称": "清新波波",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_qingxinbobo_cs_tob"
+  },
+  {
+    "音色名称": "温婉珊珊",
+    "推荐场景": "客服场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_wenwanshanshan_cs_tob"
+  },
+  {
+    "音色名称": "沪普男",
+    "推荐场景": "趣味口音",
+    "语种": "中文",
+    "voice_type": "zh_male_hupunan_mars_bigtts"
+  },
+  {
+    "音色名称": "鲁班七号",
+    "推荐场景": "趣味口音",
+    "语种": "中文",
+    "voice_type": "zh_male_lubanqihao_mars_bigtts"
+  },
+  {
+    "音色名称": "娇喘女声",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "zh_female_jiaochuan_mars_bigtts"
+  },
+  {
+    "音色名称": "林潇",
+    "推荐场景": "趣味口音",
+    "语种": "中文",
+    "voice_type": "zh_female_yangmi_mars_bigtts"
+  },
+  {
+    "音色名称": "玲玲姐姐",
+    "推荐场景": "趣味口音",
+    "语种": "中文",
+    "voice_type": "zh_female_linzhiling_mars_bigtts"
+  },
+  {
+    "音色名称": "春日部姐姐",
+    "推荐场景": "趣味口音",
+    "语种": "中文",
+    "voice_type": "zh_female_jiyejizi2_mars_bigtts"
+  },
+  {
+    "音色名称": "唐僧",
+    "推荐场景": "趣味口音",
+    "语种": "中文",
+    "voice_type": "zh_male_tangseng_mars_bigtts"
+  },
+  {
+    "音色名称": "庄周",
+    "推荐场景": "趣味口音",
+    "语种": "中文",
+    "voice_type": "zh_male_zhuangzhou_mars_bigtts"
+  },
+  {
+    "音色名称": "开朗弟弟",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "zh_male_livelybro_mars_bigtts"
+  },
+  {
+    "音色名称": "猪八戒",
+    "推荐场景": "趣味口音",
+    "语种": "中文",
+    "voice_type": "zh_male_zhubajie_mars_bigtts"
+  },
+  {
+    "音色名称": "感冒电音姐姐",
+    "推荐场景": "趣味口音",
+    "语种": "中文",
+    "voice_type": "zh_female_ganmaodianyin_mars_bigtts"
+  },
+  {
+    "音色名称": "谄媚女声",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "zh_female_flattery_mars_bigtts"
+  },
+  {
+    "音色名称": "直率英子",
+    "推荐场景": "趣味口音",
+    "语种": "中文",
+    "voice_type": "zh_female_naying_mars_bigtts"
+  },
+  {
+    "音色名称": "女雷神",
+    "推荐场景": "趣味口音",
+    "语种": "中文",
+    "voice_type": "zh_female_leidian_mars_bigtts"
+  },
+  {
+    "音色名称": "粤语小溏",
+    "推荐场景": "趣味口音",
+    "语种": "中文",
+    "voice_type": "zh_female_yueyunv_mars_bigtts"
+  },
+  {
+    "音色名称": "炀炀",
+    "推荐场景": "通用场景",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_BV705_streaming_cs_tob"
+  },
+  {
+    "音色名称": "寡言小哥",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_xiaoge_v1_tob"
+  },
+  {
+    "音色名称": "清朗温润",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_renyuwangzi_v1_tob"
+  },
+  {
+    "音色名称": "潇洒随性",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_xiaosha_v1_tob"
+  },
+  {
+    "音色名称": "清冷矜贵",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_liyisheng_v1_tob"
+  },
+  {
+    "音色名称": "沉稳优雅",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_qinglen_v1_tob"
+  },
+  {
+    "音色名称": "清逸苏感",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_chongqingzhanzhan_v1_tob"
+  },
+  {
+    "音色名称": "温柔内敛",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_xingjiwangzi_v1_tob"
+  },
+  {
+    "音色名称": "低沉缱绻",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_sigeshiye_v1_tob"
+  },
+  {
+    "音色名称": "蓝银草魂师",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_male_lanyingcaohunshi_v1_tob"
+  },
+  {
+    "音色名称": "清冷高雅",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_liumengdie_v1_tob"
+  },
+  {
+    "音色名称": "甜美娇俏",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_linxueying_v1_tob"
+  },
+  {
+    "音色名称": "柔骨魂师",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_rouguhunshi_v1_tob"
+  },
+  {
+    "音色名称": "甜美活泼",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_tianmei_v1_tob"
+  },
+  {
+    "音色名称": "成熟温柔",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_chengshu_v1_tob"
+  },
+  {
+    "音色名称": "贴心闺蜜",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_xnx_v1_tob"
+  },
+  {
+    "音色名称": "温柔白月光",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "ICL_zh_female_yry_v1_tob"
+  },
+  {
+    "音色名称": "高冷沉稳",
+    "推荐场景": "角色扮演",
+    "语种": "中文",
+    "voice_type": "zh_male_bv139_audiobook_ummv3_bigtts"
+  },
+  {
+    "音色名称": "深夜播客",
+    "推荐场景": "多情感",
+    "语种": "中文",
+    "voice_type": "zh_male_shenyeboke_emo_v2_mars_bigtts"
+  }
+]

@@ -1,0 +1,37 @@
+{
+    "female_lin_jia_nv_hai": 
+    {
+        "voice_type": "ICL_zh_female_huoponvhai_tob",
+        "file": "[COSYVOICE_PATH]/asset/zero_shot_prompt.wav"
+    },
+    "female_gao_leng_yu_jie": 
+    {
+        "voice_type": "zh_female_gaolengyujie_moon_bigtts",
+        "file": "[COSYVOICE_PATH]/asset/wavs/zh_female_gaolengyujie_moon_bigtts-1.wav"
+    },
+    "female_yuan_qin_nv_you": 
+    {
+        "voice_type": "zh_female_yuanqinvyou_moon_bigtts",
+        "file": "[COSYVOICE_PATH]/asset/wavs/zh_female_yuanqinvyou_moon_bigtts-1.wav"
+    },
+    "male_ao_jia_ba_zong": 
+    {
+        "voice_type": "zh_male_aojiaobazong_moon_bigtts",
+        "file": "[COSYVOICE_PATH]/asset/wavs/zh_male_aojiaobazong_moon_bigtts-1.wav"
+    },
+    "male_audiobook": 
+    {
+        "voice_type": "zh_male_bv139_audiobook_ummv3_bigtts",
+        "file": "[COSYVOICE_PATH]/asset/wavs/zh_male_bv139_audiobook_ummv3_bigtts.wav"
+    },
+    "male_shen_ye_bo_ke": 
+    {
+        "voice_type": "zh_male_shenyeboke_emo_v2_mars_bigtts",
+        "file": "[COSYVOICE_PATH]/asset/wavs/zh_male_shenyeboke_emo_v2_mars_bigtts-1.wav"
+    },
+    "male_yuan_bo_xiao_shu": 
+    {
+        "voice_type": "zh_male_yuanboxiaoshu_moon_bigtts",
+        "file": "[COSYVOICE_PATH]/asset/wavs/zh_male_yuanboxiaoshu_moon_bigtts-1.wav"
+    }
+}

@@ -1,0 +1,17 @@
+{
+  "skill_name": "video-generator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "帮我生成一个自然风景视频，内容是男人在稻田玩了会儿后，又跑去山上玩了，拥抱大自然，参考图片是[YOUR_SKILLS_DIR]/video-generator/assets/ghibli_summer_rice_field_4k.png和[YOUR_SKILLS_DIR]/video-generator/assets/ghibli_converted_portrait.jpg，时长10秒，16:9比例",
+      "expected_output": "生成符合描述的自然风景视频，返回进程ID、日志路径，完成后返回视频文件路径和预览链接",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "生成第一人称视角果茶宣传广告，seedance牌「苹苹安安」苹果果茶限定款；首帧为图片1：https://ark-project.tos-cn-beijing.volces.com/doc_image/r2v_tea_pic1.jpg，你的手摘下一颗带晨露的阿克苏红苹果，轻脆的苹果碰撞声；2-4 秒：快速切镜，你的手将苹果块投入雪克杯，加入冰块与茶底，用力摇晃，冰块碰撞声与摇晃声卡点轻快鼓点，背景音：「鲜切现摇」；4-6 秒：第一人称成品特写，分层果茶倒入透明杯，你的手轻挤奶盖在顶部铺展，在杯身贴上粉红包标，镜头拉近看奶盖与果茶的分层纹理；6-8 秒：第一人称手持举杯，你将图片2：https://ark-project.tos-cn-beijing.volces.com/doc_image/r2v_tea_pic2.jpg中的果茶举到镜头前（模拟递到观众面前的视角），杯身标签清晰可见，背景音「来一口鲜爽」，尾帧定格为图片2。背景声音统一为女生音色。全程使用参考视频https://ark-project.tos-cn-beijing.volces.com/doc_video/r2v_tea_video1.mp4的第一视角构图，全程使用音频https://ark-project.tos-cn-beijing.volces.com/doc_audio/r2v_tea_audio1.mp3作为背景音乐。比例16:9，时长11秒。",
+      "expected_output": "生成符合分镜描述的seedance苹苹安苹果果茶宣传广告视频，返回进程ID、日志路径，完成后返回视频文件路径和预览链接",
+      "files": []
+    }
+  ]
+}
