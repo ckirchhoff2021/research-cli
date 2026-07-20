@@ -10,6 +10,7 @@ from rich.text import Text
 from rich.style import Style
 
 from datetime import datetime
+from stream import rich_console_stream_call
 
 
 def build_agent_config(thread_id: str | None = None) -> dict:
@@ -145,6 +146,11 @@ if __name__ == '__main__':
         help="Show rich console output",
     )
     parser.add_argument(
+        "--stream", "-s",
+        action="store_true",
+        help="Show stream output",
+    )
+    parser.add_argument(
         "--thread-id",
         type=str,
         default=None,
@@ -153,6 +159,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     if args.console:
-        rich_console_call(args)
+        if args.stream:
+            rich_console_stream_call(args.task_prompt, args.thread_id)
+        else:    
+            rich_console_call(args)
     else:
         normal_call(args)
