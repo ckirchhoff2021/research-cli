@@ -78,6 +78,64 @@ uv run python main.py --task_prompt "给我讲个笑话。"
 
 编辑 `memory/AGENTS.md` 文件，定义代理的角色定位、行为准则、输出规范等。
 
+## 运行模式
+
+| 模式 | 命令 | 说明 |
+|------|------|------|
+| 普通模式 | `uv run python main.py --task_prompt "..."` | 一次性输出最终结果 |
+| 控制台模式 | `uv run python main.py -c --task_prompt "..."` | 树形结构展示执行过程 |
+| 流式模式 | `uv run python main.py -c -s --task_prompt "..."` | 实时流式刷新执行过程 |
+
+## 测试用例
+
+### 基础对话
+
+```bash
+# 普通模式
+uv run python main.py --task_prompt "讲个笑话"
+
+# 流式模式
+uv run python -m tests.test_stream --task "讲个笑话"
+```
+
+### 文件操作
+
+```bash
+# 读取并分析文件
+uv run python -m tests.test_stream --task "读取 main.py 的内容并告诉我它是做什么的"
+
+# 探索项目结构
+uv run python -m tests.test_stream --task "列出当前目录下所有 Python 文件"
+```
+
+### 代码生成
+
+```bash
+# 生成代码
+uv run python -m tests.test_stream --task "写一个快速排序的 Python 实现"
+
+# 代码审查
+uv run python -m tests.test_stream --task "检查 agent.py 中有哪些可以优化的地方"
+```
+
+### 技能调用
+
+```bash
+# 图像生成
+uv run python -m tests.test_stream --task "生成一张宫崎骏风格的大海图像"
+
+# 网页搜索
+uv run python -m tests.test_stream --task "搜索 Python 3.13 的新特性"
+```
+
+### 指定会话追踪
+
+```bash
+# 指定 thread-id 用于 LangSmith/LangGraph 链路追踪
+uv run python main.py -c -s --task_prompt "分析项目结构" --thread-id my-session-001
+uv run python -m tests.test_stream --task "继续上次的分析" --thread-id my-session-001
+```
+
 ## 特性
 
 ✅ 开箱即用的科研代理基座
@@ -85,3 +143,5 @@ uv run python main.py --task_prompt "给我讲个笑话。"
 ✅ 本地 shell 执行能力，可直接操作本地文件、运行脚本
 ✅ 会话记忆持久化
 ✅ 兼容各类 OpenAI 协议大模型
+✅ 实时流式输出，可视化执行过程
+✅ 支持 LangSmith/LangGraph 链路追踪
