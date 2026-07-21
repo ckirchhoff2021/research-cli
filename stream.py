@@ -135,6 +135,27 @@ def should_hide_node(node_name: str) -> bool:
     return any(node_name.startswith(prefix) for prefix in HIDE_PREFIXES)
 
 
+def save_trace_json(process_steps: list, final_response: str, elapsed: float, task_prompt: str, output_dir: str = "traces") -> str:
+    os.makedirs(output_dir, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"trace_{timestamp}.json"
+    filepath = os.path.join(output_dir, filename)
+
+    trace_data = {
+        "timestamp": datetime.now().isoformat(),
+        "task": task_prompt,
+        "elapsed_seconds": round(elapsed, 2),
+        "final_response": final_response,
+        "total_steps": len(process_steps),
+        "steps": process_steps,
+    }
+
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(trace_data, f, ensure_ascii=False, indent=2)
+
+    return filepath
+
+
 def build_process_tree(process_steps: list, final_response: str = "", elapsed: float = 0) -> Tree:
     tree = Tree("[bold blue]🤖 Agent 执行过程[/bold blue]")
 
@@ -344,6 +365,9 @@ def rich_console_stream_call(task_prompt: str, thread_id: str | None = None):
             f"[bold green]✨ 任务完成![/bold green]\n[dim]总耗时: {elapsed:.1f}s[/dim]",
             border_style="green"
         ))
+
+        trace_path = save_trace_json(process_steps, full_response, elapsed, task_prompt)
+        console.print(f"[dim]📁 执行轨迹已保存: {trace_path}[/dim]")
 
     except Exception as e:
         console.print()
