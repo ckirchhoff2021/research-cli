@@ -2,6 +2,7 @@ import sys
 import os
 import json
 import time
+import copy
 from datetime import datetime
 
 from dotenv import load_dotenv
@@ -14,22 +15,18 @@ from rich.live import Live
 from rich.panel import Panel
 from rich.tree import Tree
 from rich.markdown import Markdown
+from rich.text import Text
+
+
+MAX_ARGS_DISPLAY_LENGTH = 3000
+MAX_RESULT_DISPLAY_LENGTH = 3000
+MAX_THINKING_DISPLAY_LENGTH = 3000
+MAX_FINAL_RESPONSE_DISPLAY_LENGTH = 5000
 
 
 def build_agent_config(thread_id: str | None = None) -> dict:
     resolved_thread_id = thread_id or f"cli-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     return {"configurable": {"thread_id": resolved_thread_id}}
-
-
-MAX_ARGS_DISPLAY_LENGTH = 500
-MAX_RESULT_PREVIEW_LINES = 5
-MAX_RESULT_PREVIEW_CHARS = 600
-MAX_THINKING_DISPLAY_LENGTH = 1000
-
-HIDE_PREFIXES = (
-    "SkillsMiddleware", "PatchToolCalls", "MemoryMiddleware",
-    "TodoList", "SubAgent", "FileSystem", "Summarization"
-)
 
 
 def normalize_message_content(content) -> str:
@@ -54,11 +51,32 @@ def normalize_message_content(content) -> str:
     return str(content)
 
 
-def truncate_text(text: str, max_len: int) -> str:
-    text = normalize_message_content(text)
-    if len(text) > max_len:
-        return text[:max_len] + "..."
-    return text
+def truncate_text(value: str, max_length: int) -> str:
+    value = normalize_message_content(value)
+    if len(value) <= max_length:
+        return value
+    return value[: max_length - 3] + "..."
+
+
+def merge_stream_response(existing: str, incoming: str) -> str:
+    if not incoming:
+        return existing
+    if not existing:
+        return incoming
+    if incoming == existing:
+        return existing
+    if incoming.startswith(existing):
+        return incoming
+    if existing.startswith(incoming):
+        return existing
+
+    max_overlap = min(len(existing), len(incoming))
+    for overlap in range(max_overlap, 0, -1):
+        if existing.endswith(incoming[:overlap]):
+            return existing + incoming[overlap:]
+
+    separator = "" if existing.endswith(("\n", " ")) or incoming.startswith(("\n", " ")) else "\n"
+    return existing + separator + incoming
 
 
 def shorten_path(path_str: str) -> str:
@@ -77,133 +95,155 @@ def shorten_path(path_str: str) -> str:
 def format_args(args: dict) -> str:
     formatted = {}
     for k, v in args.items():
-        if isinstance(v, str) and ("/" in v or "\\" in v) and len(v) > 40:
+        if isinstance(v, str) and ("/" in v or "\\" in v) and len(v) > 60:
             formatted[k] = shorten_path(v)
-        elif isinstance(v, str) and len(v) > 100:
-            formatted[k] = v[:100] + "..."
         else:
             formatted[k] = v
     try:
-        return json.dumps(formatted, ensure_ascii=False, indent=2)
+        raw = json.dumps(formatted, ensure_ascii=False, indent=2)
     except Exception:
-        return str(formatted)
+        raw = str(formatted)
+    if len(raw) > MAX_ARGS_DISPLAY_LENGTH:
+        raw = raw[:MAX_ARGS_DISPLAY_LENGTH] + "..."
+    return raw
 
 
-def classify_tool_call(tool_name: str, tool_args: dict) -> tuple[str, str]:
-    file_path = str(tool_args.get("file_path", ""))
-    if tool_name in ("read_file", "read"):
-        if "SKILL.md" in file_path:
-            skill_name = os.path.basename(os.path.dirname(file_path))
-            return "skill", skill_name
-        if "AGENTS.md" in file_path or "/memory/" in file_path:
-            return "memory", "memory"
-    if tool_name in ("ls", "glob", "grep"):
-        return "filesystem", ""
-    if tool_name in ("execute", "run_command", "shell"):
-        return "execute", ""
-    return "normal", ""
+def detect_tool_icon(name: str, args: dict) -> tuple[str, str]:
+    if name in ("execute", "run_command", "shell", "bash"):
+        return "⚡", "magenta"
+    if name in ("read_file", "read"):
+        return "📖", "cyan"
+    if name in ("write_file", "write", "edit_file", "edit"):
+        return "✏️", "green"
+    if name in ("ls", "glob", "grep", "find"):
+        return "🔍", "dim cyan"
+    if name in ("mkdir", "rm", "cp", "mv"):
+        return "📁", "yellow"
+    if name == "write_todos":
+        return "📋", "dim"
+    return "🔧", "cyan"
 
 
-def format_tool_result(result_text: str, tool_type: str = "normal") -> tuple[str, bool]:
-    lines = result_text.splitlines()
-    total_lines = len(lines)
-    total_chars = len(result_text)
-
-    if tool_type == "skill":
-        return f"[dim blue]📖 已加载技能配置 ({total_lines} 行)[/dim blue]", False
-    if tool_type == "memory":
-        return f"[dim blue]📝 已加载记忆 ({total_lines} 行)[/dim blue]", False
-
-    is_truncated = False
-    preview_lines = lines[:MAX_RESULT_PREVIEW_LINES]
-    preview = "\n".join(preview_lines)
-
-    if len(preview) > MAX_RESULT_PREVIEW_CHARS:
-        preview = preview[:MAX_RESULT_PREVIEW_CHARS]
-        is_truncated = True
-
-    if total_lines > MAX_RESULT_PREVIEW_LINES or total_chars > MAX_RESULT_PREVIEW_CHARS:
-        is_truncated = True
-
-    if is_truncated:
-        preview += f"\n\n... [共 {total_lines} 行, {total_chars} 字符]"
-
-    return preview, is_truncated
+def is_skill_read(name: str, args: dict) -> bool:
+    if name != "read_file":
+        return False
+    file_path = args.get("file_path", "")
+    return "/skills/" in file_path and ("SKILL.md" in file_path or "AGENTS.md" in file_path)
 
 
-def should_hide_node(node_name: str) -> bool:
-    return any(node_name.startswith(prefix) for prefix in HIDE_PREFIXES)
+def format_tool_result(name: str, args: dict, result: str) -> str:
+    if is_skill_read(name, args):
+        line_count = result.count("\n") + 1
+        return f"📖 已加载技能配置 ({line_count} 行)"
+    return result
 
 
-def save_trace_json(process_steps: list, final_response: str, elapsed: float, task_prompt: str, output_dir: str = "traces") -> str:
-    os.makedirs(output_dir, exist_ok=True)
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"trace_{timestamp}.json"
-    filepath = os.path.join(output_dir, filename)
-
-    trace_data = {
-        "timestamp": datetime.now().isoformat(),
-        "task": task_prompt,
-        "elapsed_seconds": round(elapsed, 2),
-        "final_response": final_response,
-        "total_steps": len(process_steps),
-        "steps": process_steps,
-    }
-
-    with open(filepath, "w", encoding="utf-8") as f:
-        json.dump(trace_data, f, ensure_ascii=False, indent=2)
-
-    return filepath
+def detect_error(result_text: str) -> bool:
+    if not result_text:
+        return False
+    error_markers = ["Traceback", "Error:", "Exception:", "Exit code: 1", "Command failed", "No such file", "Permission denied"]
+    return any(marker in result_text for marker in error_markers)
 
 
-def build_process_tree(process_steps: list, final_response: str = "", elapsed: float = 0) -> Tree:
-    tree = Tree("[bold blue]🤖 Agent 执行过程[/bold blue]")
+class TraceWriter:
+    def __init__(self, task_prompt: str, output_dir: str = "traces", flush_interval: float = 1.0):
+        os.makedirs(output_dir, exist_ok=True)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.filepath = os.path.join(output_dir, f"trace_{timestamp}.json")
+        self.start_time = time.time()
+        self.flush_interval = flush_interval
+        self._last_flush = 0.0
+        self._dirty = False
+        self.data = {
+            "timestamp": datetime.now().isoformat(),
+            "task": task_prompt,
+            "status": "running",
+            "elapsed_seconds": 0,
+            "final_response": "",
+            "total_steps": 0,
+            "steps": [],
+            "tool_calls": [],
+            "tool_results": [],
+        }
+        self._write(force=True)
 
-    for idx, step in enumerate(process_steps, 1):
+    def update(self, process_steps: list, full_response: str, tool_calls: list, tool_results: list):
+        self.data["steps"] = copy.deepcopy(process_steps)
+        self.data["final_response"] = full_response
+        self.data["tool_calls"] = copy.deepcopy(tool_calls)
+        self.data["tool_results"] = copy.deepcopy(tool_results)
+        self.data["total_steps"] = len(process_steps)
+        self.data["elapsed_seconds"] = round(time.time() - self.start_time, 2)
+        self._dirty = True
+        self._write()
+
+    def finish(self, full_response: str, status: str = "completed"):
+        self.data["status"] = status
+        self.data["final_response"] = full_response
+        self.data["elapsed_seconds"] = round(time.time() - self.start_time, 2)
+        self._dirty = True
+        self._write(force=True)
+
+    def _write(self, force: bool = False):
+        now = time.time()
+        if not force and (not self._dirty or now - self._last_flush < self.flush_interval):
+            return
+        try:
+            with open(self.filepath, "w", encoding="utf-8") as f:
+                json.dump(self.data, f, ensure_ascii=False, indent=2)
+            self._last_flush = now
+            self._dirty = False
+        except Exception:
+            pass
+
+
+def build_tree(process_steps: list, final_response: str = "", elapsed: float = 0, running: bool = False) -> Tree:
+    tree_label = "[bold blue]🤖 Agent 执行过程[/bold blue]"
+    if running:
+        tree_label = "[bold blue]🤖 Agent 执行过程[/bold blue] [dim](streaming...)[/dim]"
+    tree = Tree(tree_label)
+
+    turn_index = 0
+    for step in process_steps:
         if step["type"] == "thinking":
-            node = tree.add(f"[dim]Step {idx}:[/dim] [italic yellow]💭 思考中...[/italic yellow]")
+            turn_index += 1
             content = truncate_text(step["content"], MAX_THINKING_DISPLAY_LENGTH)
-            node.add(f"[dim white]{content}[/dim white]")
+            label = f"💭 Turn {turn_index} 思考"
+            node = tree.add(f"[italic yellow]{label}[/italic yellow]")
+            node.add(Text(content, style="dim white"))
         elif step["type"] == "tool_call":
-            tool_type = step.get("tool_type", "normal")
-            is_special = tool_type != "normal"
+            icon, color = detect_tool_icon(step["name"], step.get("args", {}))
             is_error = step.get("is_error", False)
-
             if is_error:
                 name_style = "[bold red]"
-                icon = "❌"
-            elif tool_type == "execute":
-                name_style = "[bold magenta]"
-                icon = "⚡"
-            elif is_special:
-                name_style = "[dim cyan]"
-                icon = "🔧"
-            else:
-                name_style = "[bold cyan]"
-                icon = "🔧"
-
-            label = f" ([dim]{step.get('label', '')}[/])" if step.get("label") and tool_type == "skill" else ""
-            node = tree.add(f"[dim]Step {idx}:[/dim] {name_style}{icon} 调用工具: {step['name']}{label}[/]")
-            args_str = format_args(step.get("args", {}))
-            args_display = truncate_text(args_str, MAX_ARGS_DISPLAY_LENGTH)
-            node.add(f"[dim]📥 参数:[/dim]\n[dim white]{args_display}[/dim white]")
-
-            if step.get("result"):
-                result_node = node.add("[green]📤 结果:[/green]")
-                preview, is_truncated = format_tool_result(
-                    step["result"], tool_type
-                )
-                style = "[dim red]" if is_error else ("[dim yellow]" if is_truncated else "[dim white]")
-                result_node.add(f"{style}{preview}[/]")
+                status_icon = "❌"
             elif step.get("in_progress"):
-                node.add("[dim yellow]⏳ 执行中...[/dim yellow]")
+                name_style = f"[bold {color}]"
+                status_icon = "⏳"
+            else:
+                name_style = f"[bold {color}]"
+                status_icon = icon
+
+            node = tree.add(f"{name_style}{status_icon} {step['name']}[/]")
+            args_str = format_args(step.get("args", {}))
+            node.add(Text(f"📥 参数:\n{args_str}", style="dim white"))
+
+            if step.get("result") is not None:
+                result = step["result"]
+                display_result = format_tool_result(step["name"], step.get("args", {}), result)
+                if display_result == result:
+                    display_result = truncate_text(result, MAX_RESULT_DISPLAY_LENGTH)
+                result_style = "dim red" if is_error else "dim white"
+                result_node = node.add("[green]📤 结果:[/green]")
+                result_node.add(Text(display_result, style=result_style))
 
     if final_response:
         final_node = tree.add("[bold green]✅ 最终回复[/bold green]")
+        display_final = truncate_text(final_response, MAX_FINAL_RESPONSE_DISPLAY_LENGTH)
         try:
-            final_node.add(Markdown(final_response))
+            final_node.add(Markdown(display_final))
         except Exception:
-            final_node.add(f"[white]{final_response}[/white]")
+            final_node.add(Text(display_final, style="white"))
 
     if elapsed > 0:
         tree.add(f"[dim]⏱️  耗时: {elapsed:.1f}s[/dim]")
@@ -213,26 +253,44 @@ def build_process_tree(process_steps: list, final_response: str = "", elapsed: f
 
 def rich_console_stream_call(task_prompt: str, thread_id: str | None = None):
     load_dotenv()
-    console = Console()
-    console.print(
-        Panel(f"[bold cyan]📝 Task:[/bold cyan] {task_prompt}", border_style="cyan")
-    )
-    console.print()
+
+    import sys
+    sys.stdout.reconfigure(line_buffering=True)
+
+    console = Console(force_terminal=True, force_interactive=True)
+
+    def do_flush():
+        if hasattr(console, 'file') and console.file:
+            console.file.flush()
 
     start_time = time.time()
+    trace_writer = None
+    process_steps = []
+    tool_calls = []
+    tool_results = []
+    full_response = ""
     try:
-        with console.status("[dim]🔄 正在初始化 Research Agent...[/dim]"):
+        console.print(Panel(f"[bold cyan]📝 Task:[/bold cyan] {task_prompt}", border_style="cyan"))
+        do_flush()
+
+        init_tree = Tree("[bold blue]🤖 Agent 执行过程[/bold blue]")
+        init_tree.add("[dim]🔄 正在初始化 Research Agent...[/dim]")
+
+        with Live(init_tree, console=console, refresh_per_second=10, transient=False) as live:
             agent = create_research_agent()
 
-        console.print("[dim]✅ Agent 初始化完成，开始处理任务...\n[/dim]")
+            trace_writer = TraceWriter(task_prompt)
 
-        process_steps = []
-        pending_tool_calls = {}
-        tool_counter = 0
-        seen_skill_loads = set()
-        full_response = ""
+            process_steps.clear()
+            pending_tool_calls = {}
+            tool_calls.clear()
+            tool_results.clear()
+            full_response = ""
 
-        with Live(console=console, refresh_per_second=4) as live:
+            waiting_tree = Tree("[bold blue]🤖 Agent 执行过程[/bold blue]")
+            waiting_tree.add("[dim]⏳ 等待 Agent 响应...[/dim]")
+            live.update(waiting_tree)
+
             try:
                 for event in agent.stream(
                     {
@@ -246,9 +304,6 @@ def rich_console_stream_call(task_prompt: str, thread_id: str | None = None):
                     has_new_output = False
 
                     for node_name, node_output in event.items():
-                        if should_hide_node(node_name):
-                            continue
-
                         if not isinstance(node_output, dict):
                             continue
 
@@ -260,103 +315,89 @@ def rich_console_stream_call(task_prompt: str, thread_id: str | None = None):
                             msg_type = type(msg).__name__
 
                             if msg_type == "AIMessage":
-                                if hasattr(msg, "tool_calls") and msg.tool_calls:
-                                    for tc in msg.tool_calls:
-                                        tool_name = tc.get("name", "unknown")
-                                        tool_args = tc.get("args", {})
-                                        tool_id = tc.get("id", f"tool_{tool_counter}")
-                                        tool_counter += 1
-                                        tool_type, label = classify_tool_call(tool_name, tool_args)
-
-                                        skip = False
-                                        if tool_type == "skill":
-                                            cache_key = f"skill:{label}"
-                                            if cache_key in seen_skill_loads:
-                                                skip = True
-                                            else:
-                                                seen_skill_loads.add(cache_key)
-
-                                        if not skip:
-                                            step_idx = len(process_steps)
-                                            process_steps.append({
-                                                "type": "tool_call",
-                                                "name": tool_name,
-                                                "args": tool_args,
-                                                "result": None,
-                                                "tool_type": tool_type,
-                                                "label": label,
-                                                "tool_id": tool_id,
-                                                "in_progress": True,
-                                            })
-                                            has_new_output = True
-                                            pending_tool_calls[tool_id] = step_idx
-
-                                        pending_tool_calls[f"_pending_{tool_id}"] = skip
-
                                 content_text = normalize_message_content(msg.content)
                                 if content_text:
                                     display_text = truncate_text(content_text, MAX_THINKING_DISPLAY_LENGTH)
 
-                                    is_update = False
-                                    has_tool_calls = hasattr(msg, "tool_calls") and msg.tool_calls
-
-                                    if process_steps and process_steps[-1]["type"] == "thinking" and not has_tool_calls:
+                                    if process_steps and process_steps[-1]["type"] == "thinking":
                                         process_steps[-1]["content"] = display_text
-                                        is_update = True
-                                    elif not has_tool_calls:
+                                    else:
                                         process_steps.append({
                                             "type": "thinking",
                                             "content": display_text,
                                         })
-                                        is_update = True
 
-                                    if content_text and not has_tool_calls:
-                                        full_response = content_text
+                                    merged = merge_stream_response(full_response, content_text)
+                                    if merged != full_response:
+                                        full_response = merged
+                                        has_new_output = True
 
-                                    if is_update:
+                                if hasattr(msg, "tool_calls") and msg.tool_calls:
+                                    for tc in msg.tool_calls:
+                                        tool_name = tc.get("name", "unknown")
+                                        tool_args = tc.get("args", {})
+                                        tool_id = tc.get("id", "")
+                                        tool_call = {"name": tool_name, "args": tool_args, "id": tool_id}
+                                        tool_calls.append(tool_call)
+                                        pending_tool_calls[tool_id] = {"name": tool_name, "step_idx": len(process_steps)}
+                                        process_steps.append({
+                                            "type": "tool_call",
+                                            "name": tool_name,
+                                            "args": tool_args,
+                                            "result": None,
+                                            "in_progress": True,
+                                            "is_error": False,
+                                            "tool_id": tool_id,
+                                        })
                                         has_new_output = True
 
                             elif msg_type == "ToolMessage":
                                 result_text = normalize_message_content(msg.content)
-                                tool_id = getattr(msg, "tool_call_id", None)
+                                tool_results.append(result_text)
+                                tool_call_id = getattr(msg, "tool_call_id", "")
+                                matched = False
+                                if tool_call_id and tool_call_id in pending_tool_calls:
+                                    info = pending_tool_calls.pop(tool_call_id)
+                                    step_idx = info["step_idx"]
+                                    display_result = truncate_text(result_text, MAX_RESULT_DISPLAY_LENGTH)
+                                    if 0 <= step_idx < len(process_steps):
+                                        process_steps[step_idx]["result"] = display_result
+                                        process_steps[step_idx]["in_progress"] = False
+                                        process_steps[step_idx]["is_error"] = detect_error(result_text)
+                                        matched = True
+                                if not matched and pending_tool_calls:
+                                    first_id = next(iter(pending_tool_calls))
+                                    info = pending_tool_calls.pop(first_id)
+                                    step_idx = info["step_idx"]
+                                    display_result = truncate_text(result_text, MAX_RESULT_DISPLAY_LENGTH)
+                                    if 0 <= step_idx < len(process_steps):
+                                        process_steps[step_idx]["result"] = display_result
+                                        process_steps[step_idx]["in_progress"] = False
+                                        process_steps[step_idx]["is_error"] = detect_error(result_text)
+                                has_new_output = True
 
-                                if tool_id and tool_id in pending_tool_calls:
-                                    step_idx = pending_tool_calls.pop(tool_id)
-                                    pending_tool_calls.pop(f"_pending_{tool_id}", None)
-                                    if step_idx < len(process_steps):
-                                        step = process_steps[step_idx]
-                                        step["result"] = result_text
-                                        step["in_progress"] = False
-                                        step["is_error"] = (
-                                            "Error:" in result_text
-                                            or "Traceback" in result_text
-                                            or result_text.startswith("Error")
-                                        )
-                                        has_new_output = True
-                                elif pending_tool_calls:
-                                    for tid in list(pending_tool_calls.keys()):
-                                        if tid.startswith("_pending_"):
-                                            continue
-                                        step_idx = pending_tool_calls[tid]
-                                        if step_idx < len(process_steps) and process_steps[step_idx]["result"] is None:
-                                            is_skip = pending_tool_calls.get(f"_pending_{tid}", False)
-                                            pending_tool_calls.pop(tid, None)
-                                            pending_tool_calls.pop(f"_pending_{tid}", None)
-                                            if not is_skip:
-                                                process_steps[step_idx]["result"] = result_text
-                                                process_steps[step_idx]["in_progress"] = False
-                                                has_new_output = True
-                                            break
-
-                    if has_new_output:
+                    if has_new_output and process_steps:
                         elapsed = time.time() - start_time
-                        live.update(build_process_tree(process_steps, full_response, elapsed))
+                        tree = build_tree(process_steps, full_response, elapsed, running=True)
+                        live.update(tree)
+                        do_flush()
+                        trace_writer.update(process_steps, full_response, tool_calls, tool_results)
 
                 elapsed = time.time() - start_time
-                live.update(build_process_tree(process_steps, full_response, elapsed))
+                if not full_response and tool_results:
+                    full_response = tool_results[-1] if tool_results else "Done."
+                tree = build_tree(process_steps, full_response, elapsed, running=False)
+                live.update(tree)
 
             except KeyboardInterrupt:
-                console.print("\n[yellow]⚠️  用户中断任务[/yellow]")
+                elapsed = time.time() - start_time
+                if trace_writer:
+                    trace_writer.finish(full_response, status="interrupted")
+                console.print()
+                console.print(Panel(
+                    f"[bold yellow]⚠️  用户中断任务[/bold yellow]\n[dim]已耗时: {elapsed:.1f}s[/dim]",
+                    border_style="yellow"
+                ))
                 return
 
         elapsed = time.time() - start_time
@@ -366,10 +407,13 @@ def rich_console_stream_call(task_prompt: str, thread_id: str | None = None):
             border_style="green"
         ))
 
-        trace_path = save_trace_json(process_steps, full_response, elapsed, task_prompt)
-        console.print(f"[dim]📁 执行轨迹已保存: {trace_path}[/dim]")
+        if trace_writer:
+            trace_writer.finish(full_response, status="completed")
+            console.print(f"[dim]📁 执行轨迹已保存: {trace_writer.filepath}[/dim]")
 
     except Exception as e:
+        if trace_writer:
+            trace_writer.finish(full_response, status="error")
         console.print()
         console.print(Panel(
             f"[bold red]❌ 执行出错[/bold red]\n{type(e).__name__}: {str(e)}",
@@ -379,4 +423,6 @@ def rich_console_stream_call(task_prompt: str, thread_id: str | None = None):
         console.print("[dim]")
         traceback.print_exc(file=console.file)
         console.print("[/dim]")
+        if trace_writer:
+            console.print(f"[dim]📁 执行轨迹已保存: {trace_writer.filepath}[/dim]")
         sys.exit(1)
