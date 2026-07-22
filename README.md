@@ -136,6 +136,19 @@ uv run python main.py -c -s --task_prompt "分析项目结构" --thread-id my-se
 uv run python -m tests.test_stream --task "继续上次的分析" --thread-id my-session-001
 ```
 
+### 从文件读取任务
+
+```bash
+# 将任务内容写入文件
+echo "帮我写一篇关于孙悟空的散文，并用磁性男嗓音转换成音频" > task.txt
+
+# 从文件读取任务内容，使用流式模式
+uv run python main.py --task_prompt "$(cat task.txt)" -s -c
+
+# 或者使用流式模式读取长任务
+uv run python -m tests.test_stream --task "$(cat long_task.txt)"
+```
+
 ## 特性
 
 ✅ 开箱即用的科研代理基座
