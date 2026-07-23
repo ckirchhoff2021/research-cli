@@ -12,8 +12,10 @@ dependencies = [
     "langchain-openai>=1.3.5",
     "markdownify>=1.2.3",
     "openai>=2.45.0",
+    "pandas>=2.0.0",
     "pillow>=12.3.0",
     "python-dotenv>=1.2.2",
     "rich>=15.0.0",
+    "streamlit>=1.35.0",
     "tavily-python>=0.7.26",
 ]
