@@ -6,14 +6,19 @@
 
 ```
 research-cli/
+├── app.py                 # Streamlit Web 界面入口
 ├── main.py                # 命令行入口，接收任务参数调用代理
 ├── agent.py               # 核心代理初始化逻辑
+├── stream.py              # 流式输出逻辑
 ├── pyproject.toml         # 项目配置与依赖管理
 ├── uv.lock                # uv 依赖锁定文件
 ├── .env / .env.example    # 环境变量配置
+├── .streamlit/config.toml # Streamlit 配置
 ├── memory/                # 代理长期记忆存储，包含 AGENTS.md 行为规范
 ├── skills/                # 自定义技能集，扩展代理专项能力
 ├── tools/                 # 自定义工具实现，供代理调用
+├── sessions/              # 会话数据存储
+├── outputs/               # 输出文件存储（图片、音频、视频等）
 └── tests/                 # 测试用例
 ```
 
@@ -85,6 +90,7 @@ uv run python main.py --task_prompt "给我讲个笑话。"
 | 普通模式 | `uv run python main.py --task_prompt "..."` | 一次性输出最终结果 |
 | 控制台模式 | `uv run python main.py -c --task_prompt "..."` | 树形结构展示执行过程 |
 | 流式模式 | `uv run python main.py -c -s --task_prompt "..."` | 实时流式刷新执行过程 |
+| Web 界面 | `uv run streamlit run app.py` | 图形化界面，支持多会话管理 |
 
 ## 测试用例
 
@@ -135,6 +141,25 @@ uv run python -m tests.test_stream --task "搜索 Python 3.13 的新特性"
 uv run python main.py -c -s --task_prompt "分析项目结构" --thread-id my-session-001
 uv run python -m tests.test_stream --task "继续上次的分析" --thread-id my-session-001
 ```
+
+### Web 界面
+
+```bash
+# 启动 Streamlit Web 界面
+uv run streamlit run app.py
+
+# 或者使用 run.sh 脚本
+./run.sh --web
+```
+
+启动后访问 **http://localhost:8501**，即可使用图形化界面进行对话。
+
+**Web 界面功能：**
+- 🗨️ 多轮对话，自动保存会话历史
+- 📁 会话管理：新建、切换、删除会话
+- 📊 实时展示 Agent 执行 Trace（思考过程、工具调用）
+- 🖼️ 支持图片、音频、视频、表格等多媒体渲染
+- 🔍 会话搜索功能
 
 ### 从文件读取任务
 
