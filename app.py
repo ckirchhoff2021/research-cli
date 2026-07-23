@@ -1,6 +1,6 @@
 import json
 import mimetypes
-import os
+import re
 import uuid
 from datetime import datetime
 from pathlib import Path
@@ -24,6 +24,9 @@ MAX_ARGS_DISPLAY_LENGTH = 3000
 MAX_RESULT_DISPLAY_LENGTH = 3000
 MAX_THINKING_DISPLAY_LENGTH = 3000
 MAX_FILE_DISPLAY_LENGTH = 36
+IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp"}
+VIDEO_EXTENSIONS = {".mp4", ".webm", ".avi", ".mov", ".mkv", ".flv", ".wmv"}
+AUDIO_EXTENSIONS = {".mp3", ".wav", ".flac", ".aac", ".ogg", ".m4a", ".wma", ".aiff"}
 
 
 def get_session_files():
@@ -168,21 +171,47 @@ def display_process_steps(placeholder, steps: list, is_complete: bool = True):
         render_process_steps(steps, is_complete=is_complete)
 
 
+def resolve_local_path(raw_path: str) -> Path | None:
+    if not raw_path:
+        return None
+
+    normalized = raw_path.strip()
+    if normalized.startswith("sandbox:"):
+        normalized = normalized[len("sandbox:") :]
+    elif normalized.startswith("file://"):
+        normalized = normalized[len("file://") :]
+
+    candidate = Path(normalized)
+    if candidate.exists():
+        return candidate
+    return None
+
+
+def parse_markdown_link(line: str) -> tuple[str, str] | None:
+    match = re.fullmatch(r"\[([^\]]+)\]\(([^)]+)\)", line.strip())
+    if not match:
+        return None
+    return match.group(1), match.group(2)
+
+
 def render_file(file_path: str, display_name: str = ""):
     if not file_path:
         st.warning("No file path provided")
         return
 
-    if not display_name:
-        display_name = Path(file_path).name
+    file_path_obj = resolve_local_path(file_path)
+    if file_path_obj is None:
+        candidate = Path(file_path)
+        if not candidate.is_absolute():
+            candidate = OUTPUTS_DIR / candidate.name
+        file_path_obj = candidate if candidate.exists() else None
 
-    file_path_obj = Path(file_path)
-    if not file_path_obj.exists():
-        file_path_obj = OUTPUTS_DIR / Path(file_path).name
-
-    if not file_path_obj.exists():
+    if file_path_obj is None:
         st.error(f"File not found: {file_path}")
         return
+
+    if not display_name:
+        display_name = file_path_obj.name
 
     if len(display_name) > MAX_FILE_DISPLAY_LENGTH:
         display_name_truncated = display_name[: MAX_FILE_DISPLAY_LENGTH - 3] + "..."
@@ -221,13 +250,9 @@ def render_file(file_path: str, display_name: str = ""):
         ".aac": "🎵",
     }.get(file_extension, "📎")
 
-    image_extensions = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp"}
-    video_extensions = {".mp4", ".webm", ".avi", ".mov"}
-    audio_extensions = {".mp3", ".wav", ".flac", ".aac"}
-
-    is_image = file_extension in image_extensions
-    is_video = file_extension in video_extensions
-    is_audio = file_extension in audio_extensions
+    is_image = file_extension in IMAGE_EXTENSIONS
+    is_video = file_extension in VIDEO_EXTENSIONS
+    is_audio = file_extension in AUDIO_EXTENSIONS
 
     try:
         with open(file_path_obj, "rb") as f:
@@ -256,12 +281,22 @@ def render_file(file_path: str, display_name: str = ""):
             min-height: 40px !important;
             padding: 7px 12px !important;
             border-radius: 6px !important;
-            border: 1px solid var(--border-color, #c7ced8) !important;
-            background: transparent !important;
-            transition: border-color 0.2s ease, color 0.2s ease !important;
-            color: var(--text-color, #2b3440) !important;
-            font-weight: 400 !important;
+            border: 1px solid #cbd5e1 !important;
+            background: #f8fafc !important;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
+            color: #111827 !important;
+            font-weight: 500 !important;
             box-shadow: none !important;
+            opacity: 1 !important;
+        }
+        div[data-testid="stDownloadButton"] > button:hover {
+            background: #ffffff !important;
+            border-color: #94a3b8 !important;
+            color: #020617 !important;
+        }
+        div[data-testid="stDownloadButton"] > button p {
+            color: inherit !important;
+            opacity: 1 !important;
         }
         </style>
         """, unsafe_allow_html=True)
@@ -306,50 +341,37 @@ def render_markdown_content(content: str):
 
     lines = content.split("\n")
     i = 0
+    text_lines = []
+
     while i < len(lines):
         line = lines[i]
+        stripped_line = line.strip()
 
-        if line.startswith("![") and "](" in line:
-            import re
-            match = re.match(r"!\[([^\]]*)\]\(([^)]+)\)", line)
-            if match:
-                alt = match.group(1)
-                src = match.group(2)
-                if src.startswith("/outputs/"):
-                    file_path = OUTPUTS_DIR / src.split("/")[-1]
-                    if file_path.exists():
-                        with open(file_path, "rb") as f:
-                            st.image(f.read(), caption=alt, use_container_width=True)
-                    else:
-                        st.markdown(line)
-                else:
-                    st.markdown(line)
-                i += 1
-                continue
-
-        if line.endswith(".mp3") or line.endswith(".wav") or line.endswith(".flac"):
-            file_path = OUTPUTS_DIR / line.split("/")[-1]
-            if file_path.exists():
-                with open(file_path, "rb") as f:
-                    st.audio(f.read())
+        image_match = re.fullmatch(r"!\[([^\]]*)\]\(([^)]+)\)", stripped_line)
+        if image_match:
+            alt = image_match.group(1)
+            src = image_match.group(2)
+            resolved_path = resolve_local_path(src)
+            if resolved_path is not None:
+                render_file(str(resolved_path), alt or resolved_path.name)
             else:
-                st.markdown(line)
+                text_lines.append(line)
             i += 1
             continue
 
-        if line.endswith(".mp4") or line.endswith(".webm"):
-            file_path = OUTPUTS_DIR / line.split("/")[-1]
-            if file_path.exists():
-                with open(file_path, "rb") as f:
-                    st.video(f.read())
-            else:
-                st.markdown(line)
-            i += 1
-            continue
+        markdown_link = parse_markdown_link(stripped_line)
+        if markdown_link:
+            link_text, link_url = markdown_link
+            resolved_path = resolve_local_path(link_url)
+            if resolved_path is not None:
+                suffix = resolved_path.suffix.lower()
+                if suffix in IMAGE_EXTENSIONS | VIDEO_EXTENSIONS | AUDIO_EXTENSIONS:
+                    render_file(str(resolved_path), link_text or resolved_path.name)
+                    i += 1
+                    continue
 
         if "|" in line and i + 1 < len(lines) and all(c in lines[i + 1] for c in "|-"):
             header_line = line
-            separator_line = lines[i + 1]
             table_lines = [header_line]
             i += 2
             while i < len(lines) and "|" in lines[i]:
@@ -367,12 +389,14 @@ def render_markdown_content(content: str):
                 df = pd.DataFrame(rows, columns=headers)
                 st.dataframe(df, hide_index=True, use_container_width=True)
             else:
-                st.markdown("\n".join(table_lines))
+                text_lines.extend(table_lines)
             continue
 
+        text_lines.append(line)
         i += 1
 
-    st.markdown(content)
+    if text_lines:
+        st.markdown("\n".join(text_lines))
 
 
 def display_message(msg: dict):
