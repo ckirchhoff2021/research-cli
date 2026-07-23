@@ -4,6 +4,7 @@ import re
 import uuid
 from datetime import datetime
 from pathlib import Path
+from urllib.parse import urlparse
 
 import pandas as pd
 import streamlit as st
@@ -194,6 +195,32 @@ def parse_markdown_link(line: str) -> tuple[str, str] | None:
     return match.group(1), match.group(2)
 
 
+def get_media_suffix(value: str) -> str:
+    normalized = value.strip()
+    if normalized.startswith("sandbox:"):
+        normalized = normalized[len("sandbox:") :]
+    elif normalized.startswith("file://"):
+        normalized = normalized[len("file://") :]
+
+    parsed = urlparse(normalized)
+    path = parsed.path if parsed.scheme else normalized
+    return Path(path).suffix.lower()
+
+
+def render_remote_media(url: str, display_name: str = "") -> bool:
+    suffix = get_media_suffix(url)
+    if suffix in IMAGE_EXTENSIONS:
+        st.image(url, caption=display_name or None, use_container_width=True)
+        return True
+    if suffix in VIDEO_EXTENSIONS:
+        st.video(url)
+        return True
+    if suffix in AUDIO_EXTENSIONS:
+        st.audio(url)
+        return True
+    return False
+
+
 def render_file(file_path: str, display_name: str = ""):
     if not file_path:
         st.warning("No file path provided")
@@ -354,6 +381,8 @@ def render_markdown_content(content: str):
             resolved_path = resolve_local_path(src)
             if resolved_path is not None:
                 render_file(str(resolved_path), alt or resolved_path.name)
+            elif render_remote_media(src, alt):
+                pass
             else:
                 text_lines.append(line)
             i += 1
@@ -367,6 +396,20 @@ def render_markdown_content(content: str):
                 suffix = resolved_path.suffix.lower()
                 if suffix in IMAGE_EXTENSIONS | VIDEO_EXTENSIONS | AUDIO_EXTENSIONS:
                     render_file(str(resolved_path), link_text or resolved_path.name)
+                    i += 1
+                    continue
+            elif render_remote_media(link_url, link_text):
+                i += 1
+                continue
+
+        local_path_match = re.search(r"`(/[^`]+)`", stripped_line)
+        if local_path_match:
+            raw_path = local_path_match.group(1)
+            resolved_path = resolve_local_path(raw_path)
+            if resolved_path is not None:
+                suffix = resolved_path.suffix.lower()
+                if suffix in IMAGE_EXTENSIONS | VIDEO_EXTENSIONS | AUDIO_EXTENSIONS:
+                    render_file(str(resolved_path), resolved_path.name)
                     i += 1
                     continue
 
