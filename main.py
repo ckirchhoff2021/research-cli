@@ -28,6 +28,44 @@ def format_message_content(content, max_length=500):
     return text
 
 
+def parse_messages(messages):
+    """Parse messages to a list of dictionaries."""
+    traces = []
+    for _, msg in enumerate(messages):
+        msg_type = type(msg).__name__
+        
+        if msg_type == "HumanMessage":
+            traces.append({
+                "type": "query",
+                "content": msg.content
+            })
+        
+        elif msg_type == "AIMessage":
+            if hasattr(msg, "tool_calls") and msg.tool_calls:
+                for tool_call in msg.tool_calls:
+                    tool_name = tool_call.get("name", "unknown")
+                    tool_args = tool_call.get("args", {})
+                    traces.append({
+                        "type": "tool_call",
+                        "name": tool_name,
+                        "args": tool_args,
+                        "content": None
+                    })
+            elif msg.content:
+                traces.append({
+                    "type": "thinking",
+                    "content": msg.content
+                })
+        elif msg_type == "ToolMessage":
+            if traces and traces[-1]["type"] == "tool_call":
+                traces[-1]["result"] = format_message_content(msg.content, 500)
+        else:
+            print(f"Warning: Unknown message_type: {msg_type}")
+            continue
+        
+    return traces
+
+
 def display_agent_process(result, console):
     process_list = []
     messages = result.get("messages", [])
@@ -127,13 +165,19 @@ def normal_call(args):
         },
         config=build_agent_config(args.thread_id)
     )
-    print(result)
+    
+    messages = result["messages"]
+    print('==> Execution process:')
+    traces = parse_messages(messages)
+    print(json.dumps(traces, indent=2, ensure_ascii=False))
+    
     final_message = result["messages"][-1]
     answer = (
         final_message.content
         if hasattr(final_message, "content")
         else str(final_message)
     )
+    print('==> FinalAnswer:')
     print(answer)
     
 
