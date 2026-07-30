@@ -6,6 +6,14 @@
 
 当需要对某个目标 Skill 做静态检查、轨迹采集、结果分析和优化建议输出时，使用本流程。
 
+除非另有说明，以下路径中的 `<run_id>` 均沿用主文档准备阶段自动生成的本次运行目录标识；单次常规分析的全部产物统一保存在 `../outputs/<skill-name>/<run_id>/` 目录下。
+
+为避免在正文中重复书写长路径，下面统一使用以下别名：
+
+```text
+RUN_ROOT = ../outputs/<skill-name>/<run_id>
+```
+
 ## 执行流程
 
 ### 1. 静态检查阶段
@@ -19,7 +27,7 @@
    - 输出格式是否真实
    - 路径、命令、引用文件是否存在
    - 对代码进行review, 确保没有明显的逻辑错误，分析对边界场景的处理是否合理
-3. 按评分标准 [rubric](../assets/rubric.md) 对目标 Skill 进行分析，将分析报告保存在 `../outputs/<skill-name>/static-analysis.md` 中。
+3. 按评分标准 [rubric](../assets/rubric.md) 对目标 Skill 进行分析，将分析报告保存在 `RUN_ROOT/static-analysis.md` 中。
 4. 如果结构或内容明显不符合 Skill 格式规范，应先提示路径或格式问题，再决定是否进入执行阶段。
 
 
@@ -29,10 +37,11 @@
 
 ```bash
 cd skills/skill-optimizer/scripts
+RUN_ROOT="../outputs/<skill-name>/<run_id>"
 python executor.py \
-  --skill "../outputs/<skill-name>/origin/" \
+  --skill "$RUN_ROOT/origin/" \
   --task "<test-task-or-json-file>" \
-  [--trace_file "<trace-output-file>"]
+  --trace_file "$RUN_ROOT/trace.json"
 ```
 
 如果传入的是 JSON 文件，脚本会循环处理每个 `query`，并将所有任务结果统一写入一个 trace 文件。
@@ -45,7 +54,7 @@ python executor.py \
 
 ### 3. 结果分析阶段
 
-基于轨迹文件，从以下维度进行分析，并将分析报告保存在 `../outputs/<skill-name>/trace-analysis.md` 中：
+基于轨迹文件，从以下维度进行分析，并将分析报告保存在 `RUN_ROOT/trace-analysis.md` 中：
 
 #### 3.1 触发是否正确
 
@@ -100,10 +109,11 @@ python executor.py \
 
 ### 5. 编辑应用阶段
 
-根据优化建议，对目标 Skill 进行编辑应用，注意不要直接修改原始输入 Skill，而是拷贝一份新的Skill到 `../outputs/<skill-name>/update/`, 并在拷贝的 Skill 中进行修改。
+根据优化建议，对目标 Skill 进行编辑应用，注意不要直接修改原始输入 Skill，而是拷贝一份新的 Skill 到 `RUN_ROOT/update/`，并在拷贝的 Skill 中进行修改。
 ```bash
-mkdir -p ../outputs/<skill-name>/update/
-cp -r ../outputs/<skill-name>/origin/* ../outputs/<skill-name>/update/
+RUN_ROOT="../outputs/<skill-name>/<run_id>"
+mkdir -p "$RUN_ROOT/update/"
+cp -r "$RUN_ROOT/origin/"* "$RUN_ROOT/update/"
 ```
 
 ## 注意事项
