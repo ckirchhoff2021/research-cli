@@ -26,7 +26,7 @@ description: 优化和评测现有 Skill。用于执行目标 Skill、采集和�
 | `task` | 是 | 用于触发目标 Skill 的测试任务。既可以是单条自然语言任务，也可以是一个 JSON 文件路径；JSON 输入中至少应包含 `query` 字段，可选包含 `expected` 字段。 |
 | `trace_file` | 否 | 执行阶段的轨迹输出文件路径。该参数主要用于常规分析流程或调试；若不传，脚本会自动生成 `trace_YYYYMMDD_HHMMSS.json`。 |
 
-如果用户没有提供可执行的测试任务，先帮助用户补齐 1 到 3 条有代表性的真实样例，再开始执行，生成的样本保存在 `outputs/<skill-name>/gen_tasks.json` 文件中,格式如下：
+如果用户没有提供可执行的测试任务，先帮助用户补齐 1 到 3 条有代表性的真实样例，再开始执行，生成的样本保存在 `outputs/<skill-name>/<run_id>/gen_tasks.json` 文件中,格式如下：
 ```json
 [
   {
@@ -37,6 +37,8 @@ description: 优化和评测现有 Skill。用于执行目标 Skill、采集和�
 ```
 
 如果 `task` 是 JSON 文件路径，当前 `executor.py` 支持单个 `{query, expected}` 对象、任务数组，以及包含 `tasks` 数组的对象；脚本会提取每个任务的 `query` 字段，并保留 `expected` 字段用于后续评测或路由判断。
+
+为避免同一 Skill 多次优化时互相覆盖，准备阶段会自动生成本轮运行目录标识 `<run_id>`。该标识不要求用户输入，默认采用“时间戳 + 随机值”的形式，例如 `20260730_153045_a1b2`。
 
 首次运行前，需检查 `scripts/.env` 的环境配置，若配置不完整，提醒用户在 `scripts/.env` 中补齐以下配置：
 
@@ -65,19 +67,24 @@ description: 优化和评测现有 Skill。用于执行目标 Skill、采集和�
 
 ### 准备阶段
 
-1. 检查 `skill` 入参是否正确，并备份原始 Skill：
+1. 生成本次优化的运行目录标识 `<run_id>`：
+   - 无需用户输入，准备阶段自动生成。
+   - 推荐格式为 `YYYYMMDD_HHMMSS_<rand>`，其中 `<rand>` 为短随机后缀，用于避免并发或重复执行时冲突。
+   - 本轮优化的全部产物统一保存在 `outputs/<skill-name>/<run_id>/` 目录下。
+
+2. 检查 `skill` 入参是否正确，并备份原始 Skill：
    - `skill` 必须直接指向目标 Skill 根目录，且该目录下必须包含 `SKILL.md`。
    - 若输入目录下不存在 `SKILL.md`，则返回错误信息并终止执行。
    - 从 `SKILL.md` 中识别技能名称 `<skill-name>`。
-   - 创建备份目录 `outputs/<skill-name>/origin/`。
-   - 将该 Skill 根目录整体复制到 `outputs/<skill-name>/origin/` 下。
-   - 将实际执行用的 `skill` 路径调整为 `outputs/<skill-name>/origin/`。
+   - 创建备份目录 `outputs/<skill-name>/<run_id>/origin/`。
+   - 将该 Skill 根目录整体复制到 `outputs/<skill-name>/<run_id>/origin/` 下。
+   - 将实际执行用的 `skill` 路径调整为 `outputs/<skill-name>/<run_id>/origin/`。
    ```bash
-   mkdir -p outputs/<skill-name>/origin/
-   cp -r <skill-root> outputs/<skill-name>/origin/
+   mkdir -p outputs/<skill-name>/<run_id>/origin/
+   cp -r <skill-root> outputs/<skill-name>/<run_id>/origin/
    ```
 
-2. 检查 `task` 入参是否可执行：
+3. 检查 `task` 入参是否可执行：
    - 若为普通字符串，则直接作为单条任务执行。
    - 若为文件路径，则按 JSON 读取，并从每个对象的 `query` 字段中提取任务；若存在 `expected` 字段，则一并保留用于评测。
    - 若任务数据缺少 `expected` 或验收要求，可继续执行，但应在分析阶段明确标注“仅做开放式评估”。
@@ -95,4 +102,4 @@ description: 优化和评测现有 Skill。用于执行目标 Skill、采集和�
 - `reflACT` 执行流程：`references/reflACT.md`
 
 ## 注意事项
-本文档中的 `outputs/...` 表示 `skill-optimizer` 根目录下的产物目录；若按参考文档中的命令在 `scripts/` 目录执行，则对应路径写法为 `../outputs/...` 和 `../assets/...`。
+本文档中的 `outputs/...` 表示 `skill-optimizer` 根目录下的产物目录；若按参考文档中的命令在 `scripts/` 目录执行，则对应路径写法为 `../outputs/...` 和 `../assets/...`。除非另有说明，单次优化的全部产物都应落在 `outputs/<skill-name>/<run_id>/` 目录下。
