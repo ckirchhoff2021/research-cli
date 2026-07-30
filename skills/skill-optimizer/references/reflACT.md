@@ -9,6 +9,15 @@
 - 产物路径统一使用 `../outputs/...`
 - 模板路径统一使用 `../assets/...`
 - 脚本路径统一使用当前目录下的脚本名
+- 以下路径中的 `<run_id>` 均沿用主文档准备阶段自动生成的本次运行目录标识；单次 ReflACT 运行的全部产物统一保存在 `../outputs/<skill-name>/<run_id>/` 目录下
+
+为避免在正文中重复书写长路径，下面统一使用以下别名：
+
+```text
+RUN_ROOT = ../outputs/<skill-name>/<run_id>
+REFLACT_ROOT = RUN_ROOT/reflact
+EPOCH_ROOT = REFLACT_ROOT/<epoch_id>
+```
 
 六阶段流水线如下：
 
@@ -40,7 +49,7 @@
 ### 1. 准备阶段
 
 1. `task`数据划分：
-   - 将 `task` 中的任务列表按 `8:2` 的比例划分为训练集和验证集，保存在目录 `../outputs/<skill-name>/reflact/`，分别命名为 `train.json` 和 `val.json`。
+   - 将 `task` 中的任务列表按 `8:2` 的比例划分为训练集和验证集，保存在目录 `REFLACT_ROOT/`，分别命名为 `train.json` 和 `val.json`。
 
 ### 2. 静态检查阶段
 
@@ -53,19 +62,21 @@
    - 输出格式是否真实
    - 路径、命令、引用文件是否存在
    - 对代码进行`review`, 确保没有明显的逻辑错误，分析对边界场景的处理是否合理
-3. 按评分标准 [rubric](../assets/rubric.md) 对目标 Skill 进行分析，将分析报告保存在 `../outputs/<skill-name>/static-analysis.md` 中。
+3. 按评分标准 [rubric](../assets/rubric.md) 对目标 Skill 进行分析，将分析报告保存在 `RUN_ROOT/static-analysis.md` 中。
 4. 如果结构或内容明显不符合 Skill 格式规范，应先提示路径或格式问题，再决定是否进入执行阶段。
 
 
 ### 3. 技能初始化
 
-1. 将待优化的目标 Skill 拷贝到`../outputs/<skill-name>/reflact/best/`目录下，根据静态检查的结果`static-analysis.md`，对拷贝的技能包进行初始编辑，确保其符合 Skill 格式规范，同时修改掉一些明显的代码错误。
-2. 将编辑记录保存到`../outputs/<skill-name>/reflact/applied_patches.md`文件中。
+1. 将待优化的目标 Skill 从 `RUN_ROOT/origin/` 拷贝到 `REFLACT_ROOT/best/` 目录下，根据静态检查的结果 `static-analysis.md`，对拷贝的技能包进行初始编辑，确保其符合 Skill 格式规范，同时修改掉一些明显的代码错误。
+2. 将编辑记录保存到 `REFLACT_ROOT/applied_patches.md` 文件中。
 
 ```bash
-mkdir -p ../outputs/<skill-name>/reflact/best/
-cp -r ../outputs/<skill-name>/origin/* ../outputs/<skill-name>/reflact/best/
-touch ../outputs/<skill-name>/reflact/applied_patches.md
+RUN_ROOT="../outputs/<skill-name>/<run_id>"
+REFLACT_ROOT="$RUN_ROOT/reflact"
+mkdir -p "$REFLACT_ROOT/best/"
+cp -r "$RUN_ROOT/origin/"* "$REFLACT_ROOT/best/"
+touch "$REFLACT_ROOT/applied_patches.md"
 ```
 
 ### 4. 初始验证集精度评估
@@ -76,10 +87,12 @@ touch ../outputs/<skill-name>/reflact/applied_patches.md
 
 ```bash
 cd skills/skill-optimizer/scripts
+RUN_ROOT="../outputs/<skill-name>/<run_id>"
+REFLACT_ROOT="$RUN_ROOT/reflact"
 python executor.py \
-  --skill "../outputs/<skill-name>/reflact/best/" \
-  --task "../outputs/<skill-name>/reflact/val.json" \
-  --trace_file "../outputs/<skill-name>/reflact/val_trace_origin.json"
+  --skill "$REFLACT_ROOT/best/" \
+  --task "$REFLACT_ROOT/val.json" \
+  --trace_file "$REFLACT_ROOT/val_trace_origin.json"
 ```
 当前 [executor.py](../scripts/executor.py) 会将全部任务轨迹写入 `--trace_file` 指定的文件`val_trace_origin.json`。
 
@@ -89,11 +102,13 @@ python executor.py \
 
 ```bash
 cd skills/skill-optimizer/scripts
+RUN_ROOT="../outputs/<skill-name>/<run_id>"
+REFLACT_ROOT="$RUN_ROOT/reflact"
 python evaluator.py \
-  --trace_file "../outputs/<skill-name>/reflact/val_trace_origin.json" \
+  --trace_file "$REFLACT_ROOT/val_trace_origin.json" \
   --system_prompt "../assets/judge.md"
 ```
-将`Accuracy`的值按如下格式记录到`../outputs/<skill-name>/reflact/accuracy.md`文件中。
+将`Accuracy`的值按如下格式记录到`REFLACT_ROOT/accuracy.md`文件中。
 
 ```text
 origin_accuracy=<Accuracy>
@@ -116,10 +131,13 @@ best_accuracy=<Accuracy>
 
 ```bash
 cd skills/skill-optimizer/scripts
+RUN_ROOT="../outputs/<skill-name>/<run_id>"
+REFLACT_ROOT="$RUN_ROOT/reflact"
+EPOCH_ROOT="$REFLACT_ROOT/<epoch_id>"
 python executor.py \
-  --skill "../outputs/<skill-name>/reflact/best/" \
-  --task "../outputs/<skill-name>/reflact/train.json" \
-  --trace_file "../outputs/<skill-name>/reflact/<epoch_id>/train_trace.json"
+  --skill "$REFLACT_ROOT/best/" \
+  --task "$REFLACT_ROOT/train.json" \
+  --trace_file "$EPOCH_ROOT/train_trace.json"
 ```
 当前 [executor.py](../scripts/executor.py) 会将全部任务轨迹写入 `--trace_file` 指定的文件`train_trace.json`。
 
@@ -127,16 +145,19 @@ python executor.py \
 
 ```bash
 cd skills/skill-optimizer/scripts
+RUN_ROOT="../outputs/<skill-name>/<run_id>"
+REFLACT_ROOT="$RUN_ROOT/reflact"
+EPOCH_ROOT="$REFLACT_ROOT/<epoch_id>"
 python evaluator.py \
-  --trace_file "../outputs/<skill-name>/reflact/<epoch_id>/train_trace.json" \
+  --trace_file "$EPOCH_ROOT/train_trace.json" \
   --system_prompt "../assets/judge.md" \
-  --successes_file "../outputs/<skill-name>/reflact/<epoch_id>/success_cases.json" \
-  --failures_file "../outputs/<skill-name>/reflact/<epoch_id>/failure_cases.json"
+  --successes_file "$EPOCH_ROOT/success_cases.json" \
+  --failures_file "$EPOCH_ROOT/failure_cases.json"
 ```
 
-成功案例保存到`../outputs/<skill-name>/reflact/<epoch_id>/success_cases.json`，失败案例保存到`../outputs/<skill-name>/reflact/<epoch_id>/failure_cases.json`。
+成功案例保存到`EPOCH_ROOT/success_cases.json`，失败案例保存到`EPOCH_ROOT/failure_cases.json`。
 
-将训练集`Accuracy`的值按如下格式追加到`../outputs/<skill-name>/reflact/accuracy.md`文件中。
+将训练集`Accuracy`的值按如下格式追加到`REFLACT_ROOT/accuracy.md`文件中。
 ```text
 <epoch_id>_train_accuracy=<Accuracy>
 ```
@@ -146,23 +167,26 @@ python evaluator.py \
 
 分别对失败案例和成功案例进行反思分析，生成结构化编辑建议（`proposal`）。
 
-先查询`../outputs/<skill-name>/reflact/rejected_patches.json`是否存在，该文件记录的是历史被拒绝的编辑，生成`proposal`时需要排除这些编辑。若不存在，则创建该文件，内容为空列表。
+先查询`REFLACT_ROOT/rejected_patches.json`是否存在，该文件记录的是历史被拒绝的编辑，生成`proposal`时需要排除这些编辑。若不存在，则创建该文件，内容为空列表。
 
 ##### 对成功案例反思分析
 使用 [reflector.py](../scripts/reflector.py) 执行任务：
 
 ```bash
 cd skills/skill-optimizer/scripts
+RUN_ROOT="../outputs/<skill-name>/<run_id>"
+REFLACT_ROOT="$RUN_ROOT/reflact"
+EPOCH_ROOT="$REFLACT_ROOT/<epoch_id>"
 python reflector.py \
   --enable_thinking \
-  --cases_file "../outputs/<skill-name>/reflact/<epoch_id>/success_cases.json" \
+  --cases_file "$EPOCH_ROOT/success_cases.json" \
   --reflect_template "../assets/refl-success.md" \
-  --rejected_patches "../outputs/<skill-name>/reflact/rejected_patches.json" \
-  --skill_md "../outputs/<skill-name>/reflact/best/<skill-name>/SKILL.md" \
+  --rejected_patches "$REFLACT_ROOT/rejected_patches.json" \
+  --skill_md "$REFLACT_ROOT/best/<skill-name>/SKILL.md" \
   --case_type "success" \
-  --output_file "../outputs/<skill-name>/reflact/<epoch_id>/success_patches.json"
+  --output_file "$EPOCH_ROOT/success_patches.json"
 ```
-基于成功案例反思生成编辑`proposal`, 并将`proposal`保存到`../outputs/<skill-name>/reflact/<epoch_id>/success_patches.json`文件中。
+基于成功案例反思生成编辑`proposal`, 并将`proposal`保存到`EPOCH_ROOT/success_patches.json`文件中。
 
 
 ##### 对失败案例反思分析
@@ -170,16 +194,19 @@ python reflector.py \
 
 ```bash
 cd skills/skill-optimizer/scripts
+RUN_ROOT="../outputs/<skill-name>/<run_id>"
+REFLACT_ROOT="$RUN_ROOT/reflact"
+EPOCH_ROOT="$REFLACT_ROOT/<epoch_id>"
 python reflector.py \
   --enable_thinking \
-  --cases_file "../outputs/<skill-name>/reflact/<epoch_id>/failure_cases.json" \
+  --cases_file "$EPOCH_ROOT/failure_cases.json" \
   --reflect_template "../assets/refl-failure.md" \
-  --rejected_patches "../outputs/<skill-name>/reflact/rejected_patches.json" \
-  --skill_md "../outputs/<skill-name>/reflact/best/<skill-name>/SKILL.md" \
+  --rejected_patches "$REFLACT_ROOT/rejected_patches.json" \
+  --skill_md "$REFLACT_ROOT/best/<skill-name>/SKILL.md" \
   --case_type "failure" \
-  --output_file "../outputs/<skill-name>/reflact/<epoch_id>/failure_patches.json"
+  --output_file "$EPOCH_ROOT/failure_patches.json"
 ```
-基于失败案例反思生成编辑`proposal`, 并将`proposal`保存到`../outputs/<skill-name>/reflact/<epoch_id>/failure_patches.json`文件中。
+基于失败案例反思生成编辑`proposal`, 并将`proposal`保存到`EPOCH_ROOT/failure_patches.json`文件中。
 
 
 #### 阶段 3: Aggregate（proposal 合并）
@@ -189,15 +216,18 @@ python reflector.py \
 
 ```bash
 cd skills/skill-optimizer/scripts
+RUN_ROOT="../outputs/<skill-name>/<run_id>"
+REFLACT_ROOT="$RUN_ROOT/reflact"
+EPOCH_ROOT="$REFLACT_ROOT/<epoch_id>"
 python aggregate.py \
   --enable_thinking \
-  --success_patches "../outputs/<skill-name>/reflact/<epoch_id>/success_patches.json" \
-  --failure_patches "../outputs/<skill-name>/reflact/<epoch_id>/failure_patches.json" \
-  --skill_md "../outputs/<skill-name>/reflact/best/<skill-name>/SKILL.md" \
-  --output_file "../outputs/<skill-name>/reflact/<epoch_id>/merged_patches.json" \
+  --success_patches "$EPOCH_ROOT/success_patches.json" \
+  --failure_patches "$EPOCH_ROOT/failure_patches.json" \
+  --skill_md "$REFLACT_ROOT/best/<skill-name>/SKILL.md" \
+  --output_file "$EPOCH_ROOT/merged_patches.json" \
   --aggregate_template "../assets/aggregate.md"
 ```
-将`merged_patches`保存到`../outputs/<skill-name>/reflact/<epoch_id>/merged_patches.json`文件中。
+将`merged_patches`保存到`EPOCH_ROOT/merged_patches.json`文件中。
 
 #### 阶段 4: Select（梯度裁剪, clip）
 
@@ -206,15 +236,18 @@ python aggregate.py \
 
 ```bash
 cd skills/skill-optimizer/scripts
+RUN_ROOT="../outputs/<skill-name>/<run_id>"
+REFLACT_ROOT="$RUN_ROOT/reflact"
+EPOCH_ROOT="$REFLACT_ROOT/<epoch_id>"
 python clip.py \
   --enable_thinking \
-  --merged_patches "../outputs/<skill-name>/reflact/<epoch_id>/merged_patches.json" \
-  --skill_md "../outputs/<skill-name>/reflact/best/<skill-name>/SKILL.md" \
+  --merged_patches "$EPOCH_ROOT/merged_patches.json" \
+  --skill_md "$REFLACT_ROOT/best/<skill-name>/SKILL.md" \
   --edit_budget 5 \
-  --output_file "../outputs/<skill-name>/reflact/<epoch_id>/selected_patches.json" \
+  --output_file "$EPOCH_ROOT/selected_patches.json" \
   --clip_template "../assets/clip.md"
 ```
-将裁剪后的编辑保存到`../outputs/<skill-name>/reflact/<epoch_id>/selected_patches.json`文件中。
+将裁剪后的编辑保存到`EPOCH_ROOT/selected_patches.json`文件中。
 
 #### 阶段 5: Update（更新技能文档, rewrite）
 
@@ -223,58 +256,70 @@ python clip.py \
 
 ```bash
 cd skills/skill-optimizer/scripts
+RUN_ROOT="../outputs/<skill-name>/<run_id>"
+REFLACT_ROOT="$RUN_ROOT/reflact"
+EPOCH_ROOT="$REFLACT_ROOT/<epoch_id>"
 python step.py \
   --enable_thinking \
-  --selected_patches "../outputs/<skill-name>/reflact/<epoch_id>/selected_patches.json" \
-  --skill_md "../outputs/<skill-name>/reflact/best/<skill-name>/SKILL.md" \
-  --output_file "../outputs/<skill-name>/reflact/<epoch_id>/SKILL.md" \
+  --selected_patches "$EPOCH_ROOT/selected_patches.json" \
+  --skill_md "$REFLACT_ROOT/best/<skill-name>/SKILL.md" \
+  --output_file "$EPOCH_ROOT/SKILL.md" \
   --rewrite_template "../assets/rewrite.md"
 ```
-将重写后的技能文档保存到`../outputs/<skill-name>/reflact/<epoch_id>/SKILL.md`文件中。
+将重写后的技能文档保存到`EPOCH_ROOT/SKILL.md`文件中。
 
 
 #### 阶段 6: Evaluate（验证门控）
 
 在验证集上评估新生成的技能文档：
-- 将当前推理使用的技能`../outputs/<skill-name>/reflact/best/<skill-name>/`拷贝到目录`../outputs/<skill-name>/reflact/<epoch_id>/update/`
-- 使用阶段5生成的技能文档`../outputs/<skill-name>/reflact/<epoch_id>/SKILL.md`，覆盖`../outputs/<skill-name>/reflact/<epoch_id>/update/<skill-name>/SKILL.md`
+- 将当前推理使用的技能`REFLACT_ROOT/best/<skill-name>/`拷贝到目录`EPOCH_ROOT/update/`
+- 使用阶段5生成的技能文档`EPOCH_ROOT/SKILL.md`，覆盖`EPOCH_ROOT/update/<skill-name>/SKILL.md`
 ```bash
-mkdir -p ../outputs/<skill-name>/reflact/<epoch_id>/update
-cp -r ../outputs/<skill-name>/reflact/best/<skill-name> ../outputs/<skill-name>/reflact/<epoch_id>/update/
-cp ../outputs/<skill-name>/reflact/<epoch_id>/SKILL.md ../outputs/<skill-name>/reflact/<epoch_id>/update/<skill-name>/SKILL.md
+RUN_ROOT="../outputs/<skill-name>/<run_id>"
+REFLACT_ROOT="$RUN_ROOT/reflact"
+EPOCH_ROOT="$REFLACT_ROOT/<epoch_id>"
+mkdir -p "$EPOCH_ROOT/update"
+cp -r "$REFLACT_ROOT/best/<skill-name>" "$EPOCH_ROOT/update/"
+cp "$EPOCH_ROOT/SKILL.md" "$EPOCH_ROOT/update/<skill-name>/SKILL.md"
 ```
 - 使用[executor.py](../scripts/executor.py) 在验证集上执行新生成的技能文档：
 ```bash
 cd skills/skill-optimizer/scripts
+RUN_ROOT="../outputs/<skill-name>/<run_id>"
+REFLACT_ROOT="$RUN_ROOT/reflact"
+EPOCH_ROOT="$REFLACT_ROOT/<epoch_id>"
 python executor.py \
-  --skill "../outputs/<skill-name>/reflact/<epoch_id>/update/" \
-  --task "../outputs/<skill-name>/reflact/val.json" \
-  --trace_file "../outputs/<skill-name>/reflact/<epoch_id>/val_trace_update.json"
+  --skill "$EPOCH_ROOT/update/" \
+  --task "$REFLACT_ROOT/val.json" \
+  --trace_file "$EPOCH_ROOT/val_trace_update.json"
 ```
 当前 [executor.py](../scripts/executor.py) 会将全部任务轨迹写入 `--trace_file` 指定的文件`val_trace_update.json`。
 - 使用[evaluator.py](../scripts/evaluator.py) 对执行结果进行精度评估：
 ```bash
 cd skills/skill-optimizer/scripts
+RUN_ROOT="../outputs/<skill-name>/<run_id>"
+REFLACT_ROOT="$RUN_ROOT/reflact"
+EPOCH_ROOT="$REFLACT_ROOT/<epoch_id>"
 python evaluator.py \
-  --trace_file "../outputs/<skill-name>/reflact/<epoch_id>/val_trace_update.json" \
+  --trace_file "$EPOCH_ROOT/val_trace_update.json" \
   --system_prompt "../assets/judge.md"
 ```
-将`Accuracy`的值按如下格式追加到`../outputs/<skill-name>/reflact/accuracy.md`文件中。
+将`Accuracy`的值按如下格式追加到`REFLACT_ROOT/accuracy.md`文件中。
 ```text
 <epoch_id>_val_accuracy=<Accuracy>
 ```
-- 从`../outputs/<skill-name>/reflact/accuracy.md`中读取`best_accuracy`，并与`<epoch_id>_val_accuracy`进行对比，按如下门控决策策略进行处理。
+- 从`REFLACT_ROOT/accuracy.md`中读取`best_accuracy`，并与`<epoch_id>_val_accuracy`进行对比，按如下门控决策策略进行处理。
 
 **门控决策：**
-- `<epoch_id>_val_accuracy > best_accuracy` → **ACCEPT**（接受并更新最佳记录），更新 `best_skill`，将`../outputs/<skill-name>/reflact/<epoch_id>/SKILL.md`拷贝到`../outputs/<skill-name>/reflact/best/<skill-name>/`，覆盖原始 `best_skill` 中的`SKILL.md`。
-    - 在`../outputs/<skill-name>/reflact/accuracy.md`文件中更新`best_accuracy`为`<epoch_id>_val_accuracy`。
-    - 将阶段4生成的编辑`selected_patches.json`，记录到`../outputs/<skill-name>/reflact/applied_patches.md`文件中。
-- `<epoch_id>_val_accuracy ≤ best_accuracy` → **REJECT**（拒绝，将阶段4生成的编辑`selected_patches.json`追加到`../outputs/<skill-name>/reflact/rejected_patches.json`），并在下次反思中引入这些被拒绝的编辑。
+- `<epoch_id>_val_accuracy > best_accuracy` → **ACCEPT**（接受并更新最佳记录），更新 `best_skill`，将`EPOCH_ROOT/SKILL.md`拷贝到`REFLACT_ROOT/best/<skill-name>/`，覆盖原始 `best_skill` 中的`SKILL.md`。
+    - 在`REFLACT_ROOT/accuracy.md`文件中更新`best_accuracy`为`<epoch_id>_val_accuracy`。
+    - 将阶段4生成的编辑`selected_patches.json`，记录到`REFLACT_ROOT/applied_patches.md`文件中。
+- `<epoch_id>_val_accuracy ≤ best_accuracy` → **REJECT**（拒绝，将阶段4生成的编辑`selected_patches.json`追加到`REFLACT_ROOT/rejected_patches.json`），并在下次反思中引入这些被拒绝的编辑。
 
 
 ### 6. 结果输出
 
-完成 ReflACT 训练后，同时生成 Markdown 和 HTML 格式的优化报告，存放在 `../outputs/<skill-name>/reflact/report/` 中。
+完成 ReflACT 训练后，同时生成 Markdown 和 HTML 格式的优化报告，存放在 `REFLACT_ROOT/report/` 中。
 优化报告需涵盖以下方面的内容：
 1. 初始静态检查分析报告
 2. 验证集初始精度，以及每个epoch的训练集和验证集精度
@@ -305,43 +350,51 @@ python evaluator.py \
 
 ```text
 outputs/<skill-name>/
-├── static-analysis.md
-└── reflact/
-    ├── train.json
-    ├── val.json
-    ├── val_trace_origin.json
-    ├── accuracy.md
-    ├── applied_patches.md
-    ├── rejected_patches.json
-    ├── best/
+└── <run_id>/
+    ├── origin/
     │   └── <skill-name>/
     │       ├── SKILL.md
     │       ├── references/
     │       ├── scripts/
     │       └── assets/
-    ├── <epoch_id>/
-    │   ├── train_trace.json
-    │   ├── success_cases.json
-    │   ├── failure_cases.json
-    │   ├── success_patches.json
-    │   ├── failure_patches.json
-    │   ├── merged_patches.json
-    │   ├── selected_patches.json
-    │   ├── SKILL.md
-    │   ├── update/
-    │   │   └── <skill-name>/
-    │   │       ├── SKILL.md
-    │   │       ├── references/
-    │   │       ├── scripts/
-    │   │       └── assets/
-    │   └── val_trace_update.json
-    └── report/
-        ├── report.md
-        └── report.html
+    ├── static-analysis.md
+    └── reflact/
+        ├── train.json
+        ├── val.json
+        ├── val_trace_origin.json
+        ├── accuracy.md
+        ├── applied_patches.md
+        ├── rejected_patches.json
+        ├── best/
+        │   └── <skill-name>/
+        │       ├── SKILL.md
+        │       ├── references/
+        │       ├── scripts/
+        │       └── assets/
+        ├── <epoch_id>/
+        │   ├── train_trace.json
+        │   ├── success_cases.json
+        │   ├── failure_cases.json
+        │   ├── success_patches.json
+        │   ├── failure_patches.json
+        │   ├── merged_patches.json
+        │   ├── selected_patches.json
+        │   ├── SKILL.md
+        │   ├── update/
+        │   │   └── <skill-name>/
+        │   │       ├── SKILL.md
+        │   │       ├── references/
+        │   │       ├── scripts/
+        │   │       └── assets/
+        │   └── val_trace_update.json
+        └── report/
+            ├── report.md
+            └── report.html
 ```
 
 这些文件分别承载：
 
+- `origin/<skill-name>/`：本次运行备份的原始完整 Skill 包
 - `static-analysis.md`：目标 Skill 的初始静态检查结论
 - `train.json` / `val.json`：按训练集和验证集拆分后的任务集
 - `val_trace_origin.json`：初始 best Skill 在验证集上的执行轨迹
