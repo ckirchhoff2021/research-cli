@@ -16,6 +16,16 @@ research-cli/
 ├── .streamlit/config.toml # Streamlit 配置
 ├── memory/                # 代理长期记忆存储，包含 AGENTS.md 行为规范
 ├── skills/                # 自定义技能集，扩展代理专项能力
+│   ├── image-generator    # AI图像生成
+│   ├── speech-generator   # 语音合成
+│   ├── speech-analyze     # 语音分析转写
+│   ├── video-generator    # AI视频生成
+│   ├── semantic-retrieval # 语义检索
+│   ├── skill-creator      # 自定义技能创建
+│   ├── skill-optimizer    # 技能优化
+│   ├── picture-book-creator # 绘本创作（支持Markdown/HTML交互两种输出，内置水墨国风模板）
+│   ├── web-crawler        # 通用网页爬虫
+│   └── markdown-to-html   # Markdown/文本转精美HTML，支持6种风格
 ├── tools/                 # 自定义工具实现，供代理调用
 ├── sessions/              # 会话数据存储
 ├── outputs/               # 输出文件存储（图片、音频、视频等）
@@ -85,7 +95,7 @@ uv run python main.py --task_prompt "给我讲个笑话。"
 
 ## 内置技能列表
 
-项目内置9个AIGC与科研场景专项技能，代理可自动识别任务场景调用对应技能：
+项目内置10个AIGC与科研场景专项技能，代理可自动识别任务场景调用对应技能：
 
 | 技能名称 | 功能说明 |
 |---------|---------|
@@ -96,8 +106,9 @@ uv run python main.py --task_prompt "给我讲个笑话。"
 | semantic-retrieval | 语义检索，支持本地文档、知识库的语义相似度搜索，快速定位相关资料 |
 | skill-creator | 自定义技能创建工具，自动生成符合规范的SKILL.md模板，辅助技能开发 |
 | skill-optimizer | 技能优化工具，自动分析技能使用效果，优化技能流程、提示词，提升执行准确率 |
-| picture-book-creator | 绘本自动生成，支持输入故事主题自动生成分镜脚本、配图、排版，输出完整儿童绘本 |
+| picture-book-creator | 绘本自动生成，支持Markdown静态绘本与交互式翻页HTML绘本两种输出，内置水墨国风、水彩等多种风格模板，可自动生成分镜脚本、配图、排版，输出完整绘本 |
 | web-crawler | 通用网页爬虫，支持静态/动态网页爬取、内容提取、去重清洗，可自动绕过反爬机制抓取科研资料、网页内容 |
+| markdown-to-html | Markdown/文本转精美HTML工具，支持水墨画、简约现代、学术论文、国风宣纸、科技极简、优雅印刷等6种内置风格，自动生成目录、代码高亮、数学公式，输出单文件HTML可直接分享 |
 
 ## 运行模式
 

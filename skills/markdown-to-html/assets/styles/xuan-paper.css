@@ -1,0 +1,268 @@
+/* 国风宣纸风格 CSS */
+.style-xuan-paper {
+    margin: 0;
+    padding: 0;
+    font-family: "STFangsong", "FangSong", "KaiTi", "SimSun", serif;
+    background-color: #e8e1d0;
+    background-image: 
+        url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.15 0'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
+    color: #3b2e2a;
+    line-height: 2;
+}
+
+.style-xuan-paper .container {
+    max-width: 850px;
+    margin: 40px auto;
+    padding: 70px 90px;
+    background-color: #f5eedd;
+    background-image: 
+        url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.15' numOctaves='3' stitchTiles='stitch'/%3E%3CfeDiffuseLighting in='noise' lighting-color='%23f5eedd' surfaceScale='2'%3E%3CfeDistantLight azimuth='45' elevation='60'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23paper)' opacity='0.8'/%3E%3C/svg%3E");
+    border: 1px solid #d4c5a9;
+    box-shadow: 
+        inset 0 0 60px rgba(139, 119, 82, 0.15),
+        0 5px 20px rgba(0,0,0,0.15);
+    position: relative;
+}
+
+/* 传统边框装饰 */
+.style-xuan-paper .container::before,
+.style-xuan-paper .container::after {
+    content: "";
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border: 2px solid #8b2323;
+    opacity: 0.7;
+}
+
+.style-xuan-paper .container::before {
+    top: 15px;
+    left: 15px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.style-xuan-paper .container::after {
+    bottom: 15px;
+    right: 15px;
+    border-left: none;
+    border-top: none;
+}
+
+.style-xuan-paper .document-header {
+    text-align: center;
+    margin-bottom: 60px;
+    padding-bottom: 30px;
+    position: relative;
+}
+
+.style-xuan-paper .document-title {
+    font-size: 2.6em;
+    font-weight: normal;
+    margin: 0 0 20px 0;
+    color: #2b1d19;
+    letter-spacing: 10px;
+    position: relative;
+}
+
+.style-xuan-paper .document-title::after {
+    content: "印";
+    position: absolute;
+    right: -20px;
+    bottom: -10px;
+    width: 40px;
+    height: 40px;
+    background-color: #8b2323;
+    color: #f5eedd;
+    font-size: 0.3em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transform: rotate(-5deg);
+    letter-spacing: 0;
+}
+
+.style-xuan-paper .document-meta {
+    color: #6b5344;
+    font-size: 1.1em;
+    letter-spacing: 3px;
+}
+
+.style-xuan-paper .document-meta span {
+    margin: 0 15px;
+}
+
+.style-xuan-paper .toc-nav {
+    background-color: rgba(255,255,255,0.3);
+    padding: 25px 35px;
+    margin-bottom: 50px;
+    border: 1px dashed #b8a88a;
+    border-radius: 2px;
+}
+
+.style-xuan-paper .toc-title {
+    font-size: 1.4em;
+    text-align: center;
+    margin-bottom: 20px;
+    letter-spacing: 5px;
+    color: #3b2e2a;
+}
+
+.style-xuan-paper .toc-nav ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.style-xuan-paper .toc-nav li {
+    margin: 10px 0;
+    letter-spacing: 2px;
+}
+
+.style-xuan-paper .toc-nav a {
+    color: #5a4036;
+    text-decoration: none;
+    border-bottom: 1px dotted #a8987a;
+}
+
+.style-xuan-paper .document-content h2 {
+    font-size: 1.9em;
+    margin: 45px 0 25px 0;
+    text-align: center;
+    letter-spacing: 6px;
+    color: #2b1d19;
+    position: relative;
+}
+
+.style-xuan-paper .document-content h2::before,
+.style-xuan-paper .document-content h2::after {
+    content: "◆";
+    color: #8b2323;
+    font-size: 0.5em;
+    margin: 0 15px;
+    vertical-align: middle;
+}
+
+.style-xuan-paper .document-content h3 {
+    font-size: 1.5em;
+    margin: 35px 0 18px 0;
+    letter-spacing: 3px;
+    color: #3b2e2a;
+    border-bottom: 1px solid #d4c5a9;
+    padding-bottom: 8px;
+}
+
+.style-xuan-paper .document-content h4 {
+    font-size: 1.25em;
+    margin: 25px 0 12px 0;
+    letter-spacing: 2px;
+    color: #4b3e3a;
+}
+
+.style-xuan-paper .document-content p {
+    margin: 18px 0;
+    text-indent: 2em;
+    font-size: 1.2em;
+    letter-spacing: 1px;
+}
+
+.style-xuan-paper .document-content ul, .style-xuan-paper .document-content ol {
+    padding-left: 2.5em;
+    margin: 18px 0;
+    font-size: 1.2em;
+}
+
+.style-xuan-paper .document-content li {
+    margin: 10px 0;
+}
+
+.style-xuan-paper .document-content blockquote {
+    margin: 30px 20px;
+    padding: 20px 30px;
+    background-color: rgba(139, 35, 35, 0.05);
+    border-left: 3px solid #8b2323;
+    border-right: 3px solid #8b2323;
+    font-style: italic;
+    color: #5a4036;
+}
+
+.style-xuan-paper .document-content code {
+    font-family: "Courier New", monospace;
+    background-color: rgba(0,0,0,0.06);
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-size: 0.9em;
+}
+
+.style-xuan-paper .document-content pre {
+    background-color: rgba(255,255,255,0.5);
+    padding: 20px;
+    border: 1px solid #d4c5a9;
+    overflow-x: auto;
+    margin: 20px 0;
+}
+
+.style-xuan-paper .document-content pre code {
+    background: none;
+    padding: 0;
+}
+
+.style-xuan-paper .document-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 30px 0;
+    background-color: rgba(255,255,255,0.3);
+    border: 2px solid #b8a88a;
+}
+
+.style-xuan-paper .document-content th, .style-xuan-paper .document-content td {
+    border: 1px solid #d4c5a9;
+    padding: 12px 15px;
+    text-align: left;
+}
+
+.style-xuan-paper .document-content th {
+    background-color: rgba(139, 35, 35, 0.08);
+    font-weight: normal;
+    letter-spacing: 2px;
+}
+
+.style-xuan-paper .document-content img {
+    max-width: 100%;
+    display: block;
+    margin: 30px auto;
+    border: 5px solid #d4c5a9;
+    padding: 3px;
+    background: #f5eedd;
+}
+
+.style-xuan-paper .document-content hr {
+    border: none;
+    height: 20px;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,10 L40,10 M50,10 L60,10 M47,7 L50,10 L47,13 M53,7 L50,10 L53,13 M60,10 L100,10' stroke='%238b2323' stroke-width='1' fill='none' opacity='0.6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    margin: 45px 0;
+}
+
+.style-xuan-paper .document-footer {
+    margin-top: 70px;
+    padding-top: 30px;
+    text-align: center;
+    color: #8b7355;
+    font-size: 0.95em;
+    letter-spacing: 2px;
+}
+
+@media (max-width: 768px) {
+    .style-xuan-paper .container {
+        margin: 20px;
+        padding: 40px 30px;
+    }
+    
+    .style-xuan-paper .document-title {
+        font-size: 2em;
+        letter-spacing: 5px;
+    }
+}

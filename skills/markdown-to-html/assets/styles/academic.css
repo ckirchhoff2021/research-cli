@@ -1,0 +1,200 @@
+/* 学术论文风格 CSS */
+.style-academic {
+    margin: 0;
+    padding: 0;
+    font-family: "Times New Roman", Times, "SimSun", serif;
+    background-color: #fff;
+    color: #000;
+    line-height: 1.5;
+}
+
+.style-academic .container {
+    max-width: 210mm;
+    margin: 20px auto;
+    padding: 25mm 20mm;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    min-height: 297mm;
+}
+
+.style-academic .document-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.style-academic .document-title {
+    font-size: 20pt;
+    font-weight: bold;
+    margin: 0 0 20px 0;
+    line-height: 1.3;
+}
+
+.style-academic .document-meta {
+    font-size: 12pt;
+    margin: 10px 0;
+}
+
+.style-academic .document-meta span {
+    margin: 0 15px;
+}
+
+.style-academic .toc-nav {
+    margin: 40px 0;
+    padding: 20px;
+    page-break-after: always;
+}
+
+.style-academic .toc-title {
+    font-size: 14pt;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.style-academic .toc-nav ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.style-academic .toc-nav li {
+    margin: 5px 0;
+    font-size: 12pt;
+}
+
+.style-academic .toc-nav a {
+    color: #000;
+    text-decoration: none;
+}
+
+.style-academic .toc-nav a::after {
+    content: leader('.') target-counter(attr(href), page);
+}
+
+.style-academic .document-content h2 {
+    font-size: 16pt;
+    font-weight: bold;
+    margin: 30px 0 15px 0;
+}
+
+.style-academic .document-content h3 {
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 25px 0 12px 0;
+}
+
+.style-academic .document-content h4 {
+    font-size: 12pt;
+    font-weight: bold;
+    font-style: italic;
+    margin: 20px 0 10px 0;
+}
+
+.style-academic .document-content p {
+    margin: 10px 0;
+    font-size: 12pt;
+    text-indent: 2em;
+    text-align: justify;
+}
+
+.style-academic .document-content ul, .style-academic .document-content ol {
+    padding-left: 2.5em;
+    margin: 10px 0;
+    font-size: 12pt;
+}
+
+.style-academic .document-content li {
+    margin: 5px 0;
+}
+
+.style-academic .document-content blockquote {
+    margin: 20px 30px;
+    padding: 10px 20px;
+    font-size: 11pt;
+    font-style: italic;
+    border-left: 2px solid #ccc;
+}
+
+.style-academic .document-content code {
+    font-family: "Courier New", monospace;
+    font-size: 10pt;
+    background-color: #f5f5f5;
+    padding: 1px 4px;
+}
+
+.style-academic .document-content pre {
+    background-color: #f5f5f5;
+    padding: 15px;
+    overflow-x: auto;
+    font-size: 10pt;
+    border: 1px solid #ddd;
+    margin: 15px 0;
+}
+
+.style-academic .document-content pre code {
+    background: none;
+    padding: 0;
+}
+
+.style-academic .document-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 10.5pt;
+}
+
+.style-academic .document-content th, .style-academic .document-content td {
+    border: 1px solid #000;
+    padding: 8px 10px;
+    text-align: left;
+}
+
+.style-academic .document-content th {
+    font-weight: bold;
+    background-color: #f0f0f0;
+}
+
+.style-academic .document-content img {
+    max-width: 80%;
+    display: block;
+    margin: 20px auto;
+}
+
+.style-academic .document-content hr {
+    border: none;
+    border-top: 1px solid #000;
+    margin: 30px 0;
+}
+
+.style-academic .document-content .figure-caption {
+    text-align: center;
+    font-size: 10.5pt;
+    margin-top: -10px;
+    margin-bottom: 20px;
+}
+
+.style-academic .document-footer {
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid #ccc;
+    text-align: center;
+    font-size: 10pt;
+    color: #666;
+}
+
+@media print {
+    .style-academic {
+        background: white;
+    }
+    .style-academic .container {
+        box-shadow: none;
+        margin: 0;
+        padding: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .style-academic .container {
+        padding: 20px;
+        margin: 10px;
+    }
+}

@@ -1,0 +1,230 @@
+/* 简约现代风格 CSS */
+.style-modern {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    color: #333;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.style-modern .container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 50px 60px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.style-modern .document-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #eee;
+}
+
+.style-modern .document-title {
+    font-size: 2.5em;
+    font-weight: 700;
+    margin: 0 0 15px 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.style-modern .document-meta {
+    color: #666;
+    font-size: 1em;
+}
+
+.style-modern .document-meta span {
+    margin: 0 12px;
+}
+
+.style-modern .toc-nav {
+    background-color: #f8f9fa;
+    padding: 25px;
+    border-radius: 8px;
+    margin-bottom: 40px;
+}
+
+.style-modern .toc-title {
+    font-size: 1.2em;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.style-modern .toc-nav ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.style-modern .toc-nav li {
+    margin: 8px 0;
+    padding-left: 18px;
+    position: relative;
+}
+
+.style-modern .toc-nav li::before {
+    content: "▸";
+    position: absolute;
+    left: 0;
+    color: #667eea;
+    font-size: 0.9em;
+}
+
+.style-modern .toc-nav a {
+    color: #555;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.style-modern .toc-nav a:hover {
+    color: #667eea;
+}
+
+.style-modern .document-content h2 {
+    font-size: 1.8em;
+    margin: 35px 0 18px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+    color: #222;
+    font-weight: 600;
+}
+
+.style-modern .document-content h3 {
+    font-size: 1.45em;
+    margin: 28px 0 15px 0;
+    color: #333;
+    font-weight: 600;
+}
+
+.style-modern .document-content h4 {
+    font-size: 1.25em;
+    margin: 22px 0 12px 0;
+    color: #444;
+    font-weight: 600;
+}
+
+.style-modern .document-content p {
+    margin: 15px 0;
+    font-size: 1.05em;
+    color: #444;
+}
+
+.style-modern .document-content ul, .style-modern .document-content ol {
+    padding-left: 1.8em;
+    margin: 15px 0;
+}
+
+.style-modern .document-content li {
+    margin: 6px 0;
+    font-size: 1.05em;
+}
+
+.style-modern .document-content blockquote {
+    margin: 25px 0;
+    padding: 18px 25px;
+    background: linear-gradient(90deg, #f0f4ff 0%, white 100%);
+    border-left: 4px solid #667eea;
+    border-radius: 0 6px 6px 0;
+    color: #555;
+}
+
+.style-modern .document-content code {
+    background-color: #f0f2f5;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-family: "SF Mono", Monaco, "Courier New", monospace;
+    font-size: 0.9em;
+    color: #e83e8c;
+}
+
+.style-modern .document-content pre {
+    background-color: #2d2d2d;
+    padding: 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+.style-modern .document-content pre code {
+    background: none;
+    color: #f8f8f2;
+    padding: 0;
+}
+
+.style-modern .document-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.style-modern .document-content th, .style-modern .document-content td {
+    padding: 12px 18px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.style-modern .document-content th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+}
+
+.style-modern .document-content tr:hover {
+    background-color: #f8f9fa;
+}
+
+.style-modern .document-content img {
+    max-width: 100%;
+    display: block;
+    margin: 25px auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.style-modern .document-content hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #ddd, transparent);
+    margin: 40px 0;
+}
+
+.style-modern .document-content a {
+    color: #667eea;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.style-modern .document-content a:hover {
+    border-bottom-color: #667eea;
+}
+
+.style-modern .document-footer {
+    margin-top: 50px;
+    padding-top: 30px;
+    border-top: 1px solid #eee;
+    text-align: center;
+    color: #999;
+    font-size: 0.9em;
+}
+
+@media (max-width: 768px) {
+    .style-modern .container {
+        margin: 20px;
+        padding: 30px 25px;
+    }
+    
+    .style-modern .document-title {
+        font-size: 2em;
+    }
+}

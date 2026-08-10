@@ -1,0 +1,274 @@
+/* 水墨画风格 CSS */
+.style-ink-wash {
+    margin: 0;
+    padding: 0;
+    font-family: "STKaiti", "KaiTi", "Songti SC", "SimSun", serif;
+    background-color: #f2efe6;
+    background-image: 
+        url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%239C92AC' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+    color: #2c2c2c;
+    line-height: 1.8;
+}
+
+.style-ink-wash .container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 60px 80px;
+    background-color: rgba(255, 253, 245, 0.85);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    border-right: 1px solid #e0d8c8;
+    border-bottom: 1px solid #e0d8c8;
+    position: relative;
+}
+
+/* 水墨边角装饰 */
+.style-ink-wash .container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background-image: 
+        radial-gradient(circle at 0% 0%, rgba(0,0,0,0.08) 0%, transparent 20%),
+        radial-gradient(circle at 100% 100%, rgba(0,0,0,0.05) 0%, transparent 25%);
+}
+
+.style-ink-wash .document-header {
+    text-align: center;
+    margin-bottom: 50px;
+    padding-bottom: 30px;
+    border-bottom: 2px solid rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.style-ink-wash .document-header::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 10px;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,5 Q25,0 50,5 T100,5' stroke='%23333' stroke-width='1' fill='none' opacity='0.3'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+}
+
+.style-ink-wash .document-title {
+    font-size: 2.8em;
+    font-weight: normal;
+    margin: 0 0 20px 0;
+    color: #1a1a1a;
+    letter-spacing: 8px;
+}
+
+.style-ink-wash .document-meta {
+    color: #666;
+    font-size: 1.1em;
+    letter-spacing: 2px;
+}
+
+.style-ink-wash .document-meta span {
+    margin: 0 15px;
+}
+
+.style-ink-wash .toc-nav {
+    background-color: rgba(255,255,255,0.6);
+    padding: 20px 30px;
+    margin-bottom: 40px;
+    border-left: 4px solid #555;
+    border-radius: 0 8px 8px 0;
+}
+
+.style-ink-wash .toc-title {
+    font-size: 1.3em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
+    letter-spacing: 4px;
+}
+
+.style-ink-wash .toc-nav ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.style-ink-wash .toc-nav li {
+    margin: 8px 0;
+    padding-left: 20px;
+    position: relative;
+}
+
+.style-ink-wash .toc-nav li::before {
+    content: "○";
+    position: absolute;
+    left: 0;
+    color: #666;
+    font-size: 0.8em;
+}
+
+.style-ink-wash .toc-nav li li::before {
+    content: "、";
+}
+
+.style-ink-wash .toc-nav a {
+    color: #444;
+    text-decoration: none;
+    border-bottom: 1px dashed transparent;
+    transition: all 0.3s;
+}
+
+.style-ink-wash .toc-nav a:hover {
+    color: #000;
+    border-bottom-color: #666;
+}
+
+.style-ink-wash .document-content h2 {
+    font-size: 2em;
+    margin: 40px 0 20px 0;
+    padding-left: 20px;
+    border-left: 6px solid #2c2c2c;
+    letter-spacing: 3px;
+    position: relative;
+}
+
+.style-ink-wash .document-content h2::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #333, transparent);
+}
+
+.style-ink-wash .document-content h3 {
+    font-size: 1.6em;
+    margin: 30px 0 15px 0;
+    letter-spacing: 2px;
+    color: #333;
+}
+
+.style-ink-wash .document-content h4 {
+    font-size: 1.3em;
+    margin: 25px 0 10px 0;
+    color: #444;
+}
+
+.style-ink-wash .document-content p {
+    margin: 15px 0;
+    text-indent: 2em;
+    font-size: 1.15em;
+}
+
+.style-ink-wash .document-content ul, .style-ink-wash .document-content ol {
+    padding-left: 2.5em;
+    margin: 15px 0;
+}
+
+.style-ink-wash .document-content li {
+    margin: 8px 0;
+    font-size: 1.1em;
+}
+
+.style-ink-wash .document-content blockquote {
+    margin: 25px 0;
+    padding: 20px 30px;
+    background-color: rgba(0,0,0,0.03);
+    border-left: 4px solid #888;
+    font-style: italic;
+    color: #555;
+    position: relative;
+}
+
+.style-ink-wash .document-content blockquote::before {
+    content: "“";
+    font-size: 4em;
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    color: rgba(0,0,0,0.1);
+    font-family: serif;
+}
+
+.style-ink-wash .document-content code {
+    background-color: rgba(0,0,0,0.06);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: "Courier New", monospace;
+    font-size: 0.9em;
+}
+
+.style-ink-wash .document-content pre {
+    background-color: #f8f6f0;
+    padding: 20px;
+    border-radius: 4px;
+    overflow-x: auto;
+    border: 1px solid #e0d8c8;
+}
+
+.style-ink-wash .document-content pre code {
+    background: none;
+    padding: 0;
+}
+
+.style-ink-wash .document-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    background-color: rgba(255,255,255,0.5);
+}
+
+.style-ink-wash .document-content th, .style-ink-wash .document-content td {
+    border: 1px solid #d0c8b8;
+    padding: 12px 15px;
+    text-align: left;
+}
+
+.style-ink-wash .document-content th {
+    background-color: rgba(0,0,0,0.05);
+    font-weight: bold;
+}
+
+.style-ink-wash .document-content img {
+    max-width: 100%;
+    display: block;
+    margin: 30px auto;
+    border: 1px solid #ddd;
+    padding: 5px;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.style-ink-wash .document-content hr {
+    border: none;
+    height: 30px;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,15 Q50,0 100,15 T200,15' stroke='%23666' stroke-width='1' fill='none' opacity='0.4'/%3E%3Ccircle cx='100' cy='15' r='3' fill='%23666' opacity='0.4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    margin: 40px 0;
+}
+
+.style-ink-wash .document-footer {
+    margin-top: 60px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    text-align: center;
+    color: #888;
+    font-size: 0.9em;
+}
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+    .style-ink-wash .container {
+        margin: 20px;
+        padding: 30px 25px;
+    }
+    
+    .style-ink-wash .document-title {
+        font-size: 2em;
+        letter-spacing: 3px;
+    }
+}
