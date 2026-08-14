@@ -14,7 +14,7 @@ from pygments.formatters import HtmlFormatter
 from jinja2 import Environment, FileSystemLoader
 
 # 支持的风格列表
-STYLES = ["ink-wash", "modern", "academic", "xuan-paper", "tech-minimal", "elegant"]
+STYLES = ["ink-wash", "modern", "academic", "xuan-paper", "tech-minimal", "elegant", "tech-doc"]
 BASE_DIR = Path(__file__).parent.parent
 TEMPLATES_DIR = BASE_DIR / "templates"
 ASSETS_DIR = BASE_DIR / "assets"
@@ -95,7 +95,7 @@ class MarkdownToHTML:
         with open(css_path, "r", encoding="utf-8") as f:
             css = f.read()
         # 添加代码高亮CSS
-        if self.style == "tech-minimal":
+        if self.style in ["tech-minimal", "tech-doc"]:
             formatter = HtmlFormatter(style="monokai")
         else:
             formatter = HtmlFormatter(style="default")

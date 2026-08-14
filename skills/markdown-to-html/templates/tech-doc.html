@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>{{ css }}</style>
+    {{ math_js }}
+    <!-- Mermaid支持 -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default',
+            securityLevel: 'loose'
+        });
+    </script>
+    <script>
+        // 自动识别系统深色模式
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            const newTheme = e.matches ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            mermaid.initialize({ theme: newTheme === 'dark' ? 'dark' : 'default' });
+            // 重新渲染Mermaid图
+            document.querySelectorAll('.mermaid').forEach(el => {
+                el.removeAttribute('data-processed');
+            });
+            mermaid.init();
+        });
+        // TOC滚动高亮
+        document.addEventListener('DOMContentLoaded', function() {
+            // 代码块添加语言标识
+            document.querySelectorAll('div.highlight').forEach(el => {
+                const langClass = Array.from(el.classList).find(c => c.startsWith('language-'));
+                if (langClass) {
+                    const lang = langClass.replace('language-', '');
+                    el.setAttribute('data-lang', lang);
+                }
+            });
+            // Mermaid代码块替换
+            document.querySelectorAll('pre code.language-mermaid').forEach(code => {
+                const pre = code.parentElement;
+                const div = document.createElement('div');
+                div.className = 'mermaid';
+                div.textContent = code.textContent;
+                pre.replaceWith(div);
+            });
+            mermaid.init();
+            // 目录滚动高亮
+            const tocLinks = document.querySelectorAll('.toc a');
+            const headings = document.querySelectorAll('.content h2, .content h3');
+            window.addEventListener('scroll', () => {
+                let current = '';
+                headings.forEach(heading => {
+                    const sectionTop = heading.offsetTop;
+                    if (window.scrollY >= sectionTop - 100) {
+                        current = heading.getAttribute('id');
+                    }
+                });
+                tocLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === '#' + current) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-title">{{ title }}</div>
+    </header>
+    <div class="container">
+        <main class="content">
+            <div class="doc-header">
+                <h1 class="doc-title">{{ title }}</h1>
+                <div class="doc-meta">
+                    {% if author %}<span class="doc-meta-item">👤 {{ author }}</span>{% endif %}
+                    <span class="doc-meta-item">📅 {{ date }}</span>
+                </div>
+            </div>
+            {{ content }}
+        </main>
+        {% if toc %}
+        <aside class="toc-container">
+            <div class="toc">
+                <div class="toc-title">目录</div>
+                {{ toc | safe }}
+            </div>
+        </aside>
+        {% endif %}
+    </div>
+</body>
+</html>
