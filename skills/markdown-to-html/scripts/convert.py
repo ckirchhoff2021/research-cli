@@ -114,6 +114,39 @@ class MarkdownToHTML:
             onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true},{left: '$', right: '$', display: false}]});"></script>
         """
     
+    def _protect_math(self, text):
+        """转换前提取数学公式，防止Markdown解析器破坏公式内容"""
+        self._math_store = []
+        def _save(m):
+            idx = len(self._math_store)
+            self._math_store.append(m.group(0))
+            return f"\x00MATH{idx}\x00"
+        # 先保护块级公式$$...$$，再保护行内$...$
+        text = re.sub(r'\$\$(.+?)\$\$', _save, text, flags=re.DOTALL)
+        text = re.sub(r'\$([^$\n]+?)\$', _save, text)
+        return text
+
+    def _restore_math(self, html):
+        """转换后恢复数学公式"""
+        def _load(m):
+            idx = int(m.group(1))
+            return self._math_store[idx]
+        return re.sub(r'\x00MATH(\d+)\x00', _load, html)
+
+    def _ensure_table_blank_lines(self, text):
+        """确保表格前后有空行，避免表格被并入段落"""
+        lines = text.split('\n')
+        result = []
+        for i, line in enumerate(lines):
+            is_table = line.strip().startswith('|')
+            prev_is_table = i > 0 and lines[i-1].strip().startswith('|')
+            if is_table and not prev_is_table and i > 0 and lines[i-1].strip():
+                result.append('')  # 表格前加空行
+            result.append(line)
+            if is_table and i + 1 < len(lines) and lines[i+1].strip() and not lines[i+1].strip().startswith('|'):
+                result.append('')  # 表格后加空行
+        return '\n'.join(result)
+
     def convert(self, input_path, output_path=None):
         """执行转换"""
         input_path = Path(input_path)
@@ -128,8 +161,13 @@ class MarkdownToHTML:
         
         # 读取并转换内容
         content = self._read_file(input_path)
+        # 预处理：保护数学公式 + 修复表格空行
+        content = self._protect_math(content)
+        content = self._ensure_table_blank_lines(content)
         md = markdown.Markdown(extensions=self.md_extensions, extension_configs=self.md_extension_configs)
         html_content = md.convert(content)
+        # 后处理：恢复数学公式
+        html_content = self._restore_math(html_content)
         toc_html = md.toc if self.toc else ""
         
         # 加载模板
