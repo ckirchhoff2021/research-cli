@@ -43,13 +43,18 @@ def merge_patches(args):
         print(f"Both responses and chat_completion failed, err={outer_e}")
         patches = ''
     
-    if len(patches) == 0:
+    raw_patches = patches.strip() if isinstance(patches, str) else ""
+    if len(raw_patches) == 0:
         print("no valid merged patches is generated.")
         save_patches([], args.output_file)
         return []
     
-    patches = _parse_patches(patches, 'merged')
-    save_patches(patches, args.output_file)
+    parsed_patches = _parse_patches(raw_patches, 'merged')
+    if len(parsed_patches) == 0:
+        raise ValueError(
+            f"model returned non-empty merged patches but no parseable patch blocks: {raw_patches[:200]!r}"
+        )
+    save_patches(parsed_patches, args.output_file)
         
     print(f"merged patches saved to {args.output_file}")
     
@@ -59,8 +64,8 @@ if __name__ == "__main__":
     parser.add_argument("--enable_thinking", action="store_true", help="Enable thinking in the model")
     parser.add_argument("--aggregate_template", type=str, required=True, help="Path to the aggregate template file")
     
-    parser.add_argument("--success_patches", type=str, required=False, help="Path to the success patches file")
-    parser.add_argument("--failure_patches", type=str, required=False, help="Path to the failure patches file")
+    parser.add_argument("--success_patches", type=str, required=True, help="Path to the success patches file")
+    parser.add_argument("--failure_patches", type=str, required=True, help="Path to the failure patches file")
     
     parser.add_argument("--skill_md", type=str, required=True, help="The newest skill md file")
     parser.add_argument("--output_file", type=str, required=True, help="The output file to save the merged patches")

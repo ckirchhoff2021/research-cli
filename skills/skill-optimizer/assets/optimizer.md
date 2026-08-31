@@ -18,4 +18,4 @@
 5. **不直接污染原 Skill**：在分析阶段不得修改目标 Skill 原文件，所有结论写入独立输出文件。
 
 ## 环境前提
-执行目标 Skill 前，先确认 Python 运行环境已安装 `skill-optimizer` 自身依赖。当前 Skill 已在包内提供依赖清单 `requirements.txt`；若环境不满足，需先安装依赖，再执行任务。
+执行目标 Skill 前，先确认 Python 运行环境已安装 `skill-optimizer` 自身依赖。为避免相对路径基准混淆，统一记 `SKILL_OPT_ROOT=skills/skill-optimizer`；依赖清单位于 `SKILL_OPT_ROOT/assets/requirements.txt`。若当前工作目录在 `scripts/` 下，则对应相对路径为 `../assets/requirements.txt`。若环境不满足，需先安装依赖，再执行任务。

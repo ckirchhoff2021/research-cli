@@ -19,6 +19,51 @@ def pil_to_base64_with_prefix(image: Image.Image, fmt='jpeg') -> str:
     return f'data:image/{fmt};base64,' + b64_str
 
 
+def source_image_to_payload(source_image):
+    if isinstance(source_image, str) and source_image.startswith(("http://", "https://")):
+        return source_image
+    if isinstance(source_image, str) and os.path.exists(source_image):
+        image = Image.open(source_image)
+        return pil_to_base64_with_prefix(image)
+    if isinstance(source_image, Image.Image):
+        return pil_to_base64_with_prefix(source_image)
+    raise ValueError(
+        "source_image must be either a url, local file path or a PIL.Image.Image object, "
+        f"but got {type(source_image)!r}"
+    )
+
+
+def normalize_source_images(source_image):
+    if source_image is None:
+        return []
+    if isinstance(source_image, (str, Image.Image)):
+        return [source_image]
+    if isinstance(source_image, (list, tuple)):
+        if not source_image:
+            return []
+        return list(source_image)
+    raise ValueError(
+        "source_image must be None, a single image, or a list/tuple of images, "
+        f"but got {type(source_image)!r}"
+    )
+
+
+def parse_cli_images(images):
+    if not images:
+        return None
+
+    parsed_images = []
+    for item in images:
+        parts = [part.strip() for part in item.split(",") if part.strip()]
+        parsed_images.extend(parts)
+
+    if not parsed_images:
+        return None
+    if len(parsed_images) == 1:
+        return parsed_images[0]
+    return parsed_images
+
+
 class ImageGenerator(object):
     def __init__(self, base_url, api_key, model_name):
         self.client = OpenAI( 
@@ -28,31 +73,13 @@ class ImageGenerator(object):
         self.model_name = model_name
 
     def text2image(self, prompt, size='2K', source_image=None):
-        # data:image/png;base64,<base64_image>
-        if source_image is None:
-            extra_body = {
-                "watermark": False,
-            }
-        else:
-            if isinstance(source_image, str) and source_image.startswith('http'):
-                extra_body = {
-                    "image": source_image,
-                    "watermark": False,
-                }
-            elif isinstance(source_image, str) and os.path.exists(source_image):
-                # 本地图片路径
-                image = Image.open(source_image)
-                extra_body = {
-                    "image": pil_to_base64_with_prefix(image),
-                    "watermark": False,
-                }
-            elif isinstance(source_image, Image.Image):
-                extra_body = {
-                    "image": pil_to_base64_with_prefix(source_image),
-                    "watermark": False,
-                }
-            else:
-                raise ValueError(f"source_image must be either a url, local file path or a PIL.Image.Image object, but got {type(source_image)}")
+        extra_body = {
+            "watermark": False,
+        }
+        source_images = normalize_source_images(source_image)
+        if source_images:
+            image_payloads = [source_image_to_payload(image) for image in source_images]
+            extra_body["image"] = image_payloads[0] if len(image_payloads) == 1 else image_payloads
         
         response = self.client.images.generate( 
             model=self.model_name,
@@ -80,7 +107,13 @@ def save_to_local(url):
 def main():
     parser = argparse.ArgumentParser(description="generate image from prompt")
     parser.add_argument("--prompt", type=str, required=True, help="prompt to generate image")
-    parser.add_argument("--image", type=str, default=None, help="reference image for image generation")
+    parser.add_argument(
+        "--image",
+        type=str,
+        action="append",
+        default=None,
+        help="reference image for image generation; repeatable or comma-separated for multiple images",
+    )
     parser.add_argument("--size", type=str, default="2K", choices=["2K", "3K", "4K"], help="size of the image")
     
     args = parser.parse_args()
@@ -91,7 +124,7 @@ def main():
         model_name=os.getenv("IMAGE_GEN_MODEL"),
     )
 
-    response = generator.text2image(args.prompt, args.size, args.image)
+    response = generator.text2image(args.prompt, args.size, parse_cli_images(args.image))
     output_file = save_to_local(response)
 
     print(f"Image URL: {response}")
@@ -100,5 +133,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-
 

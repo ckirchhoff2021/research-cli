@@ -55,7 +55,7 @@ if __name__ == "__main__":
     parser.add_argument("--enable_thinking", action="store_true", help="Enable thinking in the model")
     parser.add_argument("--rewrite_template", type=str, required=True, help="Path to the rewrite template file")
     
-    parser.add_argument("--selected_patches", type=str, required=False, help="Path to the selected patches file")
+    parser.add_argument("--selected_patches", type=str, required=True, help="Path to the selected patches file")
     
     parser.add_argument("--skill_md", type=str, required=True, help="The newest skill md file")
     parser.add_argument("--output_file", type=str, required=True, help="The output file to save the skill md")

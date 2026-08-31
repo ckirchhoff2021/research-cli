@@ -1,0 +1,301 @@
+/* ============================================================
+   md2html skill · 风格样式表
+   6 套主题：ink(水墨) / gongbi(工笔重彩) / cinema(电影暗色)
+            / woodcut(黑白版画) / zhiqing(民国纸笺) / modern(现代简约)
+   用法：由 scripts/md2html.py 按 --style 注入对应主题块。
+   自定义：改 :root 变量即可整体换肤，无需动组件样式。
+   ============================================================ */
+
+/* ================= 主题变量 ================= */
+
+/* ---- 水墨（默认）：宣纸底 · 宋体 · 朱砂点缀 ---- */
+:root, :root[data-theme="ink"]{
+  --paper:#f5f0e6;            /* 页面底色 */
+  --ink:#2b2b2b;              /* 正文色 */
+  --ink-light:#5a5a52;        /* 次要文字 */
+  --accent:#b03a2e;           /* 强调色（h1 印章、链接、章节号） */
+  --accent2:#8a6d3b;          /* 辅助色（h2 下划线、blockquote 边） */
+  --heading:#2b2b2b;          /* 标题色 */
+  --card-bg:#fbf8f1;          /* 卡片/表格/figure 底色 */
+  --card-border:#e0d6c2;      /* 卡片边框 */
+  --quote-bg:#efe7d6;         /* 引用块底色 */
+  --quote-text:#4a4030;       /* 引用块文字 */
+  --caption-muted:#8a8070;    /* 图注弱化色 */
+  --thead-bg:#3a3a34;         /* 表头底色 */
+  --thead-text:#f5f0e6;       /* 表头文字 */
+  --stripe:#f3ecdd;           /* 表格斑马纹 */
+  --code-bg:#efe8d8;          /* 行内代码底色 */
+  --code-text:#7a3b2e;        /* 行内代码文字 */
+  --pre-bg:#2f2c26;           /* 代码块底色 */
+  --pre-text:#e8e0d0;         /* 代码块文字 */
+  --hr:#c9bda4;               /* 分隔线 */
+  --link:#8a4b3a;             /* 正文链接 */
+  --mark:#f0d9a0;             /* 高亮底色 */
+  --texture-dot:#e8e0d0;      /* 纸张纹理点（transparent 关闭） */
+  --font-main:"Songti SC","Noto Serif SC","STSong",serif;
+  --font-head:"Songti SC","Noto Serif SC","STSong",serif;
+  --font-mono:"SFMono-Regular",Menlo,Consolas,monospace;
+}
+
+/* ---- 工笔重彩：暖纸 · 楷体 · 金红 ---- */
+:root[data-theme="gongbi"]{
+  --paper:#faf3e8; --ink:#3a2e2a; --ink-light:#6b5d52;
+  --accent:#c0392b; --accent2:#b8860b; --heading:#3a2e2a;
+  --card-bg:#fdf8f0; --card-border:#e2d5c0;
+  --quote-bg:#f5ead8; --quote-text:#5a4a38; --caption-muted:#9a8b78;
+  --thead-bg:#4a3828; --thead-text:#faf3e8; --stripe:#f5ecdc;
+  --code-bg:#f2e6d0; --code-text:#8c5a2b; --pre-bg:#332a20; --pre-text:#f0e6d6;
+  --hr:#d8c8a8; --link:#a04030; --mark:#f5d98f; --texture-dot:#efe4d0;
+  --font-main:"Kaiti SC","STKaiti","Noto Serif SC",serif;
+  --font-head:"Kaiti SC","STKaiti","Noto Serif SC",serif;
+}
+
+/* ---- 电影写实（暗色）：深底 · 黑体 · 金蓝 ---- */
+:root[data-theme="cinema"]{
+  --paper:#1a1a1e; --ink:#e8e6e3; --ink-light:#a09c94;
+  --accent:#d4a574; --accent2:#8fa8bf; --heading:#f0eee9;
+  --card-bg:#242428; --card-border:#3a3a40;
+  --quote-bg:#2a2a30; --quote-text:#c8c4bc; --caption-muted:#787470;
+  --thead-bg:#34343a; --thead-text:#e8e6e3; --stripe:#202024;
+  --code-bg:#2e2e34; --code-text:#d4a574; --pre-bg:#101014; --pre-text:#d8d4cc;
+  --hr:#3a3a40; --link:#8fa8bf; --mark:#5a4a20; --texture-dot:transparent;
+  --font-main:"PingFang SC","Noto Sans SC","Helvetica Neue",sans-serif;
+  --font-head:"PingFang SC","Noto Sans SC","Helvetica Neue",sans-serif;
+}
+
+/* ---- 黑白版画：灰白 · 宋体 · 纯黑白 ---- */
+:root[data-theme="woodcut"]{
+  --paper:#f0f0ee; --ink:#1a1a1a; --ink-light:#555;
+  --accent:#333; --accent2:#666; --heading:#111;
+  --card-bg:#fafafa; --card-border:#ccc;
+  --quote-bg:#e8e8e6; --quote-text:#333; --caption-muted:#888;
+  --thead-bg:#1a1a1a; --thead-text:#f0f0ee; --stripe:#e4e4e2;
+  --code-bg:#e0e0de; --code-text:#1a1a1a; --pre-bg:#1a1a1a; --pre-text:#e8e8e6;
+  --hr:#999; --link:#333; --mark:#d8d8d0; --texture-dot:transparent;
+  --font-main:"Songti SC","Noto Serif SC",serif;
+  --font-head:"Songti SC","Noto Serif SC",serif;
+}
+
+/* ---- 民国纸笺：旧纸 · 楷体 · 藏青 ---- */
+:root[data-theme="zhiqing"]{
+  --paper:#f2ead8; --ink:#33302a; --ink-light:#6e6758;
+  --accent:#7a2e2e; --accent2:#2e4a6b; --heading:#33302a;
+  --card-bg:#f7f1e3; --card-border:#d9ceb4;
+  --quote-bg:#ece2ca; --quote-text:#4a4436; --caption-muted:#8d8470;
+  --thead-bg:#3d4a5c; --thead-text:#f2ead8; --stripe:#efe6d2;
+  --code-bg:#e8dcc2; --code-text:#6b4a2e; --pre-bg:#2e2a24; --pre-text:#e6dcc8;
+  --hr:#c4b694; --link:#2e4a6b; --mark:#e8cf90; --texture-dot:#e2d6bc;
+  --font-main:"Kaiti SC","STKaiti","Noto Serif SC",serif;
+  --font-head:"Kaiti SC","STKaiti","Noto Serif SC",serif;
+}
+
+/* ---- 现代简约：白底 · 黑体 · 靛蓝 ---- */
+:root[data-theme="modern"]{
+  --paper:#ffffff; --ink:#1f2328; --ink-light:#59636e;
+  --accent:#2f5fd0; --accent2:#0e8a6d; --heading:#111418;
+  --card-bg:#f6f8fa; --card-border:#d8dee4;
+  --quote-bg:#f0f4f9; --quote-text:#3d4750; --caption-muted:#8b949e;
+  --thead-bg:#24292f; --thead-text:#f6f8fa; --stripe:#f2f4f6;
+  --code-bg:#eff1f3; --code-text:#c0392b; --pre-bg:#f6f8fa; --pre-text:#1f2328;
+  --hr:#d8dee4; --link:#2f5fd0; --mark:#fff3b0; --texture-dot:transparent;
+  --font-main:"PingFang SC","Noto Sans SC","Helvetica Neue",sans-serif;
+  --font-head:"PingFang SC","Noto Sans SC","Helvetica Neue",sans-serif;
+}
+
+/* ================= 基础排版 ================= */
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--font-main);
+  line-height:1.9;
+  font-size:17px;
+  background-image:radial-gradient(var(--texture-dot) 1px, transparent 1px);
+  background-size:28px 28px;
+}
+.doc{max-width:860px;margin:0 auto;padding:56px 32px 96px}
+
+/* ================= 标题层级 ================= */
+
+h1,h2,h3,h4,h5,h6{font-family:var(--font-head);color:var(--heading);line-height:1.5}
+
+h1{
+  font-size:40px;letter-spacing:4px;text-align:center;
+  margin:0 0 14px;padding-bottom:26px;position:relative;
+}
+/* h1 底部装饰线：中央菱形 + 两侧细线 */
+h1::after{
+  content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+  width:220px;height:9px;
+  background:
+    linear-gradient(var(--hr),var(--hr)) left center/88px 1px no-repeat,
+    linear-gradient(var(--hr),var(--hr)) right center/88px 1px no-repeat,
+    linear-gradient(45deg,var(--accent) 0 0) center/9px 9px no-repeat;
+}
+.doc-subtitle{
+  text-align:center;color:var(--ink-light);font-size:16px;
+  letter-spacing:2px;margin:-4px 0 40px;
+}
+
+h2{
+  font-size:26px;letter-spacing:2px;margin:52px 0 20px;
+  padding-left:14px;border-left:5px solid var(--accent);
+  scroll-margin-top:24px;
+}
+h3{
+  font-size:21px;margin:36px 0 14px;scroll-margin-top:24px;
+}
+h3::before{content:"◆ ";color:var(--accent2);font-size:15px;vertical-align:2px}
+h4{font-size:18px;margin:28px 0 12px;color:var(--accent2)}
+h5,h6{font-size:16px;margin:22px 0 10px;color:var(--ink-light)}
+
+/* ================= 正文元素 ================= */
+
+p{margin-bottom:16px;text-align:justify}
+strong{color:var(--accent)}
+em{color:var(--ink-light)}
+del{color:var(--caption-muted)}
+mark{background:var(--mark);padding:0 4px;border-radius:2px}
+a{color:var(--link);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--link) 40%, transparent)}
+a:hover{border-bottom-color:var(--link)}
+sup{font-size:.7em}
+sub{font-size:.7em}
+
+ul,ol{margin:0 0 16px 1.6em}
+li{margin-bottom:6px}
+li::marker{color:var(--accent2)}
+li > ul, li > ol{margin:6px 0 0 1.4em}
+
+blockquote{
+  margin:24px 0;padding:16px 22px;
+  background:var(--quote-bg);border-left:4px solid var(--accent2);
+  border-radius:0 6px 6px 0;color:var(--quote-text);font-size:15.5px;
+}
+blockquote p{margin-bottom:8px}
+blockquote p:last-child{margin-bottom:0}
+blockquote blockquote{margin:10px 0;background:transparent;border-left-color:var(--hr)}
+
+hr{
+  border:none;margin:44px auto;width:60%;height:1px;
+  background:linear-gradient(to right, transparent, var(--hr) 20%, var(--hr) 80%, transparent);
+}
+
+/* ================= 代码 ================= */
+
+code{
+  font-family:var(--font-mono);font-size:.88em;
+  background:var(--code-bg);color:var(--code-text);
+  padding:2px 6px;border-radius:4px;
+}
+pre{
+  margin:24px 0;padding:18px 22px;overflow-x:auto;
+  background:var(--pre-bg);color:var(--pre-text);
+  border-radius:8px;line-height:1.7;font-size:14px;
+  box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+pre code{background:transparent;color:inherit;padding:0;font-size:inherit}
+
+/* ================= 表格 ================= */
+
+table{
+  width:100%;border-collapse:collapse;margin:26px 0;font-size:14.5px;
+  background:var(--card-bg);box-shadow:0 1px 6px rgba(0,0,0,.05);
+}
+th{
+  background:var(--thead-bg);color:var(--thead-text);
+  padding:10px 14px;text-align:left;letter-spacing:1px;font-weight:600;
+}
+td{padding:9px 14px;border-bottom:1px solid var(--card-border);vertical-align:top}
+tr:nth-child(even) td{background:var(--stripe)}
+tr:hover td{background:color-mix(in srgb,var(--accent) 6%, var(--card-bg))}
+
+/* ================= 图片 ================= */
+
+figure{
+  margin:30px 0;background:var(--card-bg);
+  border:1px solid var(--card-border);border-radius:8px;overflow:hidden;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+}
+figure img{width:100%;height:auto;display:block}
+figcaption{
+  padding:11px 18px;font-size:14px;color:var(--caption-muted);
+  text-align:center;letter-spacing:.5px;
+}
+p > img{max-width:100%;border-radius:6px;margin:8px 0}
+
+/* ================= 任务列表 ================= */
+
+ul.task-list{list-style:none;margin-left:0}
+ul.task-list li{display:flex;gap:10px;align-items:baseline}
+ul.task-list input[type="checkbox"]{
+  appearance:none;width:16px;height:16px;flex:none;
+  border:2px solid var(--accent2);border-radius:3px;
+  position:relative;top:2px;
+}
+ul.task-list input[type="checkbox"]:checked{background:var(--accent2)}
+ul.task-list input[type="checkbox"]:checked::after{
+  content:"✓";position:absolute;left:1px;top:-4px;
+  color:var(--paper);font-size:13px;font-weight:bold;
+}
+
+/* ================= 脚注 ================= */
+
+.footnote{
+  margin-top:56px;padding-top:20px;
+  border-top:1px solid var(--hr);font-size:14px;color:var(--ink-light);
+}
+.footnote ol{margin-left:1.4em}
+.footnote li{margin-bottom:6px}
+.footnote li::marker{color:var(--accent)}
+sup a.footnote-ref{border-bottom:none;color:var(--accent);font-weight:600}
+
+/* ================= 目录（TOC） ================= */
+
+.toc{
+  margin:36px 0 48px;padding:22px 28px;
+  background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;
+}
+.toc::before{
+  content:"目 录";display:block;text-align:center;
+  font-size:15px;letter-spacing:8px;color:var(--accent2);
+  margin-bottom:14px;
+}
+.toc ul{list-style:none;margin:0}
+.toc li{margin:4px 0}
+.toc a{border-bottom:none;color:var(--ink)}
+.toc a:hover{color:var(--accent)}
+.toc > ul > li > a{font-weight:600}
+.toc ul ul{margin-left:1.5em;font-size:.94em}
+.toc ul ul a{color:var(--ink-light)}
+
+/* ================= 页脚 ================= */
+
+.colophon{
+  text-align:center;margin-top:80px;padding-top:26px;
+  border-top:3px double var(--hr);
+  font-size:13px;color:var(--caption-muted);letter-spacing:1px;
+}
+
+/* ================= 打印 ================= */
+
+@media print{
+  body{background:#fff;background-image:none;font-size:12pt}
+  .doc{max-width:none;padding:0}
+  h2,h3{page-break-after:avoid}
+  figure,table,blockquote,pre{page-break-inside:avoid}
+  a{color:inherit;border-bottom:none}
+  a[href^="http"]::after{content:" (" attr(href) ")";font-size:.85em;color:var(--ink-light)}
+}
+
+/* ================= 小屏适配 ================= */
+
+@media (max-width:640px){
+  body{font-size:16px}
+  .doc{padding:36px 18px 64px}
+  h1{font-size:30px;letter-spacing:2px}
+  h2{font-size:22px}
+  table{font-size:13px}
+  th,td{padding:7px 9px}
+}

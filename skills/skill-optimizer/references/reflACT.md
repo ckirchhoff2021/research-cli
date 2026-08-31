@@ -1,6 +1,6 @@
 # ReflACT 执行流程
 
-本文档用于补充 [../SKILL.md](../SKILL.md) 中的`reflACT`执行流程，供执行 Skill 优化任务时参考。
+本文档用于补充 [SKILL.md](../SKILL.md) 中的`reflACT`执行流程，供执行 Skill 优化任务时参考。
 
 `ReflACT (Reflective Action)` 是一种基于反思的六阶段迭代方案。它把 Skill 文档视为可优化对象，通过“执行 → 反思 → 合并 → 选择 → 更新 → 验证”的闭环持续提升效果。
 
@@ -9,6 +9,7 @@
 - 产物路径统一使用 `../outputs/...`
 - 模板路径统一使用 `../assets/...`
 - 脚本路径统一使用当前目录下的脚本名
+- `executor.py --skill` 传入的是 Skill 搜索目录（包含 `<skill-name>/` 子目录的上级目录），`--root_dir` 若省略则默认使用该目录
 - 以下路径中的 `<run_id>` 均沿用主文档准备阶段自动生成的本次运行目录标识；单次 ReflACT 运行的全部产物统一保存在 `../outputs/<skill-name>/<run_id>/` 目录下
 
 为避免在正文中重复书写长路径，下面统一使用以下别名：

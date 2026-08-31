@@ -22,7 +22,7 @@ description: 优化和评测现有 Skill。用于执行目标 Skill、采集和�
 
 | 参数 | 是否必填 | 说明 |
 |---|---|---|
-| `skill` | 是 | 目标 Skill 的路径，必须直接指向目标 Skill 根目录，且该目录下必须包含 `SKILL.md` 文件。 |
+| `skill` | 是 | 目标 Skill 包的根目录，必须直接指向包含 `SKILL.md` 的目录。 |
 | `task` | 是 | 用于触发目标 Skill 的测试任务。既可以是单条自然语言任务，也可以是一个 JSON 文件路径；JSON 输入中至少应包含 `query` 字段，可选包含 `expected` 字段。 |
 | `trace_file` | 否 | 执行阶段的轨迹输出文件路径。该参数主要用于常规分析流程或调试；若不传，脚本会自动生成 `trace_YYYYMMDD_HHMMSS.json`。 |
 
@@ -49,7 +49,7 @@ description: 优化和评测现有 Skill。用于执行目标 Skill、采集和�
 
 若用户在上下文中提供了相应配置，先写入 `scripts/.env`，重新检查配置完整性，再次执行任务。
 
-除上述 API 配置外，还需确认 Python 运行环境已安装 `skill-optimizer` 自身依赖。当前 Skill 已在包内提供依赖清单 `assets/requirements.txt`；若环境不满足，需先安装依赖，再执行任务。
+除上述 API 配置外，还需确认 Python 运行环境已安装 `skill-optimizer` 自身依赖。为避免相对路径基准混淆，下面统一记 `SKILL_OPT_ROOT=skills/skill-optimizer`；依赖清单位于 `SKILL_OPT_ROOT/assets/requirements.txt`，若当前工作目录在 `scripts/` 下，则对应相对路径为 `../assets/requirements.txt`。
 
 
 ## 执行目标
@@ -78,7 +78,8 @@ description: 优化和评测现有 Skill。用于执行目标 Skill、采集和�
    - 从 `SKILL.md` 中识别技能名称 `<skill-name>`。
    - 创建备份目录 `outputs/<skill-name>/<run_id>/origin/`。
    - 将该 Skill 根目录整体复制到 `outputs/<skill-name>/<run_id>/origin/` 下。
-   - 将实际执行用的 `skill` 路径调整为 `outputs/<skill-name>/<run_id>/origin/`。
+   - 对外部用户输入而言，`skill` 始终表示包含 `SKILL.md` 的 Skill 包根目录。
+   - 对内部 `executor.py --skill` 而言，需传入“Skill 搜索目录”，也就是包含 `<skill-name>/` 子目录的上级目录；因此备份后传给 `executor.py` 的路径应为 `outputs/<skill-name>/<run_id>/origin/`，而不是 `outputs/<skill-name>/<run_id>/origin/<skill-name>/`。
    ```bash
    mkdir -p outputs/<skill-name>/<run_id>/origin/
    cp -r <skill-root> outputs/<skill-name>/<run_id>/origin/

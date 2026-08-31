@@ -44,6 +44,12 @@ python executor.py \
   --trace_file "$RUN_ROOT/trace.json"
 ```
 
+其中：
+
+- `--skill` 传给 `executor.py` 的是 Skill 搜索目录，即包含 `<skill-name>/` 子目录的上级目录，而不是直接包含 `SKILL.md` 的目录
+- `--root_dir` 控制 `LocalShellBackend` 的工作目录；若不显式传入，默认使用 `--skill` 的目录
+- 当目标 Skill 依赖特定 workspace 根目录时，再显式传入 `--root_dir`
+
 如果传入的是 JSON 文件，脚本会循环处理每个 `query`，并将所有任务结果统一写入一个 trace 文件。
 
 当前 [executor.py](../scripts/executor.py) 会将全部任务轨迹写入 `--trace_file` 指定的文件。

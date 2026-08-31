@@ -50,12 +50,17 @@ def gradient_clip(args):
         print(f"Both responses and chat_completion failed, err={outer_e}")
         selected_patches = ''
     
-    if len(selected_patches) == 0:
+    raw_selected_patches = selected_patches.strip() if isinstance(selected_patches, str) else ""
+    if len(raw_selected_patches) == 0:
         print("no valid selected patches is generated.")
         save_patches([], args.output_file)
         return []
     
-    patches = _parse_patches(selected_patches, 'selected')
+    patches = _parse_patches(raw_selected_patches, 'selected')
+    if len(patches) == 0:
+        raise ValueError(
+            f"model returned non-empty selected patches but no parseable patch blocks: {raw_selected_patches[:200]!r}"
+        )
     save_patches(patches, args.output_file)
         
     print(f"selected patches saved to {args.output_file}")
@@ -66,7 +71,7 @@ if __name__ == "__main__":
     parser.add_argument("--enable_thinking", action="store_true", help="Enable thinking in the model")
     parser.add_argument("--clip_template", type=str, required=True, help="Path to the clip template file")
     
-    parser.add_argument("--merged_patches", type=str, required=False, help="Path to the merged patches file")
+    parser.add_argument("--merged_patches", type=str, required=True, help="Path to the merged patches file")
     parser.add_argument("--edit_budget", type=int, default=5, help="Maximum number of patches to keep")
     
     parser.add_argument("--skill_md", type=str, required=True, help="The newest skill md file")

@@ -116,6 +116,18 @@ def gen_patch_text(index: int, patch: Dict[str, Any]) -> str:
     return f"### Patch {index + 1}\n{json.dumps(patch, ensure_ascii=False, indent=2)}"
 
 
+VALID_PATCH_OPS = {"append", "insert_after", "replace", "delete"}
+
+
+def _extract_tag(content: str, tag: str) -> str:
+    match = re.search(rf'<{tag}>(.*?)</{tag}>', content, re.DOTALL)
+    return match.group(1).strip() if match else ""
+
+
+def _has_value(value: str) -> bool:
+    return bool(value and value != "N/A")
+
+
 def _parse_patches(text: str, patch_type: str) -> List[Dict[str, Any]]:
     """解析 LLM 输出的 patch 格式为结构化数据"""
     patches = []
@@ -125,31 +137,54 @@ def _parse_patches(text: str, patch_type: str) -> List[Dict[str, Any]]:
     if not patch_blocks:
         return patches
     
-    for block in patch_blocks:
+    for block_index, block in enumerate(patch_blocks, start=1):
         edits = re.findall(r'<edit op="(\w+)">(.*?)</edit>', block, re.DOTALL)
-        reason_match = re.search(r'<edit_reason>(.*?)</edit_reason>', block, re.DOTALL)
-        reason = reason_match.group(1).strip() if reason_match else ""
+        if not edits:
+            raise ValueError(f"patch block {block_index} has no valid edit tags")
+
+        reason = _extract_tag(block, "edit_reason")
+        if not _has_value(reason):
+            raise ValueError(f"patch block {block_index} missing edit_reason")
+
         patch = {
             "type": patch_type,
             "reason": reason,
             "edits": [],
         }
 
-        for op, content in edits:
-            anchor_match = re.search(r'<anchor>(.*?)</anchor>', content, re.DOTALL)
-            content_match = re.search(r'<content>(.*?)</content>', content, re.DOTALL)
-            target_match = re.search(r'<target>(.*?)</target>', content, re.DOTALL)
+        for edit_index, (op, content) in enumerate(edits, start=1):
+            if op not in VALID_PATCH_OPS:
+                raise ValueError(
+                    f"patch block {block_index} edit {edit_index} has invalid op {op!r}"
+                )
+
+            anchor = _extract_tag(content, "anchor")
+            edit_content = _extract_tag(content, "content")
+            target = _extract_tag(content, "target")
             
             edit = {
                 "op": op,
             }
             
-            if anchor_match:
-                edit["anchor"] = anchor_match.group(1).strip()
-            if content_match:
-                edit["content"] = content_match.group(1).strip()
-            if target_match:
-                edit["target"] = target_match.group(1).strip()
+            if _has_value(anchor):
+                edit["anchor"] = anchor
+            if _has_value(edit_content):
+                edit["content"] = edit_content
+            if _has_value(target):
+                edit["target"] = target
+
+            if op == "insert_after" and "anchor" not in edit:
+                raise ValueError(
+                    f"patch block {block_index} edit {edit_index} missing anchor for {op!r}"
+                )
+            if op in {"replace", "delete"} and "target" not in edit:
+                raise ValueError(
+                    f"patch block {block_index} edit {edit_index} missing target for {op!r}"
+                )
+            if op in {"append", "insert_after", "replace"} and "content" not in edit:
+                raise ValueError(
+                    f"patch block {block_index} edit {edit_index} missing content for {op!r}"
+                )
 
             patch["edits"].append(edit)
 

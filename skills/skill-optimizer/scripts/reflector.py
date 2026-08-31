@@ -57,13 +57,18 @@ def reflect(args):
         print(f"Both responses and chat_completion failed, err={outer_e}")
         patches = ''
     
-    if len(patches) == 0:
+    raw_patches = patches.strip() if isinstance(patches, str) else ""
+    if len(raw_patches) == 0:
         print("no valid patches is generated.")
         save_patches([], args.output_file)
         return []
     
-    patches = _parse_patches(patches, args.case_type)
-    save_patches(patches, args.output_file)
+    parsed_patches = _parse_patches(raw_patches, args.case_type)
+    if len(parsed_patches) == 0:
+        raise ValueError(
+            f"model returned non-empty patches but no parseable patch blocks: {raw_patches[:200]!r}"
+        )
+    save_patches(parsed_patches, args.output_file)
         
     print(f"patches saved to {args.output_file}")
     

@@ -22,8 +22,10 @@ def batch_evaluate(args):
         optimizer_api["OPTIMIZER_MODEL_NAME"],
         args.enable_thinking,
     )
+    
     with open(args.trace_file, "r", encoding="utf-8") as file:
         traces = json.load(file)
+        
     corrects = []
     failures = []
     for trace in traces:

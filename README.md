@@ -7,6 +7,7 @@
 ```
 research-cli/
 ├── app.py                 # Streamlit Web 界面入口
+├── api_server.py          # FastAPI 远程服务入口
 ├── main.py                # 命令行入口，接收任务参数调用代理
 ├── agent.py               # 核心代理初始化逻辑
 ├── stream.py              # 流式输出逻辑
@@ -16,17 +17,6 @@ research-cli/
 ├── .streamlit/config.toml # Streamlit 配置
 ├── memory/                # 代理长期记忆存储，包含 AGENTS.md 行为规范
 ├── skills/                # 自定义技能集，扩展代理专项能力
-│   ├── image-generator    # AI图像生成
-│   ├── speech-generator   # 语音合成
-│   ├── speech-analyze     # 语音分析转写
-│   ├── video-generator    # AI视频生成
-│   ├── semantic-retrieval # 语义检索
-│   ├── skill-creator      # 自定义技能创建
-│   ├── skill-optimizer    # 技能优化
-│   ├── picture-book-creator # 儿童绘本创作
-│   ├── picture-book       # 知识绘本工作流（考据+批量出图+HTML合成，支持水墨/工笔/写实/版画）
-│   ├── web-crawler        # 通用网页爬虫
-│   └── markdown-to-html   # Markdown/文本转精美HTML，支持6种风格
 ├── tools/                 # 自定义工具实现，供代理调用
 ├── sessions/              # 会话数据存储
 ├── outputs/               # 输出文件存储（图片、音频、视频等）
@@ -94,24 +84,6 @@ uv run python main.py --task_prompt "给我讲个笑话。"
 
 编辑 `memory/AGENTS.md` 文件，定义代理的角色定位、行为准则、输出规范等。
 
-## 内置技能列表
-
-项目内置11个AIGC与科研场景专项技能，代理可自动识别任务场景调用对应技能：
-
-| 技能名称 | 功能说明 |
-|---------|---------|
-| image-generator | AI图像生成，支持多种风格、分辨率自定义，可生成插画、海报、科研示意图等 |
-| speech-generator | 语音合成，支持多音色、多语速调整，可生成男/女/童声等不同风格语音 |
-| speech-analyze | 语音分析与转写，支持音频转文字、语音内容摘要、声纹特征提取等 |
-| video-generator | AI视频生成，支持文本转视频、图片转视频，可自定义时长、帧率、风格 |
-| semantic-retrieval | 语义检索，支持本地文档、知识库的语义相似度搜索，快速定位相关资料 |
-| skill-creator | 自定义技能创建工具，自动生成符合规范的SKILL.md模板，辅助技能开发 |
-| skill-optimizer | 技能优化工具，自动分析技能使用效果，优化技能流程、提示词，提升执行准确率 |
-| picture-book-creator | 儿童绘本自动生成，输入故事主题自动生成分镜脚本、配图、排版，输出完整儿童绘本 |
-| picture-book | 知识绘本生成工作流，考据→分章文字稿→统一prompt批量出图→图文合成，支持水墨/工笔/写实/版画等风格，已在大明王朝1566绘本等项目验证 |
-| web-crawler | 通用网页爬虫，支持静态/动态网页爬取、内容提取、去重清洗，可自动绕过反爬机制抓取科研资料、网页内容 |
-| markdown-to-html | Markdown/文本转精美HTML工具，支持水墨画、简约现代、学术论文、国风宣纸、科技极简、优雅印刷等6种内置风格，自动生成目录、代码高亮、数学公式，输出单文件HTML可直接分享 |
-
 ## 运行模式
 
 | 模式 | 命令 | 说明 |
@@ -120,6 +92,7 @@ uv run python main.py --task_prompt "给我讲个笑话。"
 | 控制台模式 | `uv run python main.py -c --task_prompt "..."` | 树形结构展示执行过程 |
 | 流式模式 | `uv run python main.py -c -s --task_prompt "..."` | 实时流式刷新执行过程 |
 | Web 界面 | `uv run streamlit run app.py` | 图形化界面，支持多会话管理 |
+| HTTP API | `uv run python api_server.py --host 0.0.0.0 --port 8322` | 远程调用 Research Agent |
 
 ## 测试用例
 
@@ -175,13 +148,56 @@ uv run python -m tests.test_stream --task "继续上次的分析" --thread-id my
 
 ```bash
 # 启动 Streamlit Web 界面
-uv run streamlit run app.py
+uv run streamlit run app.py --server.port 8501
 
 # 或者使用 run.sh 脚本
 ./run.sh --web
 ```
 
 启动后访问 **http://localhost:8501**，即可使用图形化界面进行对话。
+
+### HTTP API
+
+启动服务：
+
+```bash
+uv run python api_server.py --host 0.0.0.0 --port 8322
+# 或 ./run.sh --api --host 0.0.0.0 --port 8322
+```
+
+一次性调用：
+
+```bash
+curl -X POST http://127.0.0.1:8322/api/v1/invoke \
+  -H 'Content-Type: application/json' \
+  -d '{"prompt":"分析当前项目结构","thread_id":"demo-001"}'
+```
+
+流式调用访问 `/api/v1/stream`，响应为 Server-Sent Events：
+
+```bash
+curl -N -X POST http://127.0.0.1:8322/api/v1/stream \
+  -H 'Content-Type: application/json' \
+  -d '{"prompt":"分析当前项目结构","thread_id":"demo-001"}'
+```
+
+设置 `RESEARCH_API_KEY` 后，API 请求必须携带
+`Authorization: Bearer <RESEARCH_API_KEY>`。服务默认监听 `127.0.0.1:8322`，可用
+`RESEARCH_API_HOST`、`RESEARCH_API_PORT` 或命令行参数覆盖。
+
+同时兼容 OpenAI Chat Completions 接口：
+
+```bash
+curl http://127.0.0.1:8322/v1/chat/completions \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "model": "research-agent",
+    "messages": [{"role": "user", "content": "分析当前项目结构"}]
+  }'
+```
+
+将 `"stream": true` 设置为流式响应；OpenAI SDK 可将 `base_url` 指向
+`http://127.0.0.1:8322/v1`。
 
 **Web 界面功能：**
 - 🗨️ 多轮对话，自动保存会话历史
