@@ -9,11 +9,18 @@ if [ $# -eq 0 ]; then
     echo "Usage:"
     echo "  ./run.sh <prompt-file>    Run CLI with task from file"
     echo "  ./run.sh --web            Start Streamlit web interface"
+    echo "  ./run.sh --api            Start HTTP API server"
     exit 1
 fi
 
 if [ "$1" == "--web" ]; then
     uv run streamlit run app.py
+    exit 0
+fi
+
+if [ "$1" == "--api" ]; then
+    shift
+    uv run python api_server.py "$@"
     exit 0
 fi
 
