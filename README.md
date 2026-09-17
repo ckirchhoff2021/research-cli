@@ -31,7 +31,6 @@ research-cli/
 ├── tools/                 # 自定义工具实现，供代理调用
 ├── sessions/              # 会话数据存储
 ├── outputs/               # 输出文件存储（图片、音频、视频等）
-├── server-tools/          # 独立模型 HTTP 服务（时间序列预测等）
 └── tests/                 # 测试用例
 ```
 
@@ -256,14 +255,6 @@ uv run python main.py --task_prompt "$(cat task.txt)" -s -c
 # 或者使用流式模式读取长任务
 uv run python -m tests.test_stream --task "$(cat long_task.txt)"
 ```
-
-## Server Tools（独立模型服务）
-
-`server-tools/` 目录下提供独立可部署的模型 HTTP 服务，可通过 API 调用：
-
-| 服务 | 端口 | 说明 |
-|------|------|------|
-| [timesfm3](server-tools/timesfm3/) | 8333 | Google TimesFM 3.0 时间序列预测，支持单/多变量预测、分位数输出 |
 
 ## 特性
 
