@@ -27,6 +27,7 @@ research-cli/
 │   ├── picture-book-creator # 儿童绘本创作
 │   ├── picture-book       # 知识绘本工作流（考据+批量出图+HTML合成，支持水墨/工笔/写实/版画）
 │   ├── web-crawler        # 通用网页爬虫
+│   ├── outputs-dashboard  # outputs目录离线可视化画廊，按分类展示视频/图片/报告/音频
 │   ├── timeseries-forecast # 基于TimesFM3的时间序列预测（销量/流量/指标，支持回测与分位数）
 │   ├── poster-video-creator # 海报/写真批量生成风格化人物动画短视频（丝滑变装/伪预告/MV）
 │   └── markdown-to-html   # Markdown/文本转精美HTML，支持6种风格
@@ -99,7 +100,7 @@ uv run python main.py --task_prompt "给我讲个笑话。"
 
 ## 内置技能列表
 
-项目内置13个AIGC与科研场景专项技能，代理可自动识别任务场景调用对应技能：
+项目内置14个AIGC与科研场景专项技能，代理可自动识别任务场景调用对应技能：
 
 | 技能名称 | 功能说明 |
 |---------|---------|
