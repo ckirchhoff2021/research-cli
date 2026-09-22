@@ -12,6 +12,7 @@ description: 专业视频生成技能，支持文本生成视频、图文转视�
 3. 参考视频风格+文本描述生成视频
 4. 自定义背景音乐、字幕、分镜脚本生成视频
 5. 支持指定视频时长、宽高比、分辨率
+6. 海报批量生成视频：`scripts/batch.py`，按组轮转风格批量出片（`make`），内容审核拦截时自动换风格补齐（`fill`）
 
 ## 触发场景
 当用户有以下需求时必须使用本技能：
@@ -69,3 +70,55 @@ description: 专业视频生成技能，支持文本生成视频、图文转视�
 - 预计执行时间：15-25分钟
 
 任务执行完成后我会第一时间将生成的视频结果推送给你，你也可以随时询问进度。
+
+## 批量生成：batch.py
+
+当用户要求「用一整目录的海报批量出短视频」「每组出 N 个不同风格的视频」时，用
+`scripts/batch.py` 而不是手写循环。海报按子目录分组（每组一个人物/主题），
+输出 `<out-dir>/<组名>/<序号>_<风格>.mp4`。海报文件需以 `_<风格slug>` 结尾
+（如 `01_pixar3d.jpg`，与 image-generator 的 `batch.py` 产物天然对应）。
+
+### make：每组批量出 N 个
+
+跨组轮转风格窗口（组 0 取第 1–N 个风格，组 1 取第 N+1–2N 个……），保证所有风格被覆盖：
+
+```bash
+.venv/bin/python [YOUR_SKILLS_DIR]/video-generator/scripts/batch.py make \
+  --posters-dir "outputs/my_task/posters" --out-dir "outputs/my_task/videos" \
+  --videos-per-group 5 --workers 4
+
+# 参数自检：只打印计划，不调用接口
+... batch.py make --posters-dir ... --out-dir ... --dry-run
+```
+
+### fill：为不足 N 个的组补齐
+
+按优先级（默认先卡通插画类、后真人/版权风险类）逐个尝试候选风格，
+被内容审核拦截（Sensitive/copyright/400）立即换下一个，直到每组凑满 N 个：
+
+```bash
+.venv/bin/python [YOUR_SKILLS_DIR]/video-generator/scripts/batch.py fill \
+  --posters-dir "outputs/my_task/posters" --out-dir "outputs/my_task/videos" \
+  --target 5
+```
+
+公共参数（两个子命令通用，写在子命令之后）：
+
+| 参数 | 说明 | 默认 |
+|---|---|---|
+| `--posters-dir` / `--out-dir` | 海报目录（每组一个子目录）/ 视频输出目录，必填 | 必填 |
+| `--motion-file` | JSON 文件新增/覆盖风格动作：`{"slug": "动作文本"}` | 内置 30 种 |
+| `--prompt-template` | 提示词模板，占位符 `{motion}` | 内置模板 |
+| `--ratio` / `--duration` / `--resolution` | 画幅 / 秒数 / 清晰度 | `9:16` / 5 / `720p` |
+| `--workers` / `--timeout-s` | 并发数 / 单任务轮询上限秒数 | 4 / 1200 |
+| `--skip-dirs` | 海报目录下忽略的子目录 | `_converted,_resized,_sheets,_gallery,_cache` |
+| `--dry-run` | 只打印计划不调用接口 | 否 |
+
+make 专有：`--videos-per-group`（默认 5）；fill 专有：`--target`（默认 5）、
+`--priority-file`（JSON 数组，风格 slug 的补齐顺序）。
+
+注意：
+- 断点续跑：已存在且大于 100KB 的视频自动跳过，失败任务写入 `<out-dir>/failures.json`；
+- 风格 slug 与动作库同构于 image-generator 的 30 种风格，新增风格用 `--motion-file`，
+  不要把业务路径硬编码进脚本；
+- 真人写实海报易被视频侧 400 拦截，优先用卡通/插画化海报，拦截后用 `fill` 补齐。
