@@ -30,7 +30,15 @@ research-cli/
 │   ├── outputs-dashboard  # outputs目录离线可视化画廊，按分类展示视频/图片/报告/音频
 │   ├── timeseries-forecast # 基于TimesFM3的时间序列预测（销量/流量/指标，支持回测与分位数）
 │   ├── poster-video-creator # 海报/写真批量生成风格化人物动画短视频（丝滑变装/伪预告/MV）
-│   └── markdown-to-html   # Markdown/文本转精美HTML，支持6种风格
+│   ├── markdown-to-html   # Markdown/文本转精美HTML，支持6种风格
+│   ├── drama-video-creator # 剧本→分镜→配图→配音→成片的戏剧化短视频生成
+│   └── tech-reports-skills/ # 技术调研与报告写作技能集
+│       ├── tech-report-writing  # 技术/调研报告写作（检索→交叉验证→MD+HTML双格式→架构图）
+│       ├── tech-research-report # 技术调研与分析报告
+│       ├── architecture-design-doc # 架构方案设计文档
+│       ├── architecture-diagram  # 暗色主题SVG架构图/云图/基础设施图
+│       ├── svg-diagram-verification # SVG图表DOM几何验证
+│       └── zhihu                # 知乎热榜、搜索、内容查询技能
 ├── tools/                 # 自定义工具实现，供代理调用
 ├── sessions/              # 会话数据存储
 ├── outputs/               # 输出文件存储（图片、音频、视频等）
@@ -100,7 +108,7 @@ uv run python main.py --task_prompt "给我讲个笑话。"
 
 ## 内置技能列表
 
-项目内置14个AIGC与科研场景专项技能，代理可自动识别任务场景调用对应技能：
+项目内置21个AIGC与科研场景专项技能，代理可自动识别任务场景调用对应技能：
 
 | 技能名称 | 功能说明 |
 |---------|---------|
@@ -115,6 +123,17 @@ uv run python main.py --task_prompt "给我讲个笑话。"
 | picture-book | 知识绘本生成工作流，考据→分章文字稿→统一prompt批量出图→图文合成，支持水墨/工笔/写实/版画等风格，已在大明王朝1566绘本等项目验证 |
 | web-crawler | 通用网页爬虫，支持静态/动态网页爬取、内容提取、去重清洗，可自动绕过反爬机制抓取科研资料、网页内容 |
 | markdown-to-html | Markdown/文本转精美HTML工具，支持水墨画、简约现代、学术论文、国风宣纸、科技极简、优雅印刷等6种内置风格，自动生成目录、代码高亮、数学公式，输出单文件HTML可直接分享 |
+| drama-video-creator | 戏剧化短视频自动生成：剧本创作→分镜设计→AI配图→配音→字幕→合成完整短视频，支持多种风格 |
+| outputs-dashboard | outputs目录离线可视化画廊，按分类展示视频/图片/报告/音频等产物，暗色主题 |
+| timeseries-forecast | 基于TimesFM3的时间序列预测，支持销量/流量/指标预测、回测、分位数输出 |
+| poster-video-creator | 海报/写真批量生成风格化人物动画短视频（丝滑变装/伪预告/MV风格） |
+| **tech-reports-skills/** | |
+| 　tech-report-writing | 技术/调研报告写作技能：知乎检索+交叉验证→MD+HTML双格式→暗色SVG架构图→渲染验证 |
+| 　tech-research-report | 技术调研与分析报告：检索→交叉验证→MD+HTML双格式→SVG架构图→渲染验证 |
+| 　architecture-design-doc | 架构方案设计文档：代码库grounding+场景驱动+治理降级+Mermaid图表 |
+| 　architecture-diagram | 暗色主题SVG架构/云/基础设施图，生成独立HTML文件 |
+| 　svg-diagram-verification | SVG图表DOM几何验证，检测文字溢出/元素重叠/越界裁剪 |
+| 　zhihu | 知乎热榜、搜索、知乎直答、知识库查询 |
 
 ## 运行模式
 
