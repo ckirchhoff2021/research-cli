@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<!-- 技术报告 HTML 模板（暗色主题）。用法：替换占位文本，架构图用 iframe 内嵌（相对路径 diagrams/xxx.html） -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{报告标题}}</title>
+<style>
+  :root {
+    --bg:#0d1117; --panel:#161b22; --border:#30363d; --text:#e6edf3;
+    --muted:#8b949e; --accent:#58a6ff; --green:#3fb950; --purple:#bc8cff;
+    --amber:#d29922; --rose:#f85149; --cyan:#39c5cf;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif; line-height:1.85; }
+  .container { max-width:960px; margin:0 auto; padding:40px 24px 80px; }
+  header { border-bottom:1px solid var(--border); padding-bottom:24px; margin-bottom:32px; }
+  h1 { font-size:28px; line-height:1.4; margin-bottom:12px; }
+  .meta { color:var(--muted); font-size:13px; }
+  .badge { display:inline-block; padding:1px 10px; border-radius:12px; font-size:12px; border:1px solid var(--border); color:var(--accent); margin-right:8px; }
+  h2 { font-size:22px; margin:48px 0 16px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+  h3 { font-size:17px; margin:28px 0 12px; color:var(--accent); }
+  h4 { font-size:15px; margin:20px 0 8px; }
+  p { margin:10px 0; font-size:15px; }
+  ul,ol { margin:10px 0 10px 24px; font-size:15px; }
+  li { margin:4px 0; }
+  code { background:#1f2937; padding:1px 6px; border-radius:4px; font-family:"JetBrains Mono",Menlo,monospace; font-size:13px; color:var(--cyan); }
+  pre { background:#0a0e14; border:1px solid var(--border); border-radius:8px; padding:16px; overflow-x:auto; margin:14px 0; font-size:13px; line-height:1.6; }
+  pre code { background:none; padding:0; color:#d1d9e0; }
+  /* 公式块：monospace 显示，避免 LaTeX 依赖 */
+  .formula { background:#0a0e14; border-left:3px solid var(--purple); padding:12px 18px; margin:14px 0; border-radius:0 8px 8px 0; font-family:Menlo,monospace; font-size:14px; overflow-x:auto; }
+  table { border-collapse:collapse; width:100%; margin:16px 0; font-size:13.5px; }
+  th,td { border:1px solid var(--border); padding:8px 12px; text-align:left; vertical-align:top; }
+  th { background:var(--panel); color:var(--accent); white-space:nowrap; }
+  tr:nth-child(even) td { background:rgba(255,255,255,0.02); }
+  blockquote { border-left:3px solid var(--accent); padding:8px 18px; margin:16px 0; background:var(--panel); border-radius:0 8px 8px 0; color:var(--muted); font-size:14px; }
+  /* callout 提示框：key=绿(核心结论) warn=黄(注意事项) 默认=中性 */
+  .callout { border:1px solid var(--border); border-radius:10px; padding:16px 20px; margin:18px 0; background:var(--panel); }
+  .callout.warn { border-color:var(--amber); }
+  .callout.key { border-color:var(--green); }
+  .callout .title { font-weight:600; margin-bottom:6px; font-size:14px; }
+  .callout.key .title { color:var(--green); }
+  .callout.warn .title { color:var(--amber); }
+  /* 架构图 iframe：与 diagrams/ 同目录，相对路径 */
+  figure { margin:24px 0; }
+  figure iframe { width:100%; height:760px; border:1px solid var(--border); border-radius:12px; background:#020617; }
+  figcaption { text-align:center; color:var(--muted); font-size:13px; margin-top:8px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  .toc { background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:20px 28px; margin:24px 0; }
+  .toc h2 { border:none; margin:0 0 12px; font-size:16px; }
+  .toc ol { margin-left:20px; }
+  .toc a { color:var(--text); }
+  .footer { margin-top:60px; padding-top:20px; border-top:1px solid var(--border); color:var(--muted); font-size:12px; }
+  .strong-green { color:var(--green); font-weight:600; }
+  .strong-rose { color:var(--rose); font-weight:600; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>{{报告标题}}</h1>
+  <div>
+    <span class="badge">{{主题标签1}}</span>
+    <span class="badge">{{主题标签2}}</span>
+  </div>
+  <div class="meta" style="margin-top:10px">
+    <span>调研来源：{{信源说明}}</span>
+    <span>报告日期：{{YYYY-MM-DD}}</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <h2>目录</h2>
+  <ol>
+    <li><a href="#sec1">一、背景</a></li>
+    <li><a href="#sec2">二、原理详解</a></li>
+    <!-- ... 其余章节锚点 ... -->
+  </ol>
+</nav>
+
+<h2 id="sec1">一、背景</h2>
+<p>{{问题定义与现有路线缺陷，配对比表}}</p>
+<div class="callout key">
+  <div class="title">核心定位</div>
+  {{一句话核心结论，加粗关键短语}}
+</div>
+<figure>
+  <iframe src="diagrams/1-paradigm-positioning.html" loading="lazy"></iframe>
+  <figcaption>图 1 · {{图标题}}</figcaption>
+</figure>
+
+<h2 id="sec2">二、原理详解</h2>
+<p>{{形式化定义文字}}</p>
+<div class="formula">{{公式，monospace 风格，如 L(θ) = E_x [ Σ_t KL( p ‖ q ) ]}}</div>
+<pre><code>{{伪代码}}</code></pre>
+
+<!-- 注意事项用 warn callout -->
+<div class="callout warn">
+  <div class="title">可信度声明</div>
+  <ul>
+    <li>{{未验证数据的诚实性声明}}</li>
+  </ul>
+</div>
+
+<h2 id="refs">参考资料</h2>
+<h4>原始出处</h4>
+<ol><li>{{作者, 标题, 出处/URL}}</li></ol>
+<h4>知乎主要参考文章</h4>
+<ol start="5"><li>{{作者（机构）《标题》— <a href="{{url}}">{{url}}</a>}}</li></ol>
+
+<div class="footer">
+  {{报告名}} · {{信源}} · {{日期}} · 配套架构图见 diagrams/ 目录
+</div>
+
+</div>
+</body>
+</html>
