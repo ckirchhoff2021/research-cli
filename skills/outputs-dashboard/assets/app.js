@@ -73,8 +73,50 @@
   ];
   const CATEGORY_RE = /^(\d{2})_.+$/;
 
+  // 新增分类目录（如 07_xxx、08_xxx）无需改代码：
+  // 名称取自目录名，图标/配色从下面的调色板按编号轮转派生。
+  const CATEGORY_ICON_PALETTE = ["📁", "📸", "🎵", "🏆", "🌍", "🔬", "💡", "🧩", "🗂️", "🎁"];
+  const CATEGORY_COLOR_PALETTE = [
+    "#7c8cff", "#ff8fa3", "#ffd166", "#6ee7b7", "#5ad1e8",
+    "#c792ea", "#f0a868", "#f78c6b", "#8ddb8c", "#e8a0e8",
+  ];
+  const dynamicCategoryMeta = new Map();
+
+  function hashString(text) {
+    let hash = 0;
+    for (let i = 0; i < text.length; i += 1) {
+      hash = (hash * 31 + text.charCodeAt(i)) >>> 0;
+    }
+    return hash;
+  }
+
+  function registerCategory(key, dirName) {
+    const builtin = CATEGORIES.find((category) => category.key === key);
+    if (builtin) {
+      dynamicCategoryMeta.set(key, builtin);
+      return builtin;
+    }
+    const label = (dirName || key)
+      .replace(/^\d+[_\-\s]+/, "")
+      .replace(/[_\-]+/g, " ")
+      .trim() || key;
+    const numeric = Number.parseInt(key, 10);
+    const seed = Number.isFinite(numeric) ? numeric : hashString(key || dirName || "x");
+    const meta = {
+      key,
+      label,
+      icon: CATEGORY_ICON_PALETTE[seed % CATEGORY_ICON_PALETTE.length],
+      accent: CATEGORY_COLOR_PALETTE[seed % CATEGORY_COLOR_PALETTE.length],
+      desc: `${label}分类下的项目与作品`,
+    };
+    dynamicCategoryMeta.set(key, meta);
+    return meta;
+  }
+
   function categoryMeta(key) {
-    return CATEGORIES.find((category) => category.key === key) || null;
+    return dynamicCategoryMeta.get(key)
+      || CATEGORIES.find((category) => category.key === key)
+      || { key: key || "other", label: key || "其他", icon: "📁", desc: "未分类内容", accent: "#9aa4bf" };
   }
 
   const state = {
@@ -221,6 +263,7 @@
         continue;
       }
       const category = { key: match[1], node, path: node.path, projects: [] };
+      registerCategory(category.key, node.name);
       const looseFiles = [];
       for (const child of (node.children || [])) {
         if (child.type === "directory") {
