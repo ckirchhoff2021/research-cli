@@ -1,0 +1,20 @@
+# Drama Studio · AI 短剧创作工坊依赖
+# 安装：pip install -r web/drama_studio/requirements.txt
+
+# ── Web 层：FastAPI + SSE 工作台 ──
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+python-dotenv>=1.0
+
+# ── LLM / 媒体生成（creative、image/video generator、tts）──
+openai>=1.40
+volcengine-python-sdk[ark]>=3.0
+requests>=2.31
+Pillow>=10.0
+
+# ── 视频合成（compose.py / bgm.py）──
+numpy>=1.26
+scipy>=1.11
+moviepy>=2.0
+imageio-ffmpeg>=0.5

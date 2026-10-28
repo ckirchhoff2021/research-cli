@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Drama Studio · AI 短剧创作工坊</title>
+  <link rel="stylesheet" href="styles.css?v=20261027a" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>" />
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#/home">
+      <span class="brand-logo">🎬</span>
+      <span class="brand-text">Drama <em>Studio</em></span>
+    </a>
+    <div class="topbar-right">
+      <span id="workerStatus" class="worker-pill" title="任务引擎状态">
+        <span class="dot"></span><span id="workerLabel">引擎就绪</span>
+      </span>
+      <button id="logToggle" class="ghost-btn" title="实时日志">📜 日志</button>
+    </div>
+  </header>
+
+  <main id="view" class="view"></main>
+
+  <!-- 实时日志抽屉 -->
+  <aside id="logDrawer" class="log-drawer">
+    <div class="log-head">
+      <strong>⚡ 任务实时日志</strong>
+      <div class="log-tabs" id="logTabs"></div>
+      <button class="icon-btn" id="logClose">✕</button>
+    </div>
+    <div class="log-body" id="logBody"></div>
+  </aside>
+
+  <!-- 新建项目弹窗 -->
+  <div class="modal-mask" id="createModal" hidden>
+    <div class="modal">
+      <div class="modal-head">
+        <h2>✨ 新建短剧</h2>
+        <button class="icon-btn" data-close>✕</button>
+      </div>
+      <div class="modal-body">
+        <label class="field">
+          <span>一句话创意</span>
+          <textarea id="f_concept" rows="3" placeholder="例如：落魄程序员意外得到一部能预知三分钟未来的手机…"></textarea>
+        </label>
+        <div class="grid-2">
+          <label class="field">
+            <span>风格题材</span>
+            <select id="f_style">
+              <option value="gufeng">古风武侠</option>
+              <option value="dushi">现代都市</option>
+              <option value="xuanyi">悬疑烧脑</option>
+              <option value="zhiyu">温暖治愈</option>
+              <option value="kehuan">科幻未来</option>
+              <option value="epic">史诗传奇</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>分镜数量 <b id="f_shots_val">7</b> 个</span>
+            <input type="range" id="f_shots" min="4" max="12" value="7" />
+          </label>
+          <label class="field">
+            <span>画面比例</span>
+            <select id="f_ratio">
+              <option value="16:9">横屏 16:9</option>
+              <option value="9:16" selected>竖屏 9:16</option>
+              <option value="1:1">方形 1:1</option>
+              <option value="21:9">电影 21:9</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>分辨率</span>
+            <select id="f_resolution">
+              <option>480p</option>
+              <option>720p</option>
+              <option selected>1080p</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="ghost-btn" data-close>取消</button>
+        <button class="btn primary" id="createSubmit">🚀 开始创作</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 通用确认弹窗 -->
+  <div class="modal-mask" id="confirmModal" hidden>
+    <div class="modal modal-sm">
+      <div class="modal-body" style="padding:28px">
+        <h3 id="confirmTitle">确认操作？</h3>
+        <p id="confirmText" class="muted"></p>
+      </div>
+      <div class="modal-foot">
+        <button class="ghost-btn" id="confirmCancel">取消</button>
+        <button class="btn danger" id="confirmOk">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toasts" class="toasts"></div>
+
+  <script src="app.js?v=20261027a"></script>
+</body>
+</html>

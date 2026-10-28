@@ -6,6 +6,7 @@ from PIL import Image, ImageDraw, ImageFont
 import scipy.io.wavfile as wav
 import imageio_ffmpeg
 from moviepy import VideoFileClip, AudioFileClip, CompositeAudioClip
+from bgm import gen_bgm
 
 def gen_bgm(path, dur, duck_ranges, sr=44100, style="gufeng"):
     """Generate style-matched BGM with ducking during dialogue."""
@@ -56,12 +57,12 @@ def gen_bgm(path, dur, duck_ranges, sr=44100, style="gufeng"):
             a[s:e]+=0.018*np.sin(2*np.pi*f*nt)*env; cur+=d
 
     # Ducking during dialogue
-    vol = np.ones(len(t)) * 0.4
+    vol = np.ones(len(t)) * 0.35
     for s,e in duck_ranges:
         si,ei=int(s*sr),int(min(e*sr,len(t))); dl=ei-si
         if dl>0:
             fd=int(0.4*sr); fu=int(0.6*sr)
-            rd=np.linspace(1,0.25,min(fd,dl)); mid=np.ones(max(dl-fd-fu,0))*0.25
+            rd=np.linspace(1,0.25,min(fd,dl)); mid=np.ones(max(dl-fd-fu,0))*0.12
             ru=np.linspace(0.25,1,min(fu,dl))
             env=np.concatenate([rd,mid,ru])[:dl]; vol[si:ei]*=env
     a*=vol
@@ -89,6 +90,8 @@ def make_card(ff, out, t1, t2, dur, fi, fo, W=1920, H=1080, FPS=24,
         capture_output=True, text=True).returncode == 0
 
 def compose_final(project, base, venv_py, ff, project_root):
+    import sys
+    sys.path.insert(0, str(Path(__file__).parent))
     WK = tempfile.mkdtemp(prefix="dc_compose_")
     W, H, FPS = 1920, 1080, 24
     title = project.get("script",{}).get("title","短剧")
@@ -157,7 +160,7 @@ def compose_final(project, base, venv_py, ff, project_root):
             vf = v.get("voice_file","")
             if not vf or not os.path.exists(vf): continue
             start = seg_main[si] + v.get("start_offset", 2.5)
-            c = AudioFileClip(vf).with_start(start).with_volume_scaled(3.0)
+            c = AudioFileClip(vf).with_start(start).with_volume_scaled(3.8)
             tracks.append(c)
             ducks.append((start - 0.3, start + v.get("duration",3) + 0.3))
             print(f"  s{si+1:02d} {v['character']} @{start:.1f}s: {v['text'][:20]}")

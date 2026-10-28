@@ -115,9 +115,13 @@ def cmd_new(args):
         ref_path = chars_dir / f"ref_{c['name']}.jpg"
         if not ref_path.exists():
             style_hint = script_data.get("style_anchor", "国风3D CG动画风格")
-            prompt = (f"{style_hint}。角色定妆照：{c.get('appearance','')}，"
-                      f"{c.get('tag','')}。{c.get('role','')}角色设定图，"
-                      f"半身像，清晰面部，高质量CG插画风格（非真人照片）")
+            prompt = (f"{style_hint}。单人角色定妆肖像照，画面中有且仅有{c['name']}这一个人物，"
+                      f"人物外观：{c.get('appearance','')}，气质标签：{c.get('tag','')}。"
+                      "构图要求：人物位于画面正中，胸部以上的单人胸像，面部清晰，正对镜头，"
+                      "背景简洁、柔和虚化，不要任何其他人物，不要路人，不要多人合影，不要人群，"
+                      "不要多视图，不要角色对照板，不要文字、标签、水印。"
+                      "画面必须是3D CG动画/卡通渲染质感（类似皮克斯、迪士尼动画电影角色），"
+                      "皮肤与光影为动画渲染效果，严禁真人照片质感，严禁真实摄影人像，严禁写实胶片感。")
             print(f"  生成 {c['name']} 参考图...", end=" ", flush=True)
             r = subprocess.run(
                 [str(VENV_PY), str(IMAGE_GEN_SCRIPT), "--prompt", prompt, "--size", "2K"],

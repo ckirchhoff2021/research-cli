@@ -65,6 +65,7 @@ class VideoGenerator:
         resolution="720p", 
         watermark=False
         ):
+        last_error = ""
         '''
         支持的类型：
         1. 文本
@@ -145,10 +146,12 @@ class VideoGenerator:
             elif status == "failed":
                 print("----- task failed -----")
                 print(f"Error: {get_result.error}")
+                last_error = str(get_result.error)
                 break
             else:
                 print(f"Task status: {status}, Retrying after 30 seconds...")
                 time.sleep(30)
+        return last_error
         
 
 
@@ -203,7 +206,7 @@ if __name__ == '__main__':
     )
     
     # print(args.images.split(','))
-    generator.generate(
+    err = generator.generate(
         args.prompt,
         input_images=args.images.split(',') if args.images else None,
         input_videos=args.videos.split(',') if args.videos else None,
@@ -214,3 +217,7 @@ if __name__ == '__main__':
         resolution=args.resolution,
         watermark=args.watermark,
     )
+    if err:
+        print(f"GENERATION_FAILED: {err}")
+        import sys as _sys
+        _sys.exit(2)

@@ -42,6 +42,8 @@ research-cli/
 ├── tools/                 # 自定义工具实现，供代理调用
 ├── sessions/              # 会话数据存储
 ├── outputs/               # 输出文件存储（图片、音频、视频等）
+├── web/                   # 可视化 Web 工作台
+│   └── drama_studio       # 🎬 AI 短剧创作工坊（FastAPI，人工干预+反馈重生成）
 └── tests/                 # 测试用例
 ```
 

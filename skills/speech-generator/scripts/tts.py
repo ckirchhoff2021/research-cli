@@ -14,7 +14,7 @@ access_token = os.getenv("TTS_ACCESS_TOKEN")
 cluster = os.getenv("TTS_CLUSTER")
 
 
-host = "openspeech.bytedance.com"
+host = os.getenv("TTS_HOST", "your-tts-host.example.com")
 api_url = f"https://{host}/api/v1/tts"
 header = {"Authorization": f"Bearer;{access_token}"}
 
@@ -26,7 +26,7 @@ def run(text, voice_type, output_file):
             "cluster": cluster
         },
         "user": {
-            "uid": "388808087185088"
+            "uid": os.getenv("TTS_UID", "your-tts-uid")
         },
         "audio": {
             "voice_type": voice_type,
