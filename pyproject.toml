@@ -9,22 +9,33 @@ dependencies = [
     "faiss-cpu>=1.14.3",
     "fastapi>=0.115.0",
     "httpx>=0.28.1",
+    "imageio-ffmpeg>=0.5.1",
     "langchain>=1.3.13",
     "langchain-openai>=1.3.5",
     "markdownify>=1.2.3",
+    "moviepy>=2.0.0",
+    "numpy>=1.26.0",
     "openai>=2.45.0",
+    "opencv-python>=4.9.0",
     "pandas>=2.0.0",
     "pillow>=12.3.0",
     "python-dotenv>=1.2.2",
     "rich>=15.0.0",
+    "scipy>=1.11.0",
     "streamlit>=1.35.0",
     "volcengine-python-sdk[ark]>=5.0.27",
     "tavily-python>=0.7.26",
     "langgraph-checkpoint-sqlite>=3.1.1",
     "uvicorn[standard]>=0.30.0",
+    "coremltools>=7.0; platform_system == 'Darwin'",
 ]
 
 [dependency-groups]
 dev = [
     "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: tests that hit real external services (network + credentials required)",
 ]

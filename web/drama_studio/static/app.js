@@ -41,7 +41,6 @@ const STAGES = [
   { key: 'script', label: '剧本', icon: '📖' },
   { key: 'characters', label: '角色', icon: '🎭' },
   { key: 'shots', label: '分镜', icon: '🎬' },
-  { key: 'voices', label: '配音', icon: '🎙️' },
   { key: 'segments', label: '片段', icon: '🎥' },
   { key: 'final', label: '成片', icon: '🏆' },
 ];
@@ -310,7 +309,7 @@ async function renderHome() {
   $('#view').innerHTML = `
     <section class="hero">
       <h1>用 AI 拍一部<span>会讲故事</span>的短剧</h1>
-      <p>创意 → 剧本 → 角色 → 分镜 → 配音 → 视频片段 → 成片，每个环节都能人工干预、实时预览、逐条重做。</p>
+      <p>创意 → 剧本 → 角色 → 分镜 → 视频片段 → 成片，每个环节都能人工干预、实时预览、逐条重做。</p>
       <button class="btn primary" id="newProjectBtn">✨ 新建短剧</button>
     </section>
     <div class="section-head">
@@ -323,7 +322,7 @@ async function renderHome() {
 }
 
 function statusLabel(s) {
-  return { created: '已创建', scripted: '剧本就绪', voiced: '配音完成', generating: '片段生成',
+  return { created: '已创建', scripted: '剧本就绪', voiced: '准备就绪', generating: '片段生成',
     assembled: '已成片', failed: '失败', done: '已完成', pending: '待生成', running: '生成中' }[s] || s;
 }
 function shotBadge(s) {
@@ -383,8 +382,6 @@ function stepState(p, key) {
     case 'characters':
       return (p.script.characters || []).every(c => c.ref_image);
     case 'shots': return (p.shots || []).length > 0;
-    case 'voices':
-      return (p.shots || []).every(s => (s.voices || []).length === (s.dialogues || []).filter(d => d.text).length);
     case 'segments': return (p.shots || []).every(s => s.video_file);
     case 'final': return !!p.final_video;
   }
@@ -430,7 +427,7 @@ function renderWorkspace() {
   `;
 
   $('#btnRunAll').onclick = async () => {
-    if (!await confirmBox('一键补齐并合成？', '将自动生成缺失的配音、视频片段并合成成片，耗时较长。')) return;
+    if (!await confirmBox('一键补齐并合成？', '将自动生成缺失的视频片段并合成成片（保留视频原声），耗时较长。')) return;
     await triggerJob('run_remaining', {}, '已开始自动流程');
   };
 
@@ -458,7 +455,6 @@ function renderStage() {
     case 'script': el.innerHTML = viewScript(p); bindScript(p); break;
     case 'characters': el.innerHTML = viewCharacters(p); bindCharacters(p); break;
     case 'shots': el.innerHTML = viewShots(p); bindShots(p); break;
-    case 'voices': el.innerHTML = viewVoices(p); break;
     case 'segments': el.innerHTML = viewSegments(p); break;
     case 'final': el.innerHTML = viewFinal(p); break;
   }
@@ -534,7 +530,7 @@ function bindScript() {
   const btn = $('#btnReScript');
   if (btn) btn.onclick = () => askFeedback({
     title: '🗯 AI 重新生成剧本',
-    hint: '按你的反馈调整剧本与分镜，并重新生成角色定妆照；已生成的配音/片段不受影响但可能不再匹配。',
+    hint: '按你的反馈调整剧本与分镜，并重新生成角色定妆照；已生成的片段不受影响但可能不再匹配。',
     placeholder: '例如：结局改成大团圆；女主性格再强势一些；中段加一个反转；分镜减到5个…',
     kind: 'regenerate_script',
     okMsg: '剧本调整中',
@@ -668,7 +664,7 @@ function viewShots(p) {
   const chars = p.script.characters || [];
   return `
     <div class="panel-title" style="padding:0 2px">
-      <h3>🎬 分镜脚本（可编辑场景/动作/对白，并单独生成配音与视频）</h3>
+      <h3>🎬 分镜脚本（可编辑场景/动作/对白，成片保留视频原始声音）</h3>
       <button class="btn violet sm" id="addShotBtn">➕ 添加镜头</button>
     </div>
     ${p.shots.map((s, i) => {
@@ -709,7 +705,6 @@ function viewShots(p) {
         </div>
         <div class="shot-tools" style="margin-top:16px">
           <button class="btn primary sm" data-save>💾 保存镜头</button>
-          <button class="ghost-btn sm" data-voice>🎙 生成配音</button>
           <button class="ghost-btn sm" data-video>🎥 ${s.video_file ? '重新生成视频' : '生成视频'}</button>
           <button class="ghost-btn sm danger-text" data-del>🗑 删除镜头</button>
         </div>
@@ -992,16 +987,6 @@ function bindShots() {
       } catch (e) { toast(e.message, 'err'); }
     };
 
-    $('[data-voice]', card).onclick = () => askFeedback({
-      title: `🎙 重新生成镜头 ${i + 1} 配音`,
-      hint: '可直接在下方下拉选择正确音色；也可在反馈里写"换成温柔女声/御姐/少女音"等，还支持语速、音调、音量调整。',
-      placeholder: '例如：换成温柔女声；语速慢一点；声音更低沉；音量再大一点…',
-      kind: 'voices',
-      options: { scope: 'shot', shot: i + 1 },
-      okMsg: '配音生成中',
-      voicePicker: true,
-    });
-
     $('[data-video]', card).onclick = () => askFeedback({
       title: `🎥 重新生成镜头 ${i + 1} 视频`,
       hint: '反馈会追加到该镜头的视频生成 prompt；角色外观保持一致。',
@@ -1021,62 +1006,19 @@ function bindShots() {
   });
 }
 
-// 配音
-function viewVoices(p) {
-  return `
-    <div class="panel-title" style="padding:0 2px">
-      <h3>🎙️ 对白配音（先生成配音确定时长，视频才能精确对齐）</h3>
-      <button class="btn primary sm" id="genAllVoices">🎙 全部生成配音</button>
-    </div>
-    ${p.shots.map((s, i) => `
-      <div class="panel voice-group">
-        <div class="panel-title">
-          <h3>镜头 ${i + 1} · ${esc(s.title)}</h3>
-          <button class="ghost-btn sm" data-shot-voice="${i}">生成该镜头配音</button>
-        </div>
-        ${(s.voices || []).length
-          ? s.voices.map(v => `
-            <div class="voice-line">
-              <span class="vchar">${esc(v.character)}</span>
-              <audio controls preload="none" src="${v.voice_file}"></audio>
-              <span class="muted">${v.voice_type ? `<span class="voice-tag" title="${esc(v.voice_type)}">🔊${esc(voiceLabel(v.voice_type))}</span> · ` : ''}${v.duration}s · @${v.start_offset}s｜${esc(v.text)}</span>
-            </div>`).join('')
-          : `<p class="muted">暂无配音${s.dialogues && s.dialogues.length ? '，点击右上角生成' : '（该镜头无对白）'}</p>`}
-      </div>`).join('')}`;
-}
-
-document.addEventListener('click', e => {
-  const b = e.target.closest('[data-shot-voice]');
-  if (!b || !state.project) return;
-  askFeedback({
-    title: `🎙 镜头 ${+b.dataset.shotVoice + 1} 配音`,
-    hint: '可直接选择正确音色，或在反馈里写"换成女声/男声、御姐、少女音"等。',
-    placeholder: '例如：换成温柔女声；语速慢一点；声音更低沉…',
-    kind: 'voices',
-    options: { scope: 'shot', shot: +b.dataset.shotVoice + 1 },
-    okMsg: '配音任务已提交',
-    voicePicker: true,
-  });
-});
-$('#view').addEventListener('click', e => {
-  if (e.target.id === 'genAllVoices') askFeedback({
-    title: '🎙 全部配音',
-    hint: '指定音色会覆盖所有角色（通常只用于单角色项目）；建议单条重生成。反馈会应用到每一条对白并重新合成。',
-    placeholder: '例如：整体语速慢一点；都换成温柔女声（留空则只补齐缺失配音）',
-    kind: 'voices',
-    okMsg: '全部配音任务已提交',
-    voicePicker: true,
-  });
-});
-
 // 视频片段
 function viewSegments(p) {
+  const ratio = (p.ratio || '16:9').replace(':', ' / ');
+  const [rw, rh] = ratio.split('/').map(Number);
+  const cols = rw < rh
+    ? 'repeat(auto-fill, minmax(230px, 0.75fr))'
+    : 'repeat(auto-fill, minmax(320px, 1fr))';
   return `
     <div class="panel-title" style="padding:0 2px">
       <h3>🎥 视频片段</h3>
       <button class="btn primary sm" id="genAllSeg">🎥 全部生成片段</button>
     </div>
-    <div class="seg-grid">
+    <div class="seg-grid" style="--shot-ratio:${ratio};grid-template-columns:${cols}">
       ${p.shots.map((s, i) => `
         <div class="seg-card">
           ${s.video_file

@@ -28,6 +28,7 @@ from PIL import Image, ImageOps
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 load_dotenv(REPO_ROOT / ".env")
+PRESETS_DIR = Path(__file__).resolve().parents[1] / "presets"
 
 # 内置风格目录：slug -> (风格名, 画面变换描述)
 BUILTIN_STYLES: dict[str, dict[str, str]] = {
@@ -68,6 +69,37 @@ DEFAULT_PROMPT_TEMPLATE = (
     "严格保留照片中人物的面部特征、长相、人数、年龄、性别和亲密关系，主角就是照片里的人；"
     "{transform}。海报级构图，竖版排版，富有戏剧性与故事感，细节丰富，画质精美，整体氛围欢乐有趣。"
 )
+
+
+def load_preset(name_or_path: str) -> tuple[dict[str, dict[str, str]], str | None]:
+    """加载技能内置预设（presets/<name>.json）或任意 JSON 路径。
+
+    返回 (风格目录, 提示词模板)。预设文件格式：
+    {"prompt_template": str, "items": [{slug, name, transform, filename?}]}
+    """
+    path = Path(name_or_path)
+    if not path.is_file():
+        path = PRESETS_DIR / f"{name_or_path}.json"
+    if not path.is_file():
+        raise SystemExit(f"preset not found: {name_or_path} (looked in {PRESETS_DIR})")
+    data = json.loads(path.read_text(encoding="utf-8"))
+    catalog: dict[str, dict[str, str]] = {}
+    for item in data.get("items", []):
+        slug = item["slug"]
+        catalog[slug] = {
+            "name": item.get("name", slug),
+            "transform": item.get("transform", ""),
+            "filename": item.get("filename", ""),
+        }
+    if not catalog:
+        raise SystemExit(f"preset {path} has no items")
+    return catalog, data.get("prompt_template")
+
+
+def output_target(out_dir: Path, ref_name: str, index: int, style: dict[str, str]) -> Path:
+    """统一的产物路径：预设可用 filename 指定语义化文件名。"""
+    filename = style.get("filename") or f"{index:02d}_{style.get('slug', '')}.jpg"
+    return out_dir / ref_name / filename
 
 _print_lock = threading.Lock()
 
@@ -122,7 +154,7 @@ class PosterBatch:
     def generate_one(self, ref_name: str, payload: str, index: int,
                      slug: str, style: dict[str, str], out_dir: Path,
                      prompt_template: str) -> Path:
-        target = out_dir / ref_name / f"{index:02d}_{slug}.jpg"
+        target = output_target(out_dir, ref_name, index, {**style, "slug": slug})
         if target.exists() and target.stat().st_size > 20 * 1024:
             return target
         prompt = prompt_template.format(style_name=style["name"], transform=style["transform"])
@@ -154,6 +186,8 @@ def parse_args() -> argparse.Namespace:
                         help="逗号分隔的风格 slug 子集，默认使用全部风格")
     parser.add_argument("--styles-file", type=Path, default=None,
                         help="JSON 文件，新增/覆盖风格：{slug: {name, transform}}")
+    parser.add_argument("--preset", default=None,
+                        help="预设名（如 aging-pixar）或预设 JSON 路径；预设自带风格目录与提示词模板")
     parser.add_argument("--prompt-template", default=DEFAULT_PROMPT_TEMPLATE,
                         help="提示词模板，占位符 {style_name} 与 {transform}")
     parser.add_argument("--size", default="2K", help="生成尺寸，默认 2K")
@@ -177,7 +211,18 @@ def main() -> int:
     if args.limit_refs:
         refs = refs[: args.limit_refs]
 
-    catalog = load_style_catalog(args.styles_file)
+    if args.preset:
+        catalog, preset_template = load_preset(args.preset)
+        if preset_template and args.prompt_template == DEFAULT_PROMPT_TEMPLATE:
+            args.prompt_template = preset_template
+        if args.styles_file:
+            extra = json.loads(args.styles_file.read_text(encoding="utf-8"))
+            for slug, meta in extra.items():
+                catalog[slug] = {"name": meta.get("name", slug),
+                                 "transform": meta.get("transform", ""),
+                                 "filename": meta.get("filename", "")}
+    else:
+        catalog = load_style_catalog(args.styles_file)
     slugs = resolve_styles(catalog, args.styles)
     if args.test:
         refs, slugs = refs[:1], slugs[:1]
@@ -186,7 +231,8 @@ def main() -> int:
             for ref_name, ref_path in refs
             for index, slug in enumerate(slugs, start=1)]
     pending = [(name, idx, slug) for name, _, idx, slug in jobs
-               if not (args.out_dir / name / f"{idx:02d}_{slug}.jpg").exists()]
+               if not output_target(args.out_dir, name, idx,
+                                    {**catalog[slug], "slug": slug}).exists()]
     log(f"refs={len(refs)} styles={len(slugs)} total={len(jobs)} pending={len(pending)} out={args.out_dir}")
 
     if args.dry_run:

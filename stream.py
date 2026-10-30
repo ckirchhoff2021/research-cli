@@ -303,7 +303,7 @@ def rich_console_stream_call(task_prompt: str, thread_id: str | None = None):
                 ):
                     has_new_output = False
 
-                    for node_name, node_output in event.items():
+                    for _, node_output in event.items():
                         if not isinstance(node_output, dict):
                             continue
 

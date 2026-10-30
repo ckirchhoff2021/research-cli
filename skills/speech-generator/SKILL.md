@@ -23,7 +23,7 @@ description: 专业语音生成技能，支持语音克隆、跨语言合成、�
 ### 在线方案
 - 无需额外环境部署，直接调用接口生成，支持音色列表参考[voice_list.json](./assets/voice_list.json)
 ### 离线方案
-- 已部署CosyVoice项目，路径：/home/chenxiang.101/workspace/CosyVoice
+- 已部署 CosyVoice 项目，路径通过环境变量 `COSYVOICE_PATH` 指定（默认 `~/workspace/CosyVoice`）
 - 参考音频（音色）可提供自定义路径，也可使用内置支持的音色，支持音色列表详情可参考[timbre.json](./assets/timbre.json)
 
 ## 使用步骤

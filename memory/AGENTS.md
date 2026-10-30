@@ -20,5 +20,5 @@
 
 ## 配置文件
 - SKILL执行需要的API配置：`.env` 文件
-- 本地知识库路径：`/Users/bytedance/Downloads/obsidian/Hisenberg`
-- python执行环境：`/Users/bytedance/Downloads/Git/Gitlab/research-cli/.venv` 目录
+- 本地知识库路径：`~/Documents/obsidian/Hisenberg`（按本机实际路径修改）
+- python执行环境：`.venv` 目录

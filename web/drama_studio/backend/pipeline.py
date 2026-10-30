@@ -645,7 +645,7 @@ def compose(project: dict, log) -> None:
     ff = find_ffmpeg()
     if not ff:
         raise RuntimeError("未找到 ffmpeg")
-    log("🎞  开始合成成片（片头片尾/转场/对白对齐/BGM）…")
+    log("🎞  开始合成成片（酷炫片头/转场/保留视频原声）…")
     compose_final(project, base, VENV_PY, ff, PROJECT_ROOT)
     project["status"] = "assembled"
     save(project)
@@ -653,11 +653,8 @@ def compose(project: dict, log) -> None:
 
 
 def run_remaining(project: dict, log) -> None:
-    """补齐缺失的配音/视频片段后合成成片。"""
+    """补齐缺失的视频片段后合成成片（成片只保留视频原始音频）。"""
     total = len(project["shots"])
-    for si, shot in enumerate(project["shots"]):
-        if not shot.get("voices"):
-            gen_shot_voices(project, si, log)
     for si, shot in enumerate(project["shots"]):
         vf = shot.get("video_file", "")
         if not vf or not os.path.exists(vf):

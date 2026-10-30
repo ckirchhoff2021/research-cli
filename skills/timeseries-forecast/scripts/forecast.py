@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """TimesFM3 时序预测技能核心脚本。
 
-封装 TimesFM3 HTTP 服务（默认 http://10.37.9.155:8333）：
+封装 TimesFM3 HTTP 服务（默认 http://127.0.0.1:8333）：
   health     健康检查
   forecast   单变量/多变量预测，支持 CSV/JSON/行内输入、缺失值填充、重采样、
              分位数输出、预留段回测（backtest）与预测图绘制
@@ -22,7 +22,7 @@ import numpy as np
 import pandas as pd
 import requests
 
-DEFAULT_BASE_URL = os.environ.get("TIMESFM3_BASE_URL", "http://10.37.9.155:8333")
+DEFAULT_BASE_URL = os.environ.get("TIMESFM3_BASE_URL", "http://127.0.0.1:8333")
 MIN_CONTEXT = 32
 MAX_HORIZON = 2048
 REPO_OUTPUTS = Path(__file__).resolve().parents[3] / "outputs" / "timesfm_forecast"

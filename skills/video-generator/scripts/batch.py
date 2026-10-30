@@ -32,6 +32,7 @@ from PIL import Image
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 load_dotenv(REPO_ROOT / ".env")
+PRESETS_DIR = Path(__file__).resolve().parents[1] / "presets"
 
 BUILTIN_MOTION: dict[str, str] = {
     "pixar3d": "角色开心地朝镜头奔跑挥手，露出灿烂大笑，镜头轻微推进，阳光海岛氛围",
@@ -134,6 +135,121 @@ def image_to_data_url(path: Path) -> str:
 
 def build_prompt(slug: str, motion_catalog: dict[str, str], template: str) -> str:
     return template.format(motion=motion_catalog[slug])
+
+
+# ---------------------------------------------------------------------------
+# scenes 子命令：场景剧预设批量生成（同一角色、多场景、带台词）
+# ---------------------------------------------------------------------------
+
+def load_scene_preset(name_or_path: str) -> dict:
+    """加载场景预设：内置 presets/<name>.json 或任意 JSON 路径。
+
+    格式：{"prompt_prefix"?: str, "items": [
+        {"theme": "主题", "slug": "英文标识", "title": "中文名",
+         "duration"?: 秒, "prompt": "完整分镜+台词"}
+    ]}
+    """
+    path = Path(name_or_path)
+    if not path.is_file():
+        path = PRESETS_DIR / f"{name_or_path}.json"
+    if not path.is_file():
+        raise SystemExit(f"preset not found: {name_or_path} (looked in {PRESETS_DIR})")
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not data.get("items"):
+        raise SystemExit(f"preset {path} has no items")
+    return data
+
+
+def build_scene_tasks(common: argparse.Namespace, preset: dict) -> list[dict]:
+    prefix = preset.get("prompt_prefix", "")
+    ref_image = str(common.ref_image)
+    wanted_themes = {t.strip() for t in (common.themes or "").split(",") if t.strip()}
+    tasks = []
+    for idx, item in enumerate(preset["items"], start=1):
+        theme = item.get("theme", "未分组")
+        if wanted_themes and theme not in wanted_themes and item.get("slug") not in wanted_themes:
+            continue
+        out = common.out_dir / theme / f"{idx:02d}_{item['slug']}.mp4"
+        if out.exists() and out.stat().st_size > MIN_OK_BYTES:
+            continue
+        duration = item.get("duration", common.duration)
+        task = {
+            "group": theme,
+            "slug": item["slug"],
+            "poster": item.get("image", ref_image),
+            "out": str(out),
+            "prompt": f"{prefix}\n{item['prompt']}",
+            "duration": duration,
+            "title": item.get("title", item["slug"]),
+            "idx": idx,
+        }
+        tasks.append(task)
+    if common.limit:
+        tasks = tasks[: common.limit]
+    return tasks
+
+
+def submit_scene(task: dict, common: argparse.Namespace) -> dict:
+    """场景任务提交：支持每个场景独立时长，返回值带任务信息。"""
+    scene_common = argparse.Namespace(**vars(common))
+    scene_common.duration = task["duration"]
+    result = submit_and_wait(task, scene_common)
+    result["task"] = {k: task[k] for k in ("group", "slug", "out", "title", "idx")}
+    return result
+
+
+def run_scenes(common: argparse.Namespace) -> int:
+    preset = load_scene_preset(common.scenes_file)
+    tasks = build_scene_tasks(common, preset)
+    log(f"scenes preset={common.scenes_file} total_items={len(preset['items'])} "
+        f"pending={len(tasks)} ratio={common.ratio} res={common.resolution} "
+        f"default_duration={common.duration}s workers={common.workers}")
+    if common.dry_run:
+        for t in tasks:
+            log(f"plan #{t['idx']:02d} [{t['group']}] {t['slug']} "
+                f"({t['duration']}s) -> {t['out']}")
+        return 0
+
+    common.out_dir.mkdir(parents=True, exist_ok=True)
+    done = ok_count = fail_count = 0
+    failures, manifest = [], []
+    started = time.time()
+    with ThreadPoolExecutor(max_workers=common.workers) as pool:
+        futures = [pool.submit(submit_scene, t, common) for t in tasks]
+        for future in as_completed(futures):
+            result = future.result()
+            t = result["task"]
+            done += 1
+            if result["ok"]:
+                ok_count += 1
+                manifest.append({"idx": t["idx"], "theme": t["group"], "slug": t["slug"],
+                                 "title": t["title"], "file": t["out"]})
+                log(f"[{done}/{len(tasks)}] OK #{t['idx']:02d} [{t['group']}] {t['title']} "
+                    f"{result['seconds']}s {result['bytes'] // 1024}KB")
+            else:
+                fail_count += 1
+                failures.append({"idx": t["idx"], "theme": t["group"], "slug": t["slug"],
+                                 "title": t["title"], "error": result["error"]})
+                log(f"[{done}/{len(tasks)}] FAIL #{t['idx']:02d} [{t['group']}] "
+                    f"{t['title']}: {result['error'][:160]}")
+
+    # 合并已落盘（含历史成功）的完整清单，供 concat 等下游使用
+    for idx, item in enumerate(preset["items"], start=1):
+        out = common.out_dir / item.get("theme", "未分组") / f"{idx:02d}_{item['slug']}.mp4"
+        if out.exists() and out.stat().st_size > MIN_OK_BYTES:
+            if not any(m["idx"] == idx for m in manifest):
+                manifest.append({"idx": idx, "theme": item.get("theme", "未分组"),
+                                 "slug": item["slug"], "title": item.get("title", item["slug"]),
+                                 "file": str(out)})
+    manifest.sort(key=lambda m: m["idx"])
+    (common.out_dir / "scenes_manifest.json").write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+    if failures:
+        (common.out_dir / "failures.json").write_text(
+            json.dumps(failures, ensure_ascii=False, indent=1), encoding="utf-8")
+    log(f"DONE ok={ok_count} fail={fail_count} total_in_manifest={len(manifest)} "
+        f"elapsed={(time.time() - started) / 60:.1f}min out={common.out_dir}")
+    return 0 if not fail_count else 1
 
 
 def submit_and_wait(task: dict, common: argparse.Namespace) -> dict:
@@ -318,15 +434,35 @@ def parse_args() -> argparse.Namespace:
     fill_parser.add_argument("--target", type=int, default=5)
     fill_parser.add_argument("--priority-file", type=Path, default=None,
                              help="JSON 数组，风格 slug 的补齐优先级")
+
+    # scenes：场景剧预设批量生成
+    scenes_parser = sub.add_parser("scenes", help="按场景预设批量生成带台词的短视频")
+    scenes_parser.add_argument("--scenes-file", required=True,
+                               help="场景预设名（presets/<name>.json）或 JSON 路径")
+    scenes_parser.add_argument("--ref-image", required=True, type=Path,
+                               help="角色参考图（预设中单个场景可用 image 覆盖）")
+    scenes_parser.add_argument("--out-dir", required=True, type=Path)
+    scenes_parser.add_argument("--themes", default=None,
+                               help="只生成指定主题/slug，逗号分隔")
+    scenes_parser.add_argument("--limit", type=int, default=0, help="只取前 N 个待生成任务")
+    scenes_parser.add_argument("--ratio", default="16:9")
+    scenes_parser.add_argument("--duration", type=int, default=8)
+    scenes_parser.add_argument("--resolution", default="720p")
+    scenes_parser.add_argument("--workers", type=int, default=4)
+    scenes_parser.add_argument("--timeout-s", type=int, default=20 * 60)
+    scenes_parser.add_argument("--dry-run", action="store_true", help="只打印计划不调用接口")
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
-    args.skip_dirs = {s.strip() for s in args.skip_dirs.split(",") if s.strip()}
+    if getattr(args, "skip_dirs", None):
+        args.skip_dirs = {s.strip() for s in args.skip_dirs.split(",") if s.strip()}
     if args.command == "make":
         args.videos_per_group = args.videos_per_group
         return run_make(args)
+    if args.command == "scenes":
+        return run_scenes(args)
     return run_fill(args)
 
 

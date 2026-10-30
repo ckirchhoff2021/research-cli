@@ -1,5 +1,6 @@
 import faiss
 import numpy as np
+import os
 from openai import OpenAI
 import argparse
 
@@ -8,7 +9,7 @@ class Embedding(object):
     def __init__(self):
         self.client = OpenAI(
             api_key="EMPTY",
-            base_url="http://10.37.79.92:8123/v1",
+            base_url=os.getenv("EMBED_BASE_URL", "http://127.0.0.1:8123/v1"),
         )
         self.model_name = "Qwen3-0.6B-Embedding"
         

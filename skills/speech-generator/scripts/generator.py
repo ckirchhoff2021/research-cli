@@ -6,7 +6,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-COSYVOICE_PATH = "/home/chenxiang.101/workspace/CosyVoice"
+COSYVOICE_PATH = os.getenv("COSYVOICE_PATH", os.path.expanduser("~/workspace/CosyVoice"))
 VENV_PYTHON = os.path.join(COSYVOICE_PATH, ".venv/bin/python")
 
 def main():

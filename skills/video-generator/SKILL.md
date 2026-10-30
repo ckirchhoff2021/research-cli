@@ -122,3 +122,55 @@ make 专有：`--videos-per-group`（默认 5）；fill 专有：`--target`（�
 - 风格 slug 与动作库同构于 image-generator 的 30 种风格，新增风格用 `--motion-file`，
   不要把业务路径硬编码进脚本；
 - 真人写实海报易被视频侧 400 拦截，优先用卡通/插画化海报，拦截后用 `fill` 补齐。
+
+## 场景剧批量：scenes 子命令（同一角色 × 多场景 × 带台词）
+
+当用户要「用同一张角色图生成多个有剧情、有台词的场景短视频」时，用 `scenes` 子命令 +
+场景预设，**不要手写循环脚本**。预设位于 `presets/<name>.json`：
+
+```bash
+.venv/bin/python skills/video-generator/scripts/batch.py scenes \
+  --scenes-file adventure-scenes \
+  --ref-image outputs/任务/refs/角色.jpg \
+  --out-dir outputs/任务/clips \
+  --duration 8 --ratio 16:9 --resolution 720p --workers 4
+```
+
+- 内置预设 `adventure-scenes`：30 集（旅游 / 骑马 / 轻功水上漂 / 开飞机 / 写代码，各 6 集），
+  每集含完整分镜、中文台词、环境音/BGM 提示，自动开启配音。
+- 只生成部分：`--themes 01_环游世界` 或 `--themes shibuya,captain`；试跑用 `--limit 1`。
+- 输出 `<out-dir>/<主题>/<序号>_<slug>.mp4`，并生成 `scenes_manifest.json` 供合成使用。
+- 新增成套场景：往 `presets/` 加 JSON（`prompt_prefix` + `items[{theme,slug,title,duration?,prompt}]`），
+  也支持直接传 JSON 路径。断点续跑规则同 make/fill。
+
+## 长视频合成：scripts/concat.py
+
+把 scenes（或任意目录）的短视频统一规格（分辨率/帧率/像素格式/音频）后拼接为长视频，
+自动生成片头、章节卡、集名卡、片尾；系统 ffmpeg 损坏时自动改用 imageio-ffmpeg 内置静态版；
+无音轨的片段自动补静音：
+
+```bash
+.venv/bin/python skills/video-generator/scripts/concat.py \
+  --manifest outputs/任务/clips/scenes_manifest.json \
+  --output outputs/任务/阿哲的奇妙冒险_长片.mp4 \
+  --title "阿哲的奇妙冒险" --cards
+```
+
+没有 manifest 时可 `--clips-dir <目录>`（递归收集 mp4）。参数：`--card-duration`、
+`--intro/outro-duration`、`--width/--height/--fps`、`--reencode-final`（最终阶段也重编码，更稳更慢）。
+
+## ⚠️ 长片故事性规范（story 优先，不要平行罗列场景）
+
+当用户要的是**长片/有故事性**的视频，**禁止**把同一主题的 N 个场景平行罗列（"旅游6集、骑马6集"
+彼此无因果 = 场景集锦，不是故事）。必须用故事预设（如 `adventure-story`），并满足：
+
+1. **一个目标**：主角有非达成不可、且有期限的具体目标；
+2. **因果链**：相邻场景必须是"因为上一集……所以本集……但是……"，每集开头写明前情、结尾交钩子；
+3. **阻碍与代价**：目标越来越难，主角要付出代价（恐惧、受伤、想放弃）；
+4. **角色弧光**：主角开场与结尾必须发生改变；
+5. **连续性**：固定道具/伙伴/配角贯穿（如怀表、逐张明信片、小圆），三幕结构清晰
+   （建置→对抗→高潮→解决），中点与"灵魂黑夜"要有；
+6. 用 `preset_to_screenplay.py` 先导出剧本给用户确认，再批量生成 + `concat.py --cards` 合成。
+
+故事预设参考 `presets/adventure-story.json`（30集：序章来信3 / 循迹世界6 / 策马追风6 /
+渡水而行6 / 学会飞翔6 / 极光归途3）。

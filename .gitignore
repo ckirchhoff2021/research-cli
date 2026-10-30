@@ -1,52 +1,25 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
-.venv/
-ENV/
-env.bak/
-venv.bak/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-uv.lock
-
-# Environment
 .env
-.env.local
-.env.*.local
-
-# Data & Outputs
+.venv/
+*__pycache__/
+uv.lock
 outputs/
-logs/
-*.log
-datas/*
-!datas/.gitkeep
-
-# IDE
+traces/
 .vscode/
-.idea/
-*.swp
-*.swo
-*~
+*sessions/
+tmp/
+coding/data/
+instructions/
+experiments/
+.env.bak
 
-# OS
+# macOS 系统文件
 .DS_Store
-Thumbs.db
-sessions
+
+# 自动同步生成的技能镜像目录（与 skills/ 重复）
+.agents/
+
+# 大型模型权重与二进制（体积过大，不入库，需另行下载）
+skills/image-generator/models/coreml/RealESRGAN.mlmodel
+skills/image-generator/models/res10.caffemodel
+skills/image-generator/tools/realesrgan/realesrgan-ncnn-vulkan
+skills/image-generator/tools/realesrgan/models/realesrgan-x4plus.bin

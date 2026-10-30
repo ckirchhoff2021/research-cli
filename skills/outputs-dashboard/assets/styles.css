@@ -751,6 +751,15 @@ a {
   background: #05070d;
 }
 
+/* 竖屏视频不能被宽度撑满后压矮高度：等比缩放、居中 */
+.featured video {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
 .featured audio {
   width: calc(100% - 24px);
   margin: 12px;
@@ -948,6 +957,18 @@ a {
   min-height: 480px;
   max-height: calc(100vh - 210px);
   border: 0;
+}
+
+/* 视频按原始分辨率比例显示：iframe 保持铺满，视频不能硬拉 */
+.viewer-stage video {
+  width: auto;
+  height: auto;
+  min-height: 0;
+  max-width: 100%;
+  max-height: calc(100vh - 210px);
+  margin: 0 auto;
+  object-fit: contain;
+  background: #05070d;
 }
 
 .viewer-stage audio {
@@ -1777,8 +1798,10 @@ a {
 .video-tile video {
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
+  height: auto;
+  aspect-ratio: auto;
+  object-fit: contain;
+  background: #05070d;
   pointer-events: none;
 }
 

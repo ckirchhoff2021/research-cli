@@ -68,10 +68,10 @@ description: 生成图像、图像风格转换、多图融合的专业技能，�
 > 本地保存路径：`outputs/dream_1720000000000.jpg`
 
 ### 示例2：图像风格转换
-**用户输入**：帮我把这张图像转换成草图风格，尺寸2K，原始路径是/home/chenxiang.101/workspace/tmp/yemen.jpg
+**用户输入**：帮我把这张图像转换成草图风格，尺寸2K，原始路径是 /path/to/input.jpg
 **执行命令**：
 ```bash
-.venv/bin/python [YOUR_SKILLS_DIR]/image-generator/scripts/generator.py --prompt "帮我把这张图像转换成草图风格" --image "/home/chenxiang.101/workspace/tmp/yemen.jpg" --size "2K"
+.venv/bin/python [YOUR_SKILLS_DIR]/image-generator/scripts/generator.py --prompt "帮我把这张图像转换成草图风格" --image "/path/to/input.jpg" --size "2K"
 ```
 **输出**：
 > 已完成图像风格转换，生成的草图风格2K图像：
@@ -118,11 +118,61 @@ description: 生成图像、图像风格转换、多图融合的专业技能，�
 # 只挑 3 种风格、4 并发、先试跑 1 张验证
 .venv/bin/python [YOUR_SKILLS_DIR]/image-generator/scripts/batch.py \
   --refs-dir "outputs/my_task/refs" --out-dir "outputs/my_task/posters" \
-  --styles pixar3d,cyberpunk,wuxia --workers 4 --test
+--styles pixar3d,cyberpunk,wuxia --workers 4 --test
 
 # 只打印执行计划，不调用接口（参数自检用）
 ... batch.py --refs-dir ... --out-dir ... --dry-run
 ```
+
+### 预设模式：--preset（成长时间线等成套提示词，禁止再手写循环脚本）
+
+当需求是一套**固定成套**的生成（如「同一个人 5→80 岁的成长海报」），直接用技能内置预设，
+不要再写一次性 Python 脚本。预设位于 `presets/<name>.json`，自带成套描述与提示词模板：
+
+```bash
+# 内置预设 aging-pixar：5~80 岁每 5 岁一张皮克斯成长海报（40 岁起带小胡子并随年龄渐白）
+.venv/bin/python skills/image-generator/scripts/batch.py \
+  --preset aging-pixar \
+  --refs-dir "outputs/我的任务/refs" \
+  --out-dir "outputs/我的任务/images" --workers 4
+
+# 只要其中几个年龄（slug 子集）
+... batch.py --preset aging-pixar --styles age05,age35,age80 ...
+
+# 也可传自定义预设 JSON 的绝对路径
+... batch.py --preset /path/to/my_preset.json ...
+```
+
+预设文件格式（以后遇到成套需求，优先往 `presets/` 加文件）：
+
+```json
+{
+  "prompt_template": "...{style_name}...{transform}...",
+  "items": [
+    {"slug": "age05", "name": "5岁", "filename": "05岁.jpg", "transform": "年龄外观+场景的完整描述"}
+  ]
+}
+```
+
+当前内置预设：
+- `aging-pixar`：16 张成长时间线（5→80 岁，40 岁起带小胡子）
+- `business-attire`：10 张职业白领正装照（经典西装/三件套/礼服/商务休闲/路演/科技风/新中式/差旅等）
+- `id-photo`：20 张证件照（服装×底色×表情，Seedream 直出纯色底）
+- `photo-restore`：旧的单图修复预设（批量场景备用）；单张照片修复请直接用下面的 `portrait_polish.py`
+- `ceo-poster`：20 张霸道总裁主题海报（高尔夫/休闲/穿衣穿袜/健身/游泳/穿鞋/内衣大片/商务/马术）
+
+### 联系表：contact_sheet.py
+
+批量生成后用通用拼图工具一键出总览（不要再手写拼图脚本）：
+
+```bash
+.venv/bin/python skills/image-generator/scripts/contact_sheet.py \
+  --images-dir "outputs/我的任务/images/<参考图名>" \
+  --output "outputs/我的任务/contact_sheet.jpg" --cols 5
+```
+
+常用参数：`--pattern`（默认 `*.jpg`）、`--recursive`、`--cols`、`--cell-w/--cell-h`、
+`--label auto|none`、`--font-size`；按文件名数字自然排序，自动跳过 contact/sheet 类图。
 
 参数：
 
@@ -146,3 +196,76 @@ picturebook noir graffiti baroque chibi steampunk underwater candy rpg disney gl
 - 断点续跑：已存在且大于 20KB 的结果自动跳过，失败任务写入 `<out-dir>/failures.json`；
 - `batch.py` 只做批量编排，单次生成能力与 `generator.py` 完全一致；
 - 新风格优先用 `--styles-file` 扩展，不要把业务路径硬编码进脚本。
+
+## 证件照：Seedream 直出（不要抠图换底）
+
+用户要证件照/档案照时，**直接让 Seedream 分别生成白/蓝/红底三张原片**，再按比例缩放成
+一寸(295×413)/二寸(413×579)、写 300dpi；**不要做蓝幕抠图换底**（发丝/眼镜边缘会出瑕疵）。
+提示词要点：与参考图同一人、正面免冠、双耳露出、双眼平视、中性表情、有领正装、
+均匀正面光、指定纯色无缝背景布、写实摄影（严禁卡通）、竖版 5:7、无边框无文字。
+2K 出图通常为 1760×2464（即 5:7），与一寸/二寸同比例，仅缩放不裁切。
+
+### 证件照预设：id-photo + 打印尺寸导出
+
+成套证件照用预设（Seedream 直出、不抠图），再用 `resize.py` 批量出打印尺寸：
+
+```bash
+# 20 个「服装×底色×表情」组合，2K 原片（1760×2464 = 5:7）
+.venv/bin/python skills/image-generator/scripts/batch.py --preset id-photo \
+  --refs-dir outputs/.../refs --out-dir outputs/.../原片2K --workers 4
+# 原片 -> 一寸(295×413)/二寸(413×579)，300dpi
+.venv/bin/python skills/image-generator/scripts/resize.py \
+  --images-dir outputs/.../原片2K/阿哲 --out-dir outputs/.../打印版 \
+  --specs 一寸,二寸 --dpi 300
+```
+
+`resize.py` 支持 `一寸/小一寸/大一寸/二寸/小二寸`；等比适配、边缘色补边不拉伸。
+注意：提示词描述底色用中文（如"浅灰色背景布"），**不要写 #十六进制色号**，
+模型可能把色号当文字渲染进画面；可加"画面中不要出现任何数字、字母或文字"。
+
+## 纯提清晰度：superres.py（不改五官 / 不美颜 / 不重绘）
+
+用户只说「提高清晰度 / 修复模糊，不要动五官」时，**必须用确定性超分，不要用 Seedream**
+（生成式重绘即使构图锁定，仍可能轻微改动五官或肤质）。`scripts/superres.py` 用
+Real-ESRGAN 的 CoreML 卷积网络逐块超分，几何身份逐像素保持：
+
+```bash
+.venv/bin/python skills/image-generator/scripts/superres.py \
+  --image outputs/.../photo.jpg --out-dir outputs/.../超分
+# 固定 512 tile、64 overlap 羽化加权，输出 _超分4x.jpg（6912x9216）+ _超分_原尺寸.jpg
+# 以拉普拉斯方差量化清晰度（实测 7.25 -> 64.0）；--usm 控制附加锐化，--compute-unit 选加速单元
+```
+
+模型文件 `models/coreml/RealESRGAN.mlmodel`（首次运行若换模型重新放入即可）。
+
+## 人像精修：portrait_polish.py（允许自然美颜 / 生成式重绘，强制零裁剪）
+
+用户说「照片模糊、提升清晰度、修复面部、美化一下、毛孔太明显」时，一律用本工具，
+不要再手写提示词或临时脚本：
+
+```bash
+# 高清修复 + 轻度自然美颜（默认）：收敛毛孔、淡化痘印斑点、均匀肤色，但保留真实纹理
+.venv/bin/python skills/image-generator/scripts/portrait_polish.py \
+  --image outputs/.../photo.jpg --mode beautify --size 4K
+
+# 只去模糊、不改肤质
+... portrait_polish.py --image ... --mode restore
+
+# 批量纯直出（用户怀疑合成/形变时）：跑 N 次整图生成，原样保留构图达标的成图，
+# 不做相似变换、不做合成；自动出带偏差标注的候选总览，挑形变最小的
+.venv/bin/python skills/image-generator/scripts/portrait_polish.py \
+  --image outputs/.../photo.jpg --collect 12 --tolerance 0.05
+```
+
+机制（都已内置，无需人工介入）：
+- **白边预补偿**：Seedream 图生图几乎总会把人物放大约 1.5~3 倍（就是用户看到的"被裁剪"）。
+  工具先把原图居中放到约 3 倍大、同背景色的画布上（自动取边缘色），模型再放大时净效果
+  正好回到原构图；白边倍数随每轮构图偏差自适应（受接口 36MP 上限封顶）。
+- **构图校验**：用 res10 SSD 人脸框 + 眼镜专用 Haar 级联定位双眼，量化人物缩放与位移，
+  偏差 >3% 自动重跑；成图再用相似变换按双眼对齐到原构图，任何分辨率下取景与原片逐边一致。
+- **合成兜底**：模型连续抖动、整图无法达标时，把美颜脸部对齐后羽化合成回增强原片，
+  保证任何情况下都零裁剪、无黑边。
+
+产物：`<out-dir>/<名>_自然精修_原尺寸.jpg`（可直接替换原图）、
+`<名>_自然精修_4K.jpg`、`_对比_*.jpg`。交付前必须目检对比图：
+只允许"更清晰 + 肤质更细腻"，身份、表情、构图有任何变化就重跑。

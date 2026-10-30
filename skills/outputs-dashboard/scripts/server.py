@@ -9,6 +9,7 @@ import os
 import re
 import threading
 import urllib.parse
+from email.utils import parsedate_to_datetime
 import webbrowser
 from concurrent.futures import ThreadPoolExecutor
 from http import HTTPStatus
@@ -427,7 +428,8 @@ class DashboardHandler(SimpleHTTPRequestHandler):
         if path is None or not path.is_file():
             self.send_error(HTTPStatus.NOT_FOUND, "File not found")
             return
-        self.serve_file(path)
+        # 媒体/图片体积大且内容稳定：允许浏览器强缓存 1 小时，避免每次刷新全量重传
+        self.serve_file(path, cache_control="public, max-age=3600")
 
     def serve_app(self, request_path: str) -> None:
         relative = urllib.parse.unquote(request_path.lstrip("/"))
@@ -442,9 +444,38 @@ class DashboardHandler(SimpleHTTPRequestHandler):
             path = ASSETS_DIR / "index.html"
         self.serve_file(path, fallback_mime="text/html")
 
-    def serve_file(self, path: Path, fallback_mime: str = "application/octet-stream") -> None:
+    def serve_file(
+        self,
+        path: Path,
+        fallback_mime: str = "application/octet-stream",
+        cache_control: str = "no-cache",
+    ) -> None:
         try:
             stat = path.stat()
+            etag = f'"{int(stat.st_mtime):x}-{stat.st_size:x}"'
+
+            # 协商缓存：If-None-Match / If-Modified-Since 命中时直接 304，不再回传文件体
+            inm = self.headers.get("If-None-Match")
+            if inm and etag in [token.strip() for token in inm.split(",")]:
+                self.send_response(HTTPStatus.NOT_MODIFIED)
+                self.send_header("ETag", etag)
+                self.send_header("Cache-Control", cache_control)
+                self.end_headers()
+                return
+            ims = self.headers.get("If-Modified-Since")
+            if ims and not inm:
+                try:
+                    ims_dt = parsedate_to_datetime(ims)
+                    if ims_dt is not None and ims_dt.timestamp() >= int(stat.st_mtime):
+                        self.send_response(HTTPStatus.NOT_MODIFIED)
+                        self.send_header("ETag", etag)
+                        self.send_header("Last-Modified", self.date_time_string(int(stat.st_mtime)))
+                        self.send_header("Cache-Control", cache_control)
+                        self.end_headers()
+                        return
+                except (TypeError, ValueError, OverflowError):
+                    pass
+
             with path.open("rb") as handle:
                 mime = mimetypes.guess_type(path.name)[0] or fallback_mime
                 if mime.startswith("text/") or mime in ("application/json", "application/javascript"):
@@ -479,8 +510,9 @@ class DashboardHandler(SimpleHTTPRequestHandler):
                 self.send_response(HTTPStatus.PARTIAL_CONTENT if partial else HTTPStatus.OK)
                 self.send_header("Content-type", mime)
                 self.send_header("Accept-Ranges", "bytes")
+                self.send_header("ETag", etag)
                 self.send_header("Last-Modified", self.date_time_string(int(stat.st_mtime)))
-                self.send_header("Cache-Control", "no-cache")
+                self.send_header("Cache-Control", cache_control)
                 if partial:
                     self.send_header("Content-Range", f"bytes {start}-{end}/{stat.st_size}")
                     self.send_header("Content-Length", str(end - start + 1))

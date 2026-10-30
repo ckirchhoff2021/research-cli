@@ -1,7 +1,7 @@
-# MemoryBase (bytedance-memorybase SDK) 能力速查
+# MemoryBase（内部记忆服务 SDK）能力速查
 
-来源：feishu-claude-tag 项目 `.venv/lib/python3.12/site-packages/bytedance/memorybase/client.py`（SDK 0.6.0 实读）。
-内部文档 `cloud.bytedance.net/docs/mem0/...` 需字节 SSO，浏览器不可达——此速查即替代事实源。
+来源：内部 SDK 包 `memorybase` 的 client 源码实读（SDK 0.6.0）。
+对应的内部平台文档需要公司 SSO，外部不可达——此速查即替代事实源；内部域名与包路径均已隐去。
 
 ## 客户端
 - `Memory(server, api_key, timeout, validate_api_key=True, insecure_skip_verify=False)`，别名 `MemoryClient`/`MemoryBaseClient`。
@@ -29,9 +29,8 @@
 - 映射飞书：session=话题(thread)、event=问答轮、messages=OpenAI 格式消息。
 
 ## 服务端点
-- 生产：`https://mem0-cn.byted.org/bytedance.memorybase.memorybase_cn`
-- 试验：`..._playground`
-- API Key 只进 `.env`；feishu-claude-tag 的 `tests/test_memo*.py` 有硬编码 key 需清理。
+- 生产 / 试验端点：使用公司内网域名（此处隐去），通过环境变量注入，禁止写进代码。
+- API Key 只进 `.env`；测试代码中若有硬编码 key 必须清理后才能入库。
 
 ## 方法论锚点（设计文档引用用）
 - mem0 管道：提取→整合(ADD/UPDATE/DELETE/NOOP)→检索；论文 arXiv:2504.19413（准确率+26%、延迟−91%、token−90%，数字系知乎转述）。

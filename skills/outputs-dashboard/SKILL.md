@@ -29,6 +29,19 @@ metadata:
 .venv/bin/python skills/outputs-dashboard/scripts/server.py --root /path/to/folder --no-open
 ```
 
+## 静态导出（单文件 HTML）
+
+不需要常驻服务时，可以把整个目录导出为一个自包含的 `index.html`：目录清单、样式和
+渲染逻辑全部内嵌，文件本体通过相对路径引用，直接双击 HTML 即可离线预览。
+
+```bash
+.venv/bin/python skills/outputs-dashboard/scripts/export_static.py
+.venv/bin/python skills/outputs-dashboard/scripts/export_static.py --root /path/to/folder --output /path/to/gallery.html
+```
+
+- 默认输出到 `outputs/index.html`，支持首页统计、分类/项目导航、类型聚合、搜索、图片灯箱、视频与音频播放。
+- 重新导出即可刷新内容；导出时自动跳过自身，避免在画廊中递归出现。
+
 ## 功能与浏览结构
 
 - 主页：统计信息、优质内容、知识库分类入口、跨分类内容类型标签与最近项目。

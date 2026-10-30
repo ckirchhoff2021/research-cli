@@ -180,6 +180,18 @@
     buildBackToTop();
     buildSidebarBackdrop();
     document.addEventListener("keydown", handleShortcuts);
+    window.lazyVideoObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const video = entry.target;
+        if (video.dataset.lazyVideo !== "ready") {
+          video.dataset.lazyVideo = "ready";
+          video.preload = "metadata";
+          video.load();
+        }
+        window.lazyVideoObserver.unobserve(video);
+      });
+    }, { rootMargin: "400px 0px" });
     loadTree(false);
   }
 
@@ -483,6 +495,9 @@
     else renderHome();
     els.sidebar.classList.remove("open");
     window.scrollTo({ top: 0 });
+    document.querySelectorAll("video[data-lazy-video]").forEach((video) => {
+      window.lazyVideoObserver?.observe(video);
+    });
   }
 
   function route() {
@@ -857,7 +872,7 @@
       const kind = kindOf(file);
       let thumb = `<div class="file-icon">${kindMeta(kind).icon}</div>`;
       if (kind === "image") thumb = `<img loading="lazy" src="${rawUrl(file.path)}" alt="${escapeAttr(file.name)}">`;
-      if (kind === "video") thumb = `<video class="card-video" muted playsinline preload="metadata" src="${rawUrl(file.path)}#t=0.5"></video>`;
+      if (kind === "video") thumb = `<video class="card-video" muted playsinline preload="none" data-lazy-video src="${rawUrl(file.path)}#t=0.5"></video>`;
       return `
         <a class="file-card" href="#/file/${encodeURIComponent(file.path)}">
           <div class="file-thumb">${thumb}</div>
@@ -887,7 +902,7 @@
     return `
       <div class="video-wall">${visible.map((file) => `
         <a class="video-tile" href="#/file/${encodeURIComponent(file.path)}">
-          <video muted playsinline preload="metadata" src="${rawUrl(file.path)}#t=0.5"></video>
+          <video muted playsinline preload="none" data-lazy-video src="${rawUrl(file.path)}#t=0.5"></video>
           <span class="video-play">▶</span>
           <small>${escapeHtml(file.name)}</small>
         </a>`).join("")}

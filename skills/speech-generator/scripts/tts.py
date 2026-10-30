@@ -18,7 +18,7 @@ host = os.getenv("TTS_HOST", "your-tts-host.example.com")
 api_url = f"https://{host}/api/v1/tts"
 header = {"Authorization": f"Bearer;{access_token}"}
 
-def run(text, voice_type, output_file):
+def run(text, voice_type, output_file, speed_ratio=1.0, volume_ratio=1.0, pitch_ratio=1.0):
     request_json = {
         "app": {
             "appid": appid,
@@ -31,9 +31,9 @@ def run(text, voice_type, output_file):
         "audio": {
             "voice_type": voice_type,
             "encoding": "mp3",
-            "speed_ratio": 1.0,
-            "volume_ratio": 1.0,
-            "pitch_ratio": 1.0,
+            "speed_ratio": float(speed_ratio),
+            "volume_ratio": float(volume_ratio),
+            "pitch_ratio": float(pitch_ratio),
         },
         "request": {
             "reqid": str(uuid.uuid4()),
@@ -78,5 +78,9 @@ if __name__ == '__main__':
     args.add_argument('--tts_text', type=str, required=True, help='Text to synthesize')
     args.add_argument('--voice_type', type=str, default="zh_male_shenyeboke_moon_bigtts", help='Voice type to use')
     args.add_argument('--output_file', type=str, default='output.mp3', help='Output file path')
+    args.add_argument('--speed_ratio', type=float, default=1.0, help='语速（0.8~1.5）')
+    args.add_argument('--volume_ratio', type=float, default=1.0, help='音量（0.8~1.5）')
+    args.add_argument('--pitch_ratio', type=float, default=1.0, help='音调（0.8~1.2）')
     args = args.parse_args()
-    run(args.tts_text, args.voice_type, args.output_file)
+    run(args.tts_text, args.voice_type, args.output_file,
+        args.speed_ratio, args.volume_ratio, args.pitch_ratio)

@@ -1,6 +1,6 @@
 # TimesFM3 HTTP 服务契约
 
-基础 URL 默认 `http://10.37.9.155:8333`，可用 `TIMESFM3_BASE_URL` 或 `--base-url` 覆盖。
+基础 URL 默认 `http://127.0.0.1:8333`，可用 `TIMESFM3_BASE_URL` 或 `--base-url` 覆盖。
 服务源码部署文档：`instructions/timesfm3.md`。
 
 ## GET /health
@@ -8,7 +8,7 @@
 ```json
 {
   "status": "ok",
-  "checkpoint": "/home/chenxiang.101/checkpoints/timesfm-3.0",
+  "checkpoint": "/path/to/checkpoints/timesfm-3.0",
   "device": "cuda",
   "torch": "2.9.0+cu128",
   "cuda_build": "12.8",

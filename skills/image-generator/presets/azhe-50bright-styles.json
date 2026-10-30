@@ -1,0 +1,306 @@
+{
+  "description": "阿哲50种不同明亮风格肖像：油画/水彩/国风/版画/插画/数字艺术，全部高调明亮，严格保留本人五官（圆脸、小内双眼、圆眼镜、淡胡茬）。",
+  "prompt_template": "以参考照片中的男士作为唯一主角，创作一张竖版肖像。严格保留本人真实五官与脸型：35岁中国男性，短寸板刷黑发、高发际线、圆润饱满有肉感的宽脸、偏小的细长内双眼睛、鼻梁不高鼻头圆、淡而平的眉毛、下巴与上唇淡青色短胡茬、大耳朵、戴黑色细边圆形大眼镜。不要瘦脸大眼、不要改变年龄，可有自然放松的微笑。本次画面风格：{style_name}——{transform}。整体必须高调明亮、光线通透柔和、色彩清新明快、画面干净，严禁暗黑、阴郁、浓重黑影。保留他本人的身份辨识度，只是艺术风格变化。画面无任何文字、水印、logo、签名。",
+  "items": [
+    {
+      "slug": "s01_impression",
+      "name": "印象派花园",
+      "filename": "01_印象派花园.jpg",
+      "transform": "明媚阳光花园，玫瑰雏菊环绕，树叶暖色光斑洒在脸上与白衬衫，莫奈/雷诺阿式轻快笔触，奶油暖调"
+    },
+    {
+      "slug": "s02_vangogh",
+      "name": "梵高星空",
+      "filename": "02_梵高星空.jpg",
+      "transform": "旋转流动的明亮蓝黄笔触，灿烂星夜与向日葵田，色彩浓烈明快，后印象派油画"
+    },
+    {
+      "slug": "s03_watercolor",
+      "name": "清新水彩",
+      "filename": "03_清新水彩.jpg",
+      "transform": "薄荷绿淡青水彩、白色小花、大面积明亮留白，透明轻盈晕染"
+    },
+    {
+      "slug": "s04_pastel",
+      "name": "粉彩画",
+      "filename": "04_粉彩画.jpg",
+      "transform": "柔和粉彩色调、细腻粉笔画质感，明亮窗边与浅色背景，温柔梦幻"
+    },
+    {
+      "slug": "s05_pencil",
+      "name": "彩色铅笔",
+      "filename": "05_彩色铅笔.jpg",
+      "transform": "细腻彩色铅笔手绘，明亮浅色背景，排线精致，清新文艺"
+    },
+    {
+      "slug": "s06_sketch",
+      "name": "淡彩素描",
+      "filename": "06_淡彩素描.jpg",
+      "transform": "干净铅笔素描加淡淡水彩，大面积留白，明亮简洁"
+    },
+    {
+      "slug": "s07_ukiyoe",
+      "name": "日式浮世绘",
+      "filename": "07_日式浮世绘.jpg",
+      "transform": "葛饰北斋风格，明亮蓝天、神奈川海浪与富士山，平涂明快色彩"
+    },
+    {
+      "slug": "s08_gongbi",
+      "name": "国风工笔",
+      "filename": "08_国风工笔.jpg",
+      "transform": "中国工笔重彩，明亮淡雅，竹、兰、白鹤与祥云，线条精致典雅"
+    },
+    {
+      "slug": "s09_inkwash",
+      "name": "青绿山水",
+      "filename": "09_青绿山水.jpg",
+      "transform": "明亮的青绿水墨山水，淡彩晕染、留白透气，国风清新"
+    },
+    {
+      "slug": "s10_newyear",
+      "name": "民俗年画",
+      "filename": "10_民俗年画.jpg",
+      "transform": "喜庆明亮的中国年画，大红大金、吉祥纹样，色彩饱满热烈"
+    },
+    {
+      "slug": "s11_popart",
+      "name": "波普艺术",
+      "filename": "11_波普艺术.jpg",
+      "transform": "高饱和撞色、网点印刷，安迪·沃霍尔式明快波普肖像"
+    },
+    {
+      "slug": "s12_artnouveau",
+      "name": "穆夏装饰",
+      "filename": "12_穆夏装饰.jpg",
+      "transform": "穆夏新艺术风，明亮金色线条、花卉装饰边框，优雅华丽"
+    },
+    {
+      "slug": "s13_artdeco",
+      "name": "装饰艺术",
+      "filename": "13_装饰艺术.jpg",
+      "transform": "几何线条、金与翡翠绿，Art Deco复古明亮海报"
+    },
+    {
+      "slug": "s14_bauhaus",
+      "name": "包豪斯",
+      "filename": "14_包豪斯.jpg",
+      "transform": "红黄蓝原色与简洁几何构成，明亮现代设计感"
+    },
+    {
+      "slug": "s15_pixel",
+      "name": "像素艺术",
+      "filename": "15_像素艺术.jpg",
+      "transform": "明亮可爱的8-bit/16-bit像素艺术，蓝天绿地，复古游戏画面"
+    },
+    {
+      "slug": "s16_voxel",
+      "name": "立体像素",
+      "filename": "16_立体像素.jpg",
+      "transform": "MagicaVoxel明亮3D方块世界，色彩清新，立体像素风"
+    },
+    {
+      "slug": "s17_lowpoly",
+      "name": "低多边形",
+      "filename": "17_低多边形.jpg",
+      "transform": "明亮低多边形Low Poly几何风，清新蓝天与渐变色彩"
+    },
+    {
+      "slug": "s18_flat",
+      "name": "扁平插画",
+      "filename": "18_扁平插画.jpg",
+      "transform": "现代明亮扁平矢量插画，简洁明快色块，轻松干净"
+    },
+    {
+      "slug": "s19_vector",
+      "name": "矢量插画",
+      "filename": "19_矢量插画.jpg",
+      "transform": "干净利落的明亮矢量插画，渐变与几何，时尚轻快"
+    },
+    {
+      "slug": "s20_linocut",
+      "name": "绝版套色版画",
+      "filename": "20_绝版套色版画.jpg",
+      "transform": "色彩明快的套色版画，刀刻肌理，装饰性强、明亮"
+    },
+    {
+      "slug": "s21_riso",
+      "name": "Riso印刷",
+      "filename": "21_Riso印刷.jpg",
+      "transform": "Risograph孔版印刷质感，明亮叠色与颗粒，清新复古"
+    },
+    {
+      "slug": "s22_risograph",
+      "name": "丝网版画",
+      "filename": "22_丝网版画.jpg",
+      "transform": "明亮丝网印刷，色块平涂、套色错位，波普清新"
+    },
+    {
+      "slug": "s23_mosaic",
+      "name": "马赛克镶嵌",
+      "filename": "23_马赛克镶嵌.jpg",
+      "transform": "明亮彩色玻璃马赛克镶嵌画，金光点缀，拜占庭清新"
+    },
+    {
+      "slug": "s24_stainedglass",
+      "name": "教堂彩窗",
+      "filename": "24_教堂彩窗.jpg",
+      "transform": "明亮透光的彩色玻璃花窗，阳光穿透，绚丽圣洁"
+    },
+    {
+      "slug": "s25_goldfoil",
+      "name": "金箔工笔",
+      "filename": "25_金箔工笔.jpg",
+      "transform": "明亮金箔与工笔结合，金色祥云仙鹤，华丽吉祥"
+    },
+    {
+      "slug": "s26_clay",
+      "name": "黏土定格",
+      "filename": "26_黏土定格.jpg",
+      "transform": "明亮可爱的黏土定格动画风，色彩柔和、质感憨厚"
+    },
+    {
+      "slug": "s27_lego",
+      "name": "乐高世界",
+      "filename": "27_乐高世界.jpg",
+      "transform": "明亮乐高积木世界，他变身乐高人偶，色彩欢快"
+    },
+    {
+      "slug": "s28_3dsoft",
+      "name": "3D软萌",
+      "filename": "28_3D软萌.jpg",
+      "transform": "皮克斯式明亮软萌3D卡通，蓝天白云，质感细腻可爱"
+    },
+    {
+      "slug": "s29_disney",
+      "name": "迪士尼动画",
+      "filename": "29_迪士尼动画.jpg",
+      "transform": "明亮迪士尼歌舞动画风，城堡烟花、灿烂色彩"
+    },
+    {
+      "slug": "s30_ghibli",
+      "name": "吉卜力风",
+      "filename": "30_吉卜力风.jpg",
+      "transform": "吉卜力明亮手绘动画，蓝天白云、夏日乡村，清新治愈"
+    },
+    {
+      "slug": "s31_shonen",
+      "name": "少年漫画",
+      "filename": "31_少年漫画.jpg",
+      "transform": "明亮热血少年漫画封面，明快网点、阳光笑容"
+    },
+    {
+      "slug": "s32_shojo",
+      "name": "少女漫画",
+      "filename": "32_少女漫画.jpg",
+      "transform": "明亮柔美少女漫画风，闪亮大眼与花朵（保留其男性五官），粉嫩清新"
+    },
+    {
+      "slug": "s33_webtoon",
+      "name": "条漫插画",
+      "filename": "33_条漫插画.jpg",
+      "transform": "明亮现代Webtoon网络漫画风，干净清爽上色"
+    },
+    {
+      "slug": "s34_cyberbright",
+      "name": "明亮赛博",
+      "filename": "34_明亮赛博.jpg",
+      "transform": "明亮版赛博朋克，粉蓝霓虹全息、干净未来都市，光线通透不暗黑"
+    },
+    {
+      "slug": "s35_vaporwave",
+      "name": "蒸汽波",
+      "filename": "35_蒸汽波.jpg",
+      "transform": "明亮粉紫蒸汽波，落日、棕榈与复古电子，明快梦幻"
+    },
+    {
+      "slug": "s36_retro70s",
+      "name": "70复古",
+      "filename": "36_70复古.jpg",
+      "transform": "70年代暖橙芥末黄复古插画风，阳光怀旧、明亮"
+    },
+    {
+      "slug": "s37_vintageposter",
+      "name": "复古旅行画",
+      "filename": "37_复古旅行画.jpg",
+      "transform": "上世纪中期明亮复古旅行海报，明快插画、度假氛围"
+    },
+    {
+      "slug": "s38_spring",
+      "name": "春日樱花",
+      "filename": "38_春日樱花.jpg",
+      "transform": "明亮春日，漫天粉樱、野餐与小狗，温柔治愈"
+    },
+    {
+      "slug": "s39_summer",
+      "name": "夏日海滩",
+      "filename": "39_夏日海滩.jpg",
+      "transform": "灿烂夏日海滩，碧海蓝天、阳光沙滩，元气清爽"
+    },
+    {
+      "slug": "s40_autumn",
+      "name": "秋日暖阳",
+      "filename": "40_秋日暖阳.jpg",
+      "transform": "明亮金秋，金黄银杏与暖阳，焦糖色调温暖"
+    },
+    {
+      "slug": "s41_lantern",
+      "name": "元宵灯会",
+      "filename": "41_元宵灯会.jpg",
+      "transform": "明亮元宵灯会，红灯笼、烟花与暖光，喜庆通透"
+    },
+    {
+      "slug": "s42_candy",
+      "name": "糖果世界",
+      "filename": "42_糖果世界.jpg",
+      "transform": "明亮梦幻糖果甜点世界，马卡龙色彩、漂浮泡泡"
+    },
+    {
+      "slug": "s43_oildaylight",
+      "name": "白昼油画",
+      "filename": "43_白昼油画.jpg",
+      "transform": "萨金特式明亮白昼写实油画，自然光、通透肤色、浅色背景"
+    },
+    {
+      "slug": "s44_bouguereau",
+      "name": "新古典",
+      "filename": "44_新古典.jpg",
+      "transform": "布格罗唯美新古典，圣洁柔光、蓝天白云，高雅明亮"
+    },
+    {
+      "slug": "s45_pre-raphaelite",
+      "name": "前拉斐尔派",
+      "filename": "45_前拉斐尔派.jpg",
+      "transform": "明亮唯美的前拉斐尔派，花卉、柔光与细腻色彩"
+    },
+    {
+      "slug": "s46_fauvism",
+      "name": "野兽派",
+      "filename": "46_野兽派.jpg",
+      "transform": "马蒂斯式野兽派，大胆鲜明的纯色、明快热烈"
+    },
+    {
+      "slug": "s47_klimt",
+      "name": "克林姆特",
+      "filename": "47_克林姆特.jpg",
+      "transform": "克林姆特金色装饰风，明亮金纹与图案，华丽绚烂"
+    },
+    {
+      "slug": "s48_hockney",
+      "name": "霍克尼泳池",
+      "filename": "48_霍克尼泳池.jpg",
+      "transform": "大卫·霍克尼式明亮泳池，明快蓝绿、阳光加州"
+    },
+    {
+      "slug": "s49_warhol",
+      "name": "沃霍尔多彩",
+      "filename": "49_沃霍尔多彩.jpg",
+      "transform": "沃霍尔式多彩重复色块肖像，鲜艳明快、波普明亮"
+    },
+    {
+      "slug": "s50_fantasy",
+      "name": "明亮奇幻",
+      "filename": "50_明亮奇幻.jpg",
+      "transform": "明亮高级奇幻风，圣光、精灵森林与金色魔法光，通透唯美"
+    }
+  ]
+}
