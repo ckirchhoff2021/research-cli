@@ -123,7 +123,13 @@ def generate_image(prompt: str, image_paths: list[str], size: str,
     src = run_generator(final_prompt, image_paths, size, log)
     ts = time.strftime("%Y%m%d-%H%M%S")
     dest = GENERATED_DIR / f"{mode}_{ts}.jpg"
-    # 统一转码为标准 RGB JPEG（处理 PNG/带透明通道/调色板等各种来源）
+    _save_as_rgb_jpeg(src, dest)
+    log(f"   ✓ 已保存：{dest.name}")
+    return str(dest)
+
+
+def _save_as_rgb_jpeg(src: Path, dest: Path) -> None:
+    """统一转码为标准 RGB JPEG（处理 PNG/带透明通道/调色板等各种来源）。"""
     from PIL import Image
     with Image.open(src) as im:
         if im.mode != "RGB":
@@ -132,6 +138,55 @@ def generate_image(prompt: str, image_paths: list[str], size: str,
             bg.paste(rgba, mask=rgba.split()[-1])
             im = bg
         im.save(dest, format="JPEG", quality=95)
+
+
+def transfer_image(prompt: str, target_path: str, ref_paths: list[str],
+                   transfer_mode: str, strength: int, size: str,
+                   feedback: str, log) -> str:
+    """参考图风格/特征迁移。图1=目标图（锁定构图主体），图2..=参考来源。"""
+    prompt = (prompt or "").strip()
+    feedback = (feedback or "").strip()
+    strength = max(1, min(100, int(strength or 70)))
+    if strength < 50:
+        level = "轻微克制，只做隐约的倾向"
+    elif strength < 85:
+        level = "明显可辨"
+    else:
+        level = "非常强烈、彻底"
+
+    if transfer_mode == "feature":
+        final_prompt = (
+            "图1是目标图，必须严格保留其场景、构图、镜头视角、人物姿态与动作不变；"
+            "图2及之后是特征参考图。请把参考图中主体的具体外观特征"
+            "（面部长相、发型、服饰款式颜色、物件或IP角色外观）自然迁移到目标图的对应主体上，"
+            "目标图原有的环境、光影氛围和其余内容保持不变，融合真实自然、无抠图拼接痕迹。"
+            f"特征迁移程度：{level}。"
+        )
+        label = "🧑 特征迁移"
+    else:
+        final_prompt = (
+            "图1是目标图，必须严格保留其主体、人物五官身份、姿态、构图与场景结构不变；"
+            "图2及之后是风格参考图。请把参考图的艺术风格迁移到目标图上："
+            "包括色调、光影、笔触质感、材质与画面氛围，但不要改变主体身份和内容。"
+            f"风格迁移程度：{level}。"
+        )
+        label = "🎨 风格迁移"
+    if prompt:
+        final_prompt += f"用户补充要求：{prompt}。"
+    if feedback:
+        final_prompt += f"本次调整要求：{feedback}"
+
+    images = [target_path] + [p for p in ref_paths if p and os.path.exists(p)]
+    log(f"🔗 {label}（强度 {strength}）：{prompt[:50] or '（按参考图自动迁移）'}")
+    log(f"   目标图：{Path(target_path).name}；参考图 {len(ref_paths)} 张："
+        f"{', '.join(Path(x).name for x in ref_paths)}")
+    if feedback:
+        log(f"   反馈：{feedback}")
+
+    src = run_generator(final_prompt, images, size, log)
+    ts = time.strftime("%Y%m%d-%H%M%S")
+    dest = GENERATED_DIR / f"transfer_{ts}.jpg"
+    _save_as_rgb_jpeg(src, dest)
     log(f"   ✓ 已保存：{dest.name}")
     return str(dest)
 

@@ -1,7 +1,7 @@
 /* Image Studio 前端：原生 JS 单页应用 */
 'use strict';
 // ── 版本自检：一旦加载到新版本，自动再重载一次，确保 JS/CSS 全部一致（防止旧标签长期驻留）──
-const BUILD = '20261102e';
+const BUILD = '20261102m';
 try {
   if (localStorage.getItem('istudio_build') !== BUILD) {
     localStorage.setItem('istudio_build', BUILD);
@@ -37,11 +37,16 @@ const PRESETS = [
 
 const state = {
   view: 'create',
-  mode: 'text2image',           // text2image | edit | style
-  refs: [],                     // {name,url}
+  mode: 'text2image',           // text2image | edit | style | transfer
+  refs: [],                     // {name,url} 参考图
+  target: null,                 // 参考迁移的目标图 {name,url}
+  transferMode: 'style',        // style | feature
+  strength: 70,
+  lastIsTransfer: false,
   prompt: '',
   jobs: new Map(),
   lastResult: null,
+  lastFromHistory: false,
   gallery: { uploads: [], generated: [], edits: [] },
 };
 
@@ -70,6 +75,7 @@ async function refreshResult(jobId) {
   const j = await api('/api/jobs/' + jobId);
   if (j.result && state.view === 'create') {
     state.lastResult = j.result;
+    state.lastFromHistory = false;
     renderResult();
     loadGallery();
     toast('✅ 图像生成完成', 'ok');
@@ -97,12 +103,41 @@ function renderCreate() {
         <button data-mode="text2image">🎨 文生图</button>
         <button data-mode="edit">🖌 图像编辑</button>
         <button data-mode="style">🌊 风格迁移</button>
+        <button data-mode="transfer">🔗 参考迁移</button>
       </div>
 
-      <label class="field"><span>参考图（编辑/风格迁移必传，文生图可选用于融合）</span></label>
-      <div class="dropzone" id="dz">📤 点击或拖拽图片到这里上传<br><small>支持 JPG / PNG / WebP，≤20MB，可多张</small></div>
-      <input type="file" id="fileInput" accept="image/*" multiple hidden />
-      <div class="ref-thumbs" id="refThumbs"></div>
+      <div id="normalUpload">
+        <label class="field"><span>参考图（编辑/风格迁移必传，文生图可选用于融合）</span></label>
+        <div class="dropzone" id="dz">📤 点击或拖拽图片到这里上传<br><small>支持 JPG / PNG / WebP，≤20MB，可多张</small></div>
+        <input type="file" id="fileInput" accept="image/*" multiple hidden />
+        <div class="ref-thumbs" id="refThumbs"></div>
+      </div>
+
+      <div id="transferUpload" hidden>
+        <label class="field"><span>🎯 目标图（被改造的基底，锁定构图与主体，仅 1 张）</span></label>
+        <div class="target-slot" id="targetSlot">
+          <div class="ts-empty">🎯 点击上传目标图<br><small>也可稍后从图库「设为目标」</small></div>
+        </div>
+        <input type="file" id="targetFileInput" accept="image/*" hidden />
+
+        <label class="field" style="margin-top:14px"><span>📎 参考图（风格 / 特征来源，可多张）</span></label>
+        <div class="ref-film" id="refFilm"></div>
+        <button class="btn sm" id="addRefBtn" style="width:100%;margin-top:8px">＋ 添加参考图</button>
+        <input type="file" id="refFileInput" accept="image/*" multiple hidden />
+
+        <div class="seg seg2" id="transferSeg" style="margin-top:14px">
+          <button data-tm="style">🎨 风格迁移</button>
+          <button data-tm="feature">🧑 特征迁移</button>
+        </div>
+        <div class="strength-row">
+          <span>迁移强度</span>
+          <div class="st-chips" id="stChips">
+            <button data-v="30" class="chip">轻 30</button>
+            <button data-v="70" class="chip">中 70</button>
+            <button data-v="100" class="chip">强 100</button>
+          </div>
+        </div>
+      </div>
 
       <label class="field"><span id="promptLabel">描述你想要的画面</span>
         <textarea id="promptInput" rows="5" placeholder="例如：雨夜小巷里的古风书生，手提灯笼，暖黄灯光，电影感…"></textarea>
@@ -123,10 +158,7 @@ function renderCreate() {
     </section>
 
     <section class="result-panel">
-      <div class="stage-refs" id="stageRefs" hidden></div>
-      <div class="stage" id="stage">
-        <div class="placeholder"><span class="big">🖼️</span>生成结果将在这里展示<br><small>支持预览、下载、送去编辑、按反馈重新生成</small></div>
-      </div>
+      <div class="stage" id="stage"></div>
       <div class="result-actions" id="resultActions"></div>
       <div class="recent panel"><h3>🕘 最近生成</h3><div class="filmstrip" id="filmstrip"><span class="muted">暂无记录</span></div></div>
     </section>
@@ -137,10 +169,10 @@ function renderCreate() {
     const b = e.target.closest('button'); if (!b) return;
     state.mode = b.dataset.mode;
     $$('#modeSeg button').forEach(x => x.classList.toggle('active', x === b));
-    const labels = { text2image: '描述你想要的画面', edit: '描述要如何编辑这张图', style: '描述目标风格' };
-    $('#promptLabel').textContent = labels[state.mode];
+    applyModeUI();
   });
   $$('#modeSeg button').forEach(b => b.classList.toggle('active', b.dataset.mode === state.mode));
+  applyModeUI();
 
   // 上传
   const dz = $('#dz'), fi = $('#fileInput');
@@ -159,22 +191,95 @@ function renderCreate() {
   });
 
   $('.gen-btn').onclick = () => submitGenerate();
+  // 参考迁移：目标图 / 参考图上传
+  $('#targetSlot').onclick = () => $('#targetFileInput').click();
+  $('#targetFileInput').onchange = e => { uploadFiles(e.target.files, 'target'); e.target.value = ''; };
+  $('#addRefBtn').onclick = () => $('#refFileInput').click();
+  $('#refFileInput').onchange = e => { uploadFiles(e.target.files, 'refs'); e.target.value = ''; };
+  $('#transferSeg').onclick = e => {
+    const b = e.target.closest('button'); if (!b) return;
+    state.transferMode = b.dataset.tm; applyModeUI();
+  };
+  $('#stChips').onclick = e => {
+    const b = e.target.closest('button'); if (!b) return;
+    state.strength = +b.dataset.v; applyModeUI();
+  };
   renderRefs();
-  renderResult();
+  renderTarget();
+  renderRefFilm();
+  renderStageEmpty();
   loadGallery().then(renderFilmstrip);
 }
 
-async function uploadFiles(files) {
+function applyModeUI() {
+  const isT = state.mode === 'transfer';
+  $('#normalUpload').hidden = isT;
+  $('#transferUpload').hidden = !isT;
+  const labels = {
+    text2image: '描述你想要的画面',
+    edit: '描述要如何编辑这张图',
+    style: '描述目标风格',
+    transfer: '补充要求（可选，留空则完全按参考图迁移）',
+  };
+  const ph = {
+    text2image: '例如：雨夜小巷里的古风书生，手提灯笼，暖黄灯光，电影感…',
+    edit: '例如：去掉背景里的路人、把天空换成黄昏…',
+    style: '例如：梵高油画 / 吉卜力动漫 / 赛博朋克霓虹…',
+    transfer: '例如：只迁移色调不要笔触；让人物也穿上参考图同款；保留文字清晰…',
+  };
+  $('#promptLabel').textContent = labels[state.mode];
+  $('#promptInput').placeholder = ph[state.mode];
+  // 参考迁移子模式 & 强度
+  $$('#transferSeg button').forEach(b =>
+    b.classList.toggle('active', b.dataset.tm === state.transferMode));
+  $$('#stChips button').forEach(b =>
+    b.classList.toggle('on', +b.dataset.v === state.strength));
+  configChanged();
+}
+
+async function uploadFiles(files, bucket = 'refs') {
+  files = [...files]; // 快照：onchange 随后会重置 input，活的 FileList 会被清空（否则多张只剩第一张）
   for (const f of files) {
     if (!f.type.startsWith('image/')) continue;
     const fd = new FormData(); fd.append('file', f);
     try {
       const r = await api('/api/upload', { method: 'POST', body: fd });
-      if (!state.refs.some(x => x.name === r.name)) state.refs.push(r);
-      toast('已上传：' + f.name, 'ok');
+      if (bucket === 'target') { state.target = r; }
+      else if (!state.refs.some(x => x.name === r.name)) { state.refs.push(r); }
+      toast((bucket === 'target' ? '目标图：' : '已上传：') + f.name, 'ok');
     } catch (e) { toast('上传失败：' + e.message, 'err'); }
   }
-  if (state.view === 'create') renderRefs();
+  if (state.view !== 'create') return;
+  if (bucket === 'target') renderTarget(); else { renderRefs(); renderRefFilm(); }
+  configChanged();
+}
+
+function renderTarget() {
+  const slot = $('#targetSlot'); if (!slot) return;
+  const t = state.target;
+  slot.innerHTML = t
+    ? `<img src="${t.url}" alt=""><div class="ts-acts"><button class="ts-rep" id="tsRep" title="更换目标图">🔄</button><button class="ts-rm" id="tsRm" title="移除目标图">✕</button></div>`
+    : `<div class="ts-empty">🎯 点击上传目标图<br><small>被改造的基底 · 锁定构图与主体</small></div>`;
+  if (t) {
+    slot.onclick = () => $('#targetFileInput').click();
+    $('#tsRm').onclick = e => { e.stopPropagation(); state.target = null; renderTarget(); configChanged(); };
+  } else {
+    slot.onclick = () => $('#targetFileInput').click();
+  }
+}
+
+function renderRefFilm() {
+  const box = $('#refFilm'); if (!box) return;
+  box.innerHTML = state.refs.map((r, i) => `
+    <div class="rf-card" title="${esc(r.name)}">
+      <img src="${r.url}" alt="">
+      <span class="rf-n">${i + 1}</span>
+      <button class="rf-x" data-i="${i}">✕</button>
+    </div>`).join('');
+  box.onclick = e => {
+    const b = e.target.closest('.rf-x'); if (!b) return;
+    state.refs.splice(+b.dataset.i, 1); renderRefFilm(); configChanged();
+  };
 }
 function renderRefs() {
   const box = $('#refThumbs'); if (!box) return;
@@ -184,42 +289,90 @@ function renderRefs() {
       <button class="rm" data-i="${i}">✕</button></div>`).join('');
   box.onclick = e => {
     const b = e.target.closest('.rm'); if (!b) return;
-    state.refs.splice(+b.dataset.i, 1); renderRefs();
+    state.refs.splice(+b.dataset.i, 1); renderRefs(); configChanged();
   };
-  renderStageRefs();
 }
-// 右侧展示窗口顶部的「当前参考图」小条：新上传/删除都实时刷新
-function renderStageRefs() {
-  const box = $('#stageRefs'); if (!box) return;
-  if (!state.refs.length) { box.hidden = true; box.innerHTML = ''; return; }
-  box.hidden = false;
-  box.innerHTML = `<span class="slabel">参考图 ${state.refs.length} 张</span>` +
-    state.refs.map((r, i) => `
-    <div class="sref" title="${esc(r.name)}"><img src="${r.url}" alt="">
-      <span class="n">#${i + 1}</span>
-      <button class="x" data-i="${i}">✕</button></div>`).join('');
-  box.onclick = e => {
-    const b = e.target.closest('.x'); if (!b) return;
-    state.refs.splice(+b.dataset.i, 1); renderRefs();
-  };
+
+// 配置变化（切模式/上传/删除）后：旧结果失效，右侧框回到"预览示意"状态
+function configChanged() {
+  state.lastResult = null;
+  if (state.view !== 'create') return;
+  $('#resultActions').innerHTML = '';
+  renderStageEmpty();
+}
+
+// 右侧展示框：无结果时在【框内】展示目标图/参考图预览
+function renderStageEmpty() {
+  const stage = $('#stage'); if (!stage) return;
+  if (state.lastResult) { renderResult(); return; }
+  const refCard = (r, i) => `
+    <div class="tp-ref" data-preview="${r.url}" title="点击放大 #${i + 1}">
+      <img src="${r.url}" alt=""><span>#${i + 1} 参考</span>
+    </div>`;
+  if (state.mode === 'transfer') {
+    const t = state.target;
+    stage.innerHTML = `
+      <div class="tp-wrap">
+        <div class="tp-col">
+          <div class="tp-cap">🎯 目标图 · 保持构图与主体</div>
+          <div class="tp-target ${t ? '' : 'empty'}">
+            ${t
+              ? `<img src="${t.url}" data-preview="${t.url}" title="点击放大" alt="target">`
+              : `<div class="tp-add">🎯 还没有目标图<br><small>在左侧上传，或从图库点「🎯」</small></div>`}
+          </div>
+        </div>
+        <div class="tp-arrow">✨<b>➜</b></div>
+        <div class="tp-col tp-refcol">
+          <div class="tp-cap">📎 参考图 ×${state.refs.length} · 风格 / 特征来源</div>
+          <div class="tp-refs">
+            ${state.refs.map(refCard).join('') ||
+              '<div class="tp-add">📎 还没有参考图<br><small>在左侧「＋ 添加参考图」，或从图库点「➕ 参考」</small></div>'}
+          </div>
+        </div>
+      </div>`;
+  } else if (state.refs.length) {
+    stage.innerHTML = `
+      <div class="rp-only">
+        <div class="tp-cap">📎 当前参考图 ×${state.refs.length}（点击放大）</div>
+        <div class="tp-refs">${state.refs.map(refCard).join('')}</div>
+        <div class="placeholder"><span class="big">🖼️</span>写好提示词点「🚀 生成」，结果将在这里展示</div>
+      </div>`;
+  } else {
+    stage.innerHTML = `
+      <div class="placeholder"><span class="big">🖼️</span>生成结果将在这里展示
+        <br><small>支持预览、下载、送去编辑、按反馈重新生成</small></div>`;
+  }
+  stage.querySelectorAll('[data-preview]').forEach(el => {
+    el.onclick = () => { if (el.dataset.preview) openLightbox(el.dataset.preview); };
+  });
 }
 
 async function submitGenerate(feedback = '') {
   const prompt = $('#promptInput') ? $('#promptInput').value.trim() : state.prompt;
   state.prompt = prompt;
-  if (!prompt) return toast('请先输入提示词', 'err');
-  if (state.mode !== 'text2image' && state.refs.length === 0)
-    return toast(state.mode === 'style' ? '风格迁移需要先上传参考图' : '图像编辑需要先上传参考图', 'err');
+  if (state.mode === 'transfer') {
+    if (!state.target) return toast('请先上传一张目标图', 'err');
+    if (state.refs.length === 0) return toast('请至少添加一张参考图', 'err');
+  } else {
+    if (!prompt) return toast('请先输入提示词', 'err');
+    if (state.mode !== 'text2image' && state.refs.length === 0)
+      return toast(state.mode === 'style' ? '风格迁移需要先上传参考图' : '图像编辑需要先上传参考图', 'err');
+  }
   const busy = [...state.jobs.values()].some(j => j.status === 'running' || j.status === 'queued');
   if (busy) return toast('请等待当前任务完成', 'err');
   const size = $('#sizeSel').value;
+  state.lastIsTransfer = state.mode === 'transfer';
+  state.lastBefore = state.mode === 'transfer' ? state.target.url : null;
   setStageBusy(feedback ? '按反馈重新生成中…' : '生成中…');
   try {
+    const options = state.mode === 'transfer'
+      ? { prompt, mode: 'transfer', size, feedback,
+          target: state.target.name, images: state.refs.map(r => r.name),
+          transfer_mode: state.transferMode, strength: state.strength }
+      : { prompt, mode: state.mode, size, feedback, images: state.refs.map(r => r.name) };
     await api('/api/jobs', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ kind: 'generate', options: {
-        prompt, mode: state.mode, size, feedback, images: state.refs.map(r => r.name),
-      }}),
+      body: JSON.stringify({ kind: 'generate', options }),
     });
   } catch (e) {
     setStageError(e.message);
@@ -237,18 +390,61 @@ function renderResult() {
   const r = state.lastResult;
   const stage = $('#stage');
   if (!r) return;
-  stage.innerHTML = `<img src="${r.url}?t=${Date.now()}" alt="result">`;
+  const afterUrl = `${r.url}?t=${Date.now()}`;
+  if (!state.lastFromHistory && state.lastIsTransfer && state.lastBefore) {
+    stage.innerHTML = `
+      <div class="compare" id="compareBox">
+        <img class="cmp-before" src="${state.lastBefore}" alt="before">
+        <img class="cmp-after" id="cmpAfter" src="${afterUrl}" alt="after">
+        <div class="cmp-line" id="cmpLine"><div class="cmp-grip">⇔</div></div>
+        <span class="cmp-tag b">原图</span><span class="cmp-tag a">迁移结果</span>
+      </div>`;
+    bindCompare();
+  } else {
+    stage.innerHTML = `<img src="${afterUrl}" alt="result">`;
+  }
   $('#resultActions').innerHTML = `
     <button class="btn primary" id="btnRegen">🔄 重新生成（可带反馈）</button>
     <a class="btn" href="${r.url}" download><span>⬇️ 下载</span></a>
     <button class="btn" id="btnEdit">🖌 送去编辑</button>
-    <button class="btn ghost-btn" id="btnRef">➕ 用作参考图</button>`;
+    <button class="btn ghost-btn" id="btnRef">➕ 用作参考图</button>
+    <button class="btn ghost-btn" id="btnBack">↩ 返回配置预览</button>`;
   $('#btnRegen').onclick = askFeedback;
   $('#btnEdit').onclick = () => loadEditor(r.url, r.name);
   $('#btnRef').onclick = () => {
     if (!state.refs.some(x => x.name === r.name)) state.refs.push(r);
-    renderRefs(); toast('已加入参考图');
+    renderRefs(); renderRefFilm(); toast('已加入参考图');
   };
+  $('#btnBack').onclick = closeResult;
+}
+
+// 退出"结果查看态"：恢复右侧框内的目标图/参考图配置预览（不改动任何已上传图片）
+function closeResult() {
+  state.lastResult = null;
+  state.lastFromHistory = false;
+  if (state.view !== 'create') return;
+  $('#resultActions').innerHTML = '';
+  renderStageEmpty();
+}
+
+function bindCompare() {
+  const box = $('#compareBox'), after = $('#cmpAfter'), line = $('#cmpLine');
+  if (!box) return;
+  let pos = 50;
+  const apply = () => {
+    after.style.clipPath = `inset(0 0 0 ${pos}%)`;
+    line.style.left = pos + '%';
+  };
+  apply();
+  let dragging = false;
+  const moveTo = cx => {
+    const rect = box.getBoundingClientRect();
+    pos = Math.min(100, Math.max(0, (cx - rect.left) / rect.width * 100));
+    apply();
+  };
+  box.addEventListener('pointerdown', e => { dragging = true; box.setPointerCapture(e.pointerId); moveTo(e.clientX); });
+  box.addEventListener('pointermove', e => { if (dragging) moveTo(e.clientX); });
+  box.addEventListener('pointerup', () => { dragging = false; });
 }
 async function renderFilmstrip() {
   const box = $('#filmstrip'); if (!box) return;
@@ -262,6 +458,7 @@ async function renderFilmstrip() {
   box.onclick = e => {
     const cell = e.target.closest('.cell'); if (!cell) return;
     state.lastResult = { name: cell.dataset.name, url: cell.dataset.url };
+    state.lastFromHistory = true; // 历史图无 before 信息：只做查看态，不套用对比滑杆
     renderResult();
   };
 }
@@ -849,6 +1046,7 @@ async function renderGallery() {
           <div class="acts">
             <button data-act="edit" data-url="/media/${it.d}/${encodeURIComponent(it.name)}">🖌 编辑</button>
             <button data-act="ref" data-name="${esc(it.name)}" data-url="/media/${it.d}/${encodeURIComponent(it.name)}">➕ 参考</button>
+            <button data-act="target" data-name="${esc(it.name)}" data-url="/media/${it.d}/${encodeURIComponent(it.name)}">🎯</button>
             <button data-act="dl" data-url="/media/${it.d}/${encodeURIComponent(it.name)}">⬇️</button>
           </div>
         </div>
@@ -866,6 +1064,11 @@ async function renderGallery() {
       const r = { name: b.dataset.name, url };
       if (!state.refs.some(x => x.name === r.name)) state.refs.push(r);
       switchView('create'); toast('已加入参考图');
+    }
+    if (b.dataset.act === 'target') {
+      state.target = { name: b.dataset.name, url };
+      state.mode = 'transfer';
+      switchView('create'); toast('已设为目标图，可继续添加参考图');
     }
     if (b.dataset.act === 'dl') { const a = document.createElement('a'); a.href = url; a.download = ''; a.click(); }
   };

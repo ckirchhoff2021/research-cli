@@ -72,21 +72,41 @@ def trigger(body: JobBody):
     size = opts.get("size") if isinstance(opts.get("size"), str) else "2K"
     feedback = _as_str(opts.get("feedback"))
     image_names = opts.get("images") or []
+    transfer_mode = _as_str(opts.get("transfer_mode")) or "style"
+    try:
+        strength = int(opts.get("strength", 70))
+    except (TypeError, ValueError):
+        strength = 70
+    if mode == "transfer":
+        target_name = _as_str(opts.get("target"))
+        if not target_name:
+            raise HTTPException(400, "参考迁移需要一张目标图")
+        if not image_names:
+            raise HTTPException(400, "参考迁移至少需要一张参考图")
+        target_path = _resolve_image(target_name)
+        ref_paths = [_resolve_image(n) for n in image_names]
+    else:
+        target_path, ref_paths = "", []
     image_paths = [_resolve_image(n) for n in image_names]
-    if not prompt:
+    if not prompt and mode != "transfer":
         raise HTTPException(400, "提示词不能为空")
     if mode in ("edit", "style") and not image_paths:
         raise HTTPException(400, "该模式至少需要一张参考图，请先上传")
     if size not in ("2K", "3K", "4K"):
         raise HTTPException(400, "尺寸只支持 2K / 3K / 4K")
-    if mode not in ("text2image", "edit", "style"):
+    if mode not in ("text2image", "edit", "style", "transfer"):
         raise HTTPException(400, f"未知模式: {mode}")
 
     def fn(j, log):
-        out = pipeline.generate_image(prompt, image_paths, size, mode, feedback, log)
+        if mode == "transfer":
+            out = pipeline.transfer_image(prompt, target_path, ref_paths,
+                                          transfer_mode, strength, size, feedback, log)
+        else:
+            out = pipeline.generate_image(prompt, image_paths, size, mode, feedback, log)
         return {"name": Path(out).name, "url": f"/media/generated/{Path(out).name}"}
 
-    title = {"text2image": "文生图", "edit": "图像编辑", "style": "风格迁移"}.get(mode, "图像生成")
+    title = {"text2image": "文生图", "edit": "图像编辑", "style": "风格迁移",
+             "transfer": "参考迁移"}.get(mode, "图像生成")
     job = jobs.submit("generate", title, fn)
     return jobs.job_snapshot(job)
 
