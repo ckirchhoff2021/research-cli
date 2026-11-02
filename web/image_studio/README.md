@@ -4,6 +4,16 @@
 支持上传图像、按 prompt 文生图、图生图编辑、风格迁移、带反馈重新生成、编辑预览，
 并内置一个类 Photoshop 的本地图像编辑器（裁剪 / 旋转 / 翻转 / 调色 / 画笔 / 橡皮 / AI 局部重绘 / 撤销重做）。
 
+## 环境准备
+
+```bash
+# 在仓库根目录安装依赖（全量安装也可直接 uv sync）
+pip install -r web/image_studio/requirements.txt
+
+# 配置图像生成 API（按 .env.example 填写 IMAGE_GEN_* 等变量）
+cp .env.example .env
+```
+
 ## 启动
 
 ```bash

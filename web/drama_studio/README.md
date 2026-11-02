@@ -4,6 +4,16 @@
 重做时还可以**填写自然语言反馈，让 AI 按反馈调整生成**。通过 SSE 实时查看任务日志。
 底层复用项目内 `skills/drama-video-creator` 的完整 pipeline。
 
+## 环境准备
+
+```bash
+# 在仓库根目录安装依赖（全量安装也可直接 uv sync）
+pip install -r web/drama_studio/requirements.txt
+
+# 配置 API（按 .env.example 填写 ARK / IMAGE_GEN / VIDEO_GEN / TTS 等变量）
+cp .env.example .env
+```
+
 ## 启动
 
 ```bash
