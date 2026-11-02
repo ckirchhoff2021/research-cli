@@ -1,4 +1,4 @@
-"""最终合成：酷炫片头片尾 + 交叉淡入淡出 + 原始背景声 + 对白音轨精确对齐（无额外 BGM）。"""
+"""最终合成：酷炫片头片尾 + 交叉淡入淡出 + 原始背景声；可选混入用户上传的 BGM。"""
 from __future__ import annotations
 import math
 import os
@@ -316,12 +316,36 @@ def compose_final(project, base, venv_py, ff, project_root):
         "-crf", "20", "-c:a", "aac", "-b:a", "192k", "-pix_fmt", "yuv420p",
         "-r", str(FPS), cp])
 
-    print("\n[4] 最终合成（直接保留视频原始音频，不叠加配音/BGM）...")
+    bgm_file = project.get("bgm_file", "")
+    has_bgm = bool(bgm_file) and os.path.exists(bgm_file)
+    if has_bgm:
+        print("\n[4] 最终合成（保留视频原声，混入上传的 BGM）...")
+    else:
+        print("\n[4] 最终合成（保留视频原始音频，无 BGM）...")
     final_path = str(base / "final.mp4")
     if os.path.exists(final_path):
         os.remove(final_path)
-    # cat.mp4 已含各片段原始音频的 acrossfade 混音，直接重封装即可
-    run([ff, "-y", "-i", cp, "-c", "copy", "-shortest", final_path])
+    if has_bgm:
+        # BGM 循环铺满全片：低音量(0.2)垫在原声下，首尾淡入淡出，按成片时长截断
+        fade_out_st = max(0.0, td - 3.0)
+        fc = (
+            "[1:a]aformat=sample_rates=44100:channel_layouts=stereo,"
+            "volume=0.2,"
+            "afade=t=in:st=0:d=2,"
+            f"afade=t=out:st={fade_out_st:.3f}:d=3,"
+            f"atrim=0:{td:.3f}[bgm];"
+            "[0:a][bgm]amix=inputs=2:duration=first:normalize=0[a]"
+        )
+        ok = run([ff, "-y", "-i", cp, "-stream_loop", "-1", "-i", bgm_file,
+                  "-filter_complex", fc,
+                  "-map", "0:v", "-map", "[a]",
+                  "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
+                  "-shortest", final_path])
+        if not ok:
+            raise RuntimeError("BGM 混音失败，请检查上传的音频文件是否可正常播放")
+    else:
+        # cat.mp4 已含各片段原始音频的 acrossfade 混音，直接重封装即可
+        run([ff, "-y", "-i", cp, "-c", "copy", "-shortest", final_path])
 
     if os.path.exists(final_path):
         sz = os.path.getsize(final_path) / (1024 * 1024)

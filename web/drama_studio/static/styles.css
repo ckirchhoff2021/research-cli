@@ -300,6 +300,55 @@ a { color: inherit; text-decoration: none; }
 /* ── 弹窗 ── */
 .modal-mask { position: fixed; inset: 0; z-index: 200; background: rgba(4,4,10,0.66); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 20px; animation: fade 0.2s ease; }
 @keyframes fade { from { opacity: 0; } }
+
+/* ── 非真人美术画风选择 ── */
+.art-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+.art-card {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
+  padding: 11px 12px; border-radius: 12px; cursor: pointer;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.22);
+  transition: all 0.16s ease;
+  user-select: none;
+}
+.art-card:hover { border-color: rgba(139,124,246,0.55); transform: translateY(-1px); }
+.art-card.on {
+  border-color: var(--violet);
+  background: rgba(139,124,246,0.2);
+  box-shadow: 0 0 0 1px var(--violet), 0 6px 18px rgba(139,124,246,0.25);
+}
+.art-card .art-icon { font-size: 22px; line-height: 1.2; }
+.art-card .art-name { font-size: 13.5px; font-weight: 600; color: var(--text); }
+.art-card .art-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.art-badge { color: var(--gold); border-color: rgba(242,201,120,0.35); }
+
+/* ── BGM 上传 ── */
+.bgm-upload {
+  display: flex; align-items: center; gap: 14px;
+  margin-top: 6px; padding: 16px 18px;
+  border: 1.5px dashed var(--border); border-radius: 12px;
+  cursor: pointer; transition: all 0.16s ease;
+  background: rgba(0,0,0,0.2);
+}
+.bgm-upload:hover { border-color: var(--violet); background: rgba(139,124,246,0.08); }
+.bgm-plus {
+  font-size: 26px; color: var(--violet); line-height: 1;
+  width: 42px; height: 42px; flex: none;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; border: 1px solid var(--violet);
+}
+.bgm-up-text { font-size: 14px; color: var(--text); line-height: 1.5; }
+.bgm-up-text small { color: var(--muted); font-size: 11.5px; }
+.bgm-row { display: flex; align-items: center; gap: 16px; margin-top: 6px; flex-wrap: wrap; }
+.bgm-row audio { height: 40px; max-width: 340px; }
+.bgm-info { display: flex; flex-direction: column; gap: 7px; }
+.bgm-name { font-size: 13.5px; color: var(--text); }
+.bgm-actions { display: flex; gap: 8px; }
+.danger-text { color: #f87171; }
 .modal { width: min(620px, 100%); background: var(--bg-2); border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow); overflow: hidden; }
 .modal-sm { width: min(420px, 100%); }
 .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); }

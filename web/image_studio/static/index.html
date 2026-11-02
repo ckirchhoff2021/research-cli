@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🎨 Image Studio · AI 图像工坊</title>
+<link rel="stylesheet" href="styles.css?v=20261102e" />
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand"><span class="logo">🎨</span><div><b>Image Studio</b><small>AI 生成 · 图像编辑 · 风格迁移</small></div></div>
+    <nav class="tabs">
+      <button class="tab active" data-view="create">✨ AI 创作</button>
+      <button class="tab" data-view="editor">🖌 图像编辑</button>
+      <button class="tab" data-view="gallery">🗂 图库</button>
+    </nav>
+    <div class="top-right">
+      <span id="workerPill" class="pill">● 就绪</span>
+      <small id="feBuild" class="fe-build" title="前端版本号；刷新后应与最新一致">v20261102e</small>
+      <button class="icon-btn" id="logBtn" title="任务日志">📜</button>
+    </div>
+  </header>
+
+  <main id="view"><!-- 视图由 app.js 渲染 --></main>
+</div>
+
+<!-- toast -->
+<div id="toastBox"></div>
+
+<!-- 反馈弹窗 -->
+<div id="feedbackModal" class="modal-mask" hidden>
+  <div class="modal">
+    <div class="modal-head"><h2 id="fbTitle">重新生成</h2><button class="icon-btn" id="fbClose">✕</button></div>
+    <div class="modal-body">
+      <p id="fbHint" class="muted"></p>
+      <label class="field"><span>修改反馈（留空 = 按原提示词重新生成）</span>
+        <textarea id="fbText" rows="3" placeholder="例如：色调更暖一些；人物笑容再明显；背景换成海边…"></textarea>
+      </label>
+    </div>
+    <div class="modal-foot">
+      <button class="ghost-btn" id="fbCancel">取消</button>
+      <button class="btn primary" id="fbSubmit">🚀 按反馈生成</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI 局部重绘弹窗 -->
+<div id="inpaintModal" class="modal-mask" hidden>
+  <div class="modal">
+    <div class="modal-head"><h2>✨ AI 局部重绘</h2><button class="icon-btn" id="ipmClose">✕</button></div>
+    <div class="modal-body">
+      <p class="muted">只有虚线框选的区域会被重新绘制，其余像素保持不变，边缘自动羽化融合。</p>
+      <label class="field"><span>重绘内容（留空 = 智能移除框内物体并补全背景）</span>
+        <textarea id="ipmText" rows="3" placeholder="例如：换成一束向日葵；去掉路人并补全地面；给杯子里加上咖啡…"></textarea>
+      </label>
+    </div>
+    <div class="modal-foot">
+      <button class="ghost-btn" id="ipmCancel">取消</button>
+      <button class="btn primary" id="ipmSubmit">✨ 开始重绘</button>
+    </div>
+  </div>
+</div>
+
+<!-- 日志抽屉 -->
+<div id="logDrawer" hidden>
+  <div class="log-head"><b>任务日志</b><button class="icon-btn" id="logClose">✕</button></div>
+  <pre id="logBody"></pre>
+</div>
+
+<script src="app.js?v=20261102e"></script>
+</body>
+</html>

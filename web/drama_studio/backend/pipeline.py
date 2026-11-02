@@ -37,6 +37,10 @@ from creative import (  # noqa: E402
 )
 from creative import generate_shot as llm_generate_shot  # noqa: E402
 from compose import compose_final  # noqa: E402
+from artstyles import (  # noqa: E402
+    ART_STYLES, get_style, style_anchor as art_style_anchor,
+    DEFAULT_ART_STYLE, sanitize_nonreal,
+)
 
 OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -68,9 +72,50 @@ def load(project_id: str) -> dict:
     # 统一为同一引用，保证 rebuild_prompts 的修改能反映到顶层。
     if data.get("shots") is not None:
         data.setdefault("script", {})["shots"] = data["shots"]
+    # 迁移：补齐非真人美术画风字段（老项目默认 3D 卡通）
+    art_id = data.get("art_style") or DEFAULT_ART_STYLE
+    if not any(s["id"] == art_id for s in ART_STYLES):
+        art_id = DEFAULT_ART_STYLE
+    data["art_style"] = art_id
+    script = data.setdefault("script", {})
+    if not script.get("art_anchor"):
+        script["art_anchor"] = art_style_anchor(art_id)
+        migrated = True
+        # 老镜头 prompt 写于画风改造前（可能含"写实/胶片"），按新锚点重建
+        try:
+            build_shot_prompts(script)
+        except Exception:
+            pass
+    else:
+        migrated = False
+    # 清除 LLM 风格锚点里残留的真人/胶片/写实措辞
+    raw_anchor = script.get("style_anchor", "")
+    clean_anchor = sanitize_nonreal(raw_anchor)
+    if clean_anchor != raw_anchor:
+        script["style_anchor"] = clean_anchor
+        migrated = True
+        try:
+            build_shot_prompts(script)
+        except Exception:
+            pass
+    # 已有 art_anchor 但镜头 prompt 仍是旧版（没带画风前缀）的，也重建一次
+    _shots = data.get("shots", [])
+    _anchor_head = script["art_anchor"][:24]
+    _llm_head = script.get("style_anchor", "")[:16]
+    _need = (
+        _shots and (
+            not str(_shots[0].get("prompt", "")).startswith(_anchor_head)
+            or (_llm_head and _llm_head not in str(_shots[0].get("prompt", "")))
+        )
+    )
+    if _need:
+        try:
+            build_shot_prompts(script)
+            migrated = True
+        except Exception:
+            pass
     # 迁移：为缺少 uid 的镜头补稳定 ID。
     # 素材文件（segments/voices）按 uid 命名，拖拽排序改变位置后不会错绑或互相覆盖。
-    migrated = False
     for shot in data.get("shots", []):
         if not shot.get("uid"):
             shot["uid"] = "shot_" + uuid.uuid4().hex[:10]
@@ -109,6 +154,7 @@ def generate_shot(project: dict, user_prompt: str) -> dict:
     settings = get_settings()
     script = project.get("script", {})
     context = {
+        "art_anchor": script.get("art_anchor", art_style_anchor(project.get("art_style"))),
         "style_anchor": script.get("style_anchor", ""),
         "characters": script.get("characters", []),
         "shots": project.get("shots", []),
@@ -249,15 +295,21 @@ def create_project(payload: dict, log) -> str:
     ratio = payload.get("ratio", "16:9")
     resolution = payload.get("resolution", "1080p")
     style = payload.get("style", "gufeng")
+    art_id = payload.get("art_style", DEFAULT_ART_STYLE)
+    if not any(s["id"] == art_id for s in ART_STYLES):
+        art_id = DEFAULT_ART_STYLE
+    spec = get_style(art_id)
 
     pid = new_pid(concept[:8])
     ensure_dirs(pid)
     log(f"🎬 新建项目 {pid}")
     log(f"   创意：{concept}")
-    log(f"   分镜 {num_shots} 个｜{ratio}｜{resolution}｜风格 {style}")
+    log(f"   分镜 {num_shots} 个｜{ratio}｜{resolution}｜题材 {style}")
+    log(f"   美术画风：{spec['icon']} {spec['label']}（非真人形象）")
 
     log("✍️  LLM 创作剧本与分镜…")
-    script_data = generate_script(concept, num_shots, style, ratio, resolution, settings)
+    script_data = generate_script(concept, num_shots, style, ratio, resolution,
+                                  settings, art_style=art_id)
     log(f"   片名：{script_data.get('title', '')}")
     log(f"   角色：{'、'.join(c['name'] for c in script_data.get('characters', []))}")
 
@@ -276,6 +328,7 @@ def create_project(payload: dict, log) -> str:
         "resolution": resolution,
         "num_shots": num_shots,
         "style": style,
+        "art_style": art_id,
         "script": script_data,
         "shots": shots,
         "final_video": "",
@@ -303,12 +356,15 @@ def regenerate_script(project: dict, log, feedback: str = "") -> None:
         script_data = refine_script(
             project["concept"], project.get("script", {}), feedback,
             project["ratio"], project["resolution"], settings,
+            art_style=project.get("art_style"),
+            style=project.get("style"),
         )
     else:
         log("✍️  AI 重新生成剧本…")
         script_data = generate_script(
             project["concept"], project["num_shots"], project["style"],
             project["ratio"], project["resolution"], settings,
+            art_style=project.get("art_style"),
         )
     shots = build_shot_prompts(script_data)
     for s in shots:
@@ -337,17 +393,18 @@ def gen_character_image(project: dict, char_name: str, log, feedback: str = "") 
     base = ensure_dirs(project["id"])
     chars_dir = base / "characters"
     ref_path = chars_dir / f"ref_{char_name}.jpg"
-    style_hint = project.get("script", {}).get("style_anchor", "国风3D CG动画风格")
+    art_id = project.get("art_style", DEFAULT_ART_STYLE)
+    spec = get_style(art_id)
+    art_anchor = project.get("script", {}).get("art_anchor") or art_style_anchor(art_id)
     feedback = (feedback or "").strip()
     # 强制“单人肖像”：避免模型脑补路人/配角，或把“角色设定图”理解成多人设定板
     prompt = (
-        f"{style_hint}。单人角色定妆肖像照，画面中有且仅有{char_name}这一个人物，"
-        f"人物外观：{char.get('appearance', '')}，气质标签：{char.get('tag', '')}。"
+        f"{art_anchor}。单人角色定妆肖像照，画面中有且仅有{char_name}这一个人物，"
+        f"人物外观：{sanitize_nonreal(char.get('appearance', ''))}，气质标签：{char.get('tag', '')}。"
         "构图要求：人物位于画面正中，胸部以上的单人胸像，面部清晰，正对镜头，"
         "背景简洁、柔和虚化，不要任何其他人物，不要路人，不要多人合影，不要人群，"
         "不要多视图，不要角色对照板，不要文字、标签、水印。"
-        "画面必须是3D CG动画/卡通渲染质感（类似皮克斯、迪士尼动画电影角色），"
-        "皮肤与光影为动画渲染效果，严禁真人照片质感，严禁真实摄影人像，严禁写实胶片感。"
+        f"{spec['char']}。"
     )
     if feedback:
         prompt += f"本次调整要求：{feedback}（仍须保持画面中只有{char_name}一人）。"
@@ -521,21 +578,19 @@ def gen_shot_video(project: dict, shot_index: int, log,
         return str(max(fresh, key=os.path.getmtime))
 
     # ── 降级阶梯：原图 → 自动卡通化图 → 纯文本 ──────────────
-    CG_PREFIX = "3D CG动画电影风格，卡通渲染质感，非真人照片，虚构角色。"
+    _art_id = project.get("art_style", DEFAULT_ART_STYLE)
+    _spec = get_style(_art_id)
+    CG_PREFIX = art_style_anchor(_art_id) + "。"
 
     def cartoonize(src: str, cn: str) -> str | None:
-        """把定妆照自动风格化为 3D 动画质感（五官/服装/姿势不变），产出 ref_<角色>_toon.jpg。"""
+        """把定妆照自动风格化为项目所选画风（五官/服装/姿势不变），产出 ref_<角色>_toon.jpg。"""
         toon = chars_dir / f"ref_{cn}_toon.jpg"
         if toon.exists() and os.path.getsize(toon) > 20_000:
             return str(toon)
         before_img = ({str(p) for p in IMG_OUT_DIR.glob("dream_*.jpg")}
                       if IMG_OUT_DIR.exists() else set())
-        stylize = (
-            "把这张人物图像转换成3D CG动画电影风格：保持人物五官特征、发型、服装款式与配色、"
-            "配饰、姿势完全不变，仅把皮肤质感、光影和整体画面渲染为皮克斯/迪士尼式卡通动画效果，"
-            "非真人照片，背景同步做同风格动画化。"
-        )
-        log(f"   🎨 自动卡通化定妆照：{cn}…")
+        stylize = _spec["stylize"] + "。"
+        log(f"   🎨 自动风格化定妆照（{_spec['label']}）：{cn}…")
         run_proc(
             [str(VENV_PY), str(IMAGE_GEN_SCRIPT),
              "--prompt", stylize, "--image", src, "--size", "2K"],
@@ -623,6 +678,75 @@ def gen_shot_video(project: dict, shot_index: int, log,
     save(project)
     via = ("原始定妆照" if level == 0 else "卡通化定妆照" if level == 1 else "纯文本")
     log(f"✅ 镜头{shot_index+1:02d} 完成（{via}）→ {dest.name} ({os.path.getsize(dest)/1024/1024:.1f}MB)")
+
+
+def change_art_style(project: dict, art_id: str, log) -> None:
+    """更换全片非真人美术画风：重写风格锚点/镜头 prompt，重生成全部定妆照，
+    并将已有片段标记为需重新生成（素材文件保留在磁盘）。"""
+    if not any(s["id"] == art_id for s in ART_STYLES):
+        raise ValueError(f"未知美术画风: {art_id}")
+    spec = get_style(art_id)
+    old_id = project.get("art_style", DEFAULT_ART_STYLE)
+    if old_id == art_id:
+        log(f"🎨 当前已是「{spec['label']}」画风，无需更换")
+        return
+    log(f"🎨 更换美术画风：{get_style(old_id)['label']} → {spec['icon']} {spec['label']}")
+    project["art_style"] = art_id
+    script = project.setdefault("script", {})
+    script["art_anchor"] = art_style_anchor(art_id)
+    # 作废已有片段与成片（uid 保留，文件不删除）
+    for shot in project.get("shots", []):
+        shot["status"] = "pending"
+        shot["video_file"] = ""
+        shot["error"] = ""
+    project["final_video"] = ""
+    project["status"] = "scripted"
+    rebuild_prompts(project)
+    save(project)
+    log("🖼  按新画风重新生成全部角色定妆照…")
+    for c in script.get("characters", []):
+        gen_character_image(project, c["name"], log)
+    save(project)
+    log("✅ 画风更换完成，请到「片段」页重新生成视频后再合成成片")
+
+
+# ── BGM：支持用户自行上传（不做生成式 BGM） ───────────
+BGM_EXTS = {".mp3", ".m4a", ".aac", ".wav", ".flac", ".ogg"}
+
+
+def save_bgm(project: dict, src_path: str, original_name: str, log=None) -> None:
+    """把上传的 BGM 保存到项目 bgm/ 目录并记录 bgm_file。"""
+    ext = Path(original_name).suffix.lower()
+    if ext not in BGM_EXTS:
+        raise ValueError(f"不支持的音频格式：{ext or '未知'}（支持 mp3/m4a/aac/wav/flac/ogg）")
+    base = ensure_dirs(project["id"])
+    bgm_dir = base / "bgm"
+    bgm_dir.mkdir(parents=True, exist_ok=True)
+    dest = bgm_dir / f"bgm{ext}"
+    # 清理同目录下旧的其它格式 BGM
+    for old in bgm_dir.glob("bgm.*"):
+        if old != dest:
+            old.unlink()
+    shutil.copy(src_path, dest)
+    project["bgm_file"] = str(dest)
+    project["bgm_name"] = original_name
+    save(project)
+    if log:
+        log(f"🎵 BGM 已上传：{original_name}")
+
+
+def remove_bgm(project: dict, log=None) -> None:
+    """移除已上传的 BGM。"""
+    bgm_file = project.get("bgm_file", "")
+    if bgm_file:
+        p = Path(bgm_file)
+        if p.exists():
+            p.unlink()
+    project["bgm_file"] = ""
+    project["bgm_name"] = ""
+    save(project)
+    if log:
+        log("🎵 BGM 已移除")
 
 
 def glob_latest() -> str | None:

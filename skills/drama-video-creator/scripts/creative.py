@@ -197,17 +197,86 @@ def call_llm(system_prompt, user_prompt, settings):
     text = re.sub(r'\s*```$', '', text)
     return json.loads(text)
 
-def generate_script(concept, num_shots, style, ratio, resolution, settings):
+
+# ── 题材风格（故事层）：决定时代背景、类型套路、人物设定、叙事与情绪基调 ──
+THEMES: dict[str, dict] = {
+    "gufeng": {
+        "label": "古风武侠",
+        "directive": (
+            "古风武侠：古代（唐宋或架空王朝）背景，江湖、门派、刀剑、茶馆驿站等元素；"
+            "人物着古装、用文言味的简短对白；重情义、家国、侠义取舍，"
+            "叙事写意，情绪豪迈中带含蓄，避免现代器物与网络用语"
+        ),
+    },
+    "dushi": {
+        "label": "现代都市",
+        "directive": (
+            "现代都市：当代城市背景，写字楼、出租屋、地铁、外卖、职场与市井生活；"
+            "人物着现代服装，对白口语化；聚焦普通人的现实处境、情感与成长，"
+            "细节真实接地气，情绪克制有共鸣"
+        ),
+    },
+    "xuanyi": {
+        "label": "悬疑烧脑",
+        "directive": (
+            "悬疑烧脑：以谜题、误会、伏笔和反转驱动，信息层层揭露；"
+            "多用夜晚、雨、封闭空间、光影对比制造紧张氛围；人物对白暗藏机锋，"
+            "每个分镜埋线索，结尾有意外但逻辑自洽"
+        ),
+    },
+    "zhiyu": {
+        "label": "温暖治愈",
+        "directive": (
+            "温暖治愈：基调温柔明亮，日常中的善意、和解与陪伴；"
+            "暖色调、柔光、生活气息场景；节奏舒缓，对白真诚不煽情，"
+            "情绪由低落/孤独渐转温暖，结尾留有余味"
+        ),
+    },
+    "kehuan": {
+        "label": "科幻未来",
+        "directive": (
+            "科幻未来：近未来或星际背景，人工智能、赛博都市、太空舱、高科技设备；"
+            "围绕科技与人的关系展开（记忆、时间、身份、抉择）；"
+            "场景有未来感与冷峻光影，设定需自洽，软科幻人文表达优先"
+        ),
+    },
+    "epic": {
+        "label": "史诗传奇",
+        "directive": (
+            "史诗传奇：宏大时代或神话背景，家国命运、英雄征途、宿命与牺牲；"
+            "大场面与厚重质感（山川、战场、宫殿、征途），人物关系格局大；"
+            "叙事有传奇色彩和仪式感，情绪悲壮而有力"
+        ),
+    },
+}
+
+
+def theme_directive(style: str) -> tuple[str, str]:
+    """返回 (中文题材名, 给 LLM 的题材指引)；未知 key 回退现代都市。"""
+    t = THEMES.get(style or "", THEMES["dushi"])
+    return t["label"], t["directive"]
+
+def generate_script(concept, num_shots, style, ratio, resolution, settings,
+                    art_style=None):
     """Generate full script from concept."""
+    from artstyles import style_anchor
+    art_anchor = style_anchor(art_style)
+    theme_label, theme_dir = theme_directive(style)
     user = f"""创意/主题：{concept}
-风格倾向：{style}
+题材类型（决定故事的时代背景、类型套路、人物设定与叙事基调，必须严格遵守）：
+{theme_dir}
+美术画风（必须严格遵守，所有人物与画面均为此画风的非真人形象，不得出现真人实拍/写实人像质感）：
+{art_anchor}
 画面比例：{ratio}，分辨率：{resolution}
 请生成{num_shots}个分镜，每个分镜时长10秒，总时长约{num_shots*10}秒。
 注意：
 - 对白start_offset要合理，第一个对白从2-3秒后开始（先让观众看到场景和人物）
 - 相邻镜头场景过渡要自然（外景→内景、昼→夜等变化要合理）
-- 每个镜头的action必须描写人物说话时的表情动作，确保AI视频生成时人物有对应的表演"""
+- 每个镜头的action必须描写人物说话时的表情动作，确保AI视频生成时人物有对应的表演
+- 角色外观（appearance）与 style_anchor 的描写要贴合上述美术画风，禁止"真人/写实/照片感/胶片感"等表述"""
     data = call_llm(SCRIPT_SYSTEM, user, settings)
+    data["art_anchor"] = art_anchor
+    data["theme_type"] = theme_label
 
     # Assign voice types to characters（传入性别，防止女角色落男声）
     for c in data.get("characters", []):
@@ -216,11 +285,19 @@ def generate_script(concept, num_shots, style, ratio, resolution, settings):
     return data
 
 
-def refine_script(concept, prev_script, feedback, ratio, resolution, settings):
+def refine_script(concept, prev_script, feedback, ratio, resolution, settings,
+                  art_style=None, style=None):
     """结合上一版剧本与用户反馈，让 LLM 调整并输出完整新剧本（保持相同 JSON 格式）。"""
     import json as _json
+    from artstyles import style_anchor
+    art_anchor = style_anchor(art_style)
+    _, theme_dir = theme_directive(style)
     user = f"""原始创意：{concept}
 画面比例：{ratio}，分辨率：{resolution}
+题材类型（须继续保持）：
+{theme_dir}
+美术画风（必须严格遵守，所有人物与画面均为此画风的非真人形象）：
+{art_anchor}
 
 这是上一版剧本：
 {_json.dumps(prev_script, ensure_ascii=False)}
@@ -230,8 +307,10 @@ def refine_script(concept, prev_script, feedback, ratio, resolution, settings):
 
 请严格依据用户反馈调整剧本：反馈点到的内容必须修改，未提及的内容尽量保持不变。
 仍然输出完整 JSON（格式与上一版一致，包含全部角色与分镜），不要只输出改动片段。
-若用户要求增减分镜，请相应调整；角色外观描述仍需完整，用于视频生成的一致性。"""
+若用户要求增减分镜，请相应调整；角色外观描述仍需完整，用于视频生成的一致性。
+角色外观与 style_anchor 须贴合上述美术画风，禁止"真人/写实/照片感/胶片感"等表述。"""
     data = call_llm(SCRIPT_SYSTEM, user, settings)
+    data["art_anchor"] = art_anchor
     for c in data.get("characters", []):
         c["voice_type"] = pick_voice(c.get("voice_hint", ""), c.get("gender", ""))
     return data
@@ -261,6 +340,7 @@ SHOT_SYSTEM = """你是资深剧情短视频编剧，正在为一部已经存在
 def generate_shot(user_prompt, context, settings):
     """Generate one shot JSON from the user's prompt, grounded in the existing project."""
     import json as _json
+    art_anchor = context.get("art_anchor", "")
     style_anchor = context.get("style_anchor", "")
     characters = context.get("characters", [])
     prev_shots = context.get("shots", [])
@@ -268,7 +348,8 @@ def generate_shot(user_prompt, context, settings):
     char_lines = "\n".join(f"- {c.get('name','')}：{c.get('appearance','')}" for c in characters) or "- （暂无角色）"
     shot_lines = "\n".join(f"{i+1}. {s.get('title','')} — {s.get('scene','')}" for i, s in enumerate(prev_shots)) or "- （暂无分镜）"
 
-    user = f"""全片视觉基调：{style_anchor}
+    visual = "。".join(x for x in (art_anchor, style_anchor) if x)
+    user = f"""全片视觉基调：{visual}
 
 已有角色：
 {char_lines}
@@ -304,8 +385,11 @@ def generate_shot(user_prompt, context, settings):
 
 def build_shot_prompts(script_data):
     """Build final video generation prompt for each shot, with style anchor + character appearance lock."""
-    style_anchor = script_data.get("style_anchor", "")
-    char_map = {c["name"]: c["appearance"] for c in script_data.get("characters", [])}
+    from artstyles import sanitize_nonreal
+    art_anchor = script_data.get("art_anchor", "")
+    style_anchor = sanitize_nonreal(script_data.get("style_anchor", ""))
+    char_map = {c["name"]: sanitize_nonreal(c.get("appearance", ""))
+                for c in script_data.get("characters", [])}
     shots = script_data.get("shots", [])
     prompts = []
     for shot in shots:
@@ -318,7 +402,15 @@ def build_shot_prompts(script_data):
         dialogue_desc = ""
         for d in shot.get("dialogues", []):
             dialogue_desc += f'{d["character"]}说{d["text"]}时表情生动口型自然，' 
-        prompt = f"{style_anchor}。{char_str}。场景：{shot['scene']}。画面：{shot['action']}。{dialogue_desc}情绪氛围：{shot.get('emotion','自然')}。"
+        parts = [
+            art_anchor,
+            style_anchor,
+            char_str,
+            f"场景：{shot['scene']}",
+            f"画面：{shot['action']}",
+            f"{dialogue_desc}情绪氛围：{shot.get('emotion','自然')}",
+        ]
+        prompt = "。".join(x for x in parts if x) + "。"
         prompts.append(prompt)
         shot["prompt"] = prompt
     return shots

@@ -43,7 +43,8 @@ research-cli/
 ├── sessions/              # 会话数据存储
 ├── outputs/               # 输出文件存储（图片、音频、视频等）
 ├── web/                   # 可视化 Web 工作台
-│   └── drama_studio       # 🎬 AI 短剧创作工坊（FastAPI，人工干预+反馈重生成）
+│   ├── drama_studio       # 🎬 AI 短剧创作工坊（FastAPI，人工干预+反馈重生成）
+│   └── image_studio       # 🎨 AI 图像创作工坊（文生图/图生图/风格迁移）
 └── tests/                 # 测试用例
 ```
 

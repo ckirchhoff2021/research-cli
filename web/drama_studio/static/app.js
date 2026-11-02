@@ -12,8 +12,9 @@ const voiceLabel = id => {
 };
 
 async function api(path, opts = {}) {
+  const isForm = opts.body instanceof FormData;
   const res = await fetch(path, {
-    headers: opts.body ? { 'Content-Type': 'application/json' } : {},
+    headers: (opts.body && !isForm) ? { 'Content-Type': 'application/json' } : {},
     ...opts,
   });
   if (!res.ok) {
@@ -29,6 +30,8 @@ const state = {
   project: null,
   stage: 'script',
   voices: [],
+  artStyles: [],
+  artSelected: '3d_cartoon',
   jobs: new Map(),          // id -> job snapshot
   jobLogs: new Map(),       // id -> lines[]
   logTab: null,
@@ -331,10 +334,39 @@ function shotBadge(s) {
 }
 
 // ── 新建项目弹窗 ─────────────────────────────────────
-function openCreateModal() {
+async function openCreateModal() {
+  if (!state.artStyles.length) {
+    try { state.artStyles = await api('/api/art_styles'); } catch (e) { state.artStyles = []; }
+  }
+  state.artSelected = '3d_cartoon';
+  renderArtGrid($('#f_artgrid'), state.artStyles, state.artSelected);
   $('#createModal').hidden = false;
   $('#f_concept').focus();
 }
+function artStyleLabel(id) {
+  const s = (state.artStyles || []).find(x => x.id === id);
+  return s ? `${s.icon} ${s.label}` : id;
+}
+const STYLE_LABEL = {
+  gufeng: '古风武侠', dushi: '现代都市', xuanyi: '悬疑烧脑',
+  zhiyu: '温暖治愈', kehuan: '科幻未来', epic: '史诗传奇',
+};
+function renderArtGrid(grid, list, selected) {
+  if (!grid) return;
+  grid.innerHTML = list.map(s => `
+    <div class="art-card ${s.id === selected ? 'on' : ''}" data-art="${s.id}" title="${esc(s.desc)}">
+      <span class="art-icon">${s.icon}</span>
+      <span class="art-name">${esc(s.label)}</span>
+      <span class="art-desc">${esc(s.desc)}</span>
+    </div>`).join('');
+}
+$('#createModal').addEventListener('click', e => {
+  const card = e.target.closest('[data-art]');
+  if (!card) return;
+  state.artSelected = card.dataset.art;
+  $$('#f_artgrid .art-card').forEach(el =>
+    el.classList.toggle('on', el.dataset.art === state.artSelected));
+});
 $$('#createModal [data-close]').forEach(b => b.onclick = () => $('#createModal').hidden = true);
 $('#f_shots').oninput = e => $('#f_shots_val').textContent = e.target.value;
 
@@ -347,6 +379,7 @@ $('#createSubmit').onclick = async () => {
     ratio: $('#f_ratio').value,
     resolution: $('#f_resolution').value,
     style: $('#f_style').value,
+    art_style: state.artSelected,
   };
   $('#createModal').hidden = true;
   try {
@@ -361,6 +394,9 @@ async function openWorkspace(id) {
   try {
     state.project = await api(`/api/projects/${id}`);
     if (!state.voices.length) state.voices = await api('/api/voices');
+    if (!state.artStyles.length) {
+      try { state.artStyles = await api('/api/art_styles'); } catch (e) {}
+    }
     renderWorkspace();
   } catch (e) {
     $('#view').innerHTML = `<div class="empty-state"><div class="big>⚠️</div>${esc(e.message)}</div>`;
@@ -412,6 +448,7 @@ function renderWorkspace() {
           <h1>${esc(p.name)}</h1>
           <div class="ws-meta">
             <span class="badge ${p.status}">${statusLabel(p.status)}</span>
+            <span class="badge art-badge">${esc(artStyleLabel(p.art_style))}</span>
             <span class="badge">${p.ratio}</span>
             <span class="badge">${p.resolution}</span>
             <span class="badge">${(p.shots || []).length} 镜</span>
@@ -467,11 +504,17 @@ function viewConcept(p) {
       <div class="panel-title"><h3>💡 核心创意</h3></div>
       <p style="font-size:18px;line-height:1.9">${esc(p.concept)}</p>
       <div class="grid-2" style="margin-top:22px">
-        <div class="field"><span>风格倾向</span><input value="${esc(p.style)}" disabled /></div>
+        <div class="field"><span>题材风格</span><input value="${esc(STYLE_LABEL[p.style] || p.style)}" disabled /></div>
         <div class="field"><span>分镜数量</span><input value="${p.num_shots}" disabled /></div>
         <div class="field"><span>画面比例</span><input value="${p.ratio}" disabled /></div>
+        <div class="field"><span>美术画风</span><input value="${esc(artStyleLabel(p.art_style))}" disabled /></div>
         <div class="field"><span>分辨率</span><input value="${p.resolution}" disabled /></div>
       </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><h3>🎨 更换美术画风</h3></div>
+      <p class="muted">选择一种新的非真人画风：将重写全片视觉基调、重新生成角色定妆照，已有视频片段和成片会作废，需要重新生成。</p>
+      <div class="art-grid" id="changeArtGrid" style="margin-top:14px"></div>
     </div>
     <div class="panel">
       <div class="panel-title"><h3>♻️ 重新开始</h3></div>
@@ -499,11 +542,25 @@ function viewScript(p) {
       <label class="field"><span>核心主题</span><input id="s_theme" value="${esc(s.theme)}" /></label>
       <label class="field"><span>风格锚点（全片视觉基调，会前置到每个镜头 prompt）</span>
         <textarea id="s_style_anchor" rows="3">${esc(s.style_anchor)}</textarea></label>
-      <label class="field" style="max-width:260px"><span>BGM 风格</span>
-        <select id="s_bgm">
-          ${['gufeng', 'epic', 'business', 'bright', 'suspense'].map(v =>
-            `<option ${s.bgm_style === v ? 'selected' : ''}>${v}</option>`).join('')}
-        </select></label>
+      <div class="field">
+        <span>背景音乐 BGM（可选 · 支持上传自备音频）</span>
+        ${p.bgm_file ? `
+          <div class="bgm-row">
+            <audio controls preload="none" src="${p.bgm_file}"></audio>
+            <div class="bgm-info">
+              <span class="bgm-name">🎵 ${esc(p.bgm_name || '已上传 BGM')}</span>
+              <div class="bgm-actions">
+                <button type="button" class="ghost-btn sm" id="bgmReplace">🔄 更换</button>
+                <button type="button" class="ghost-btn sm danger-text" id="bgmRemove">🗑 移除</button>
+              </div>
+            </div>
+          </div>` : `
+          <label class="bgm-upload" id="bgmUploadLabel">
+            <input type="file" id="bgmFile" accept="audio/*,.mp3,.m4a,.aac,.wav,.flac,.ogg" hidden />
+            <span class="bgm-plus">＋</span>
+            <span class="bgm-up-text">点击上传 BGM<br/><small>支持 mp3 / m4a / wav / flac / ogg，≤50MB</small></span>
+          </label>`}
+      </div>
     </div>`;
 }
 
@@ -516,7 +573,6 @@ function bindScript() {
         logline: $('#s_logline').value,
         theme: $('#s_theme').value,
         style_anchor: $('#s_style_anchor').value,
-        bgm_style: $('#s_bgm').value,
       };
       try {
         state.project = await api(`/api/projects/${state.project.id}/script`, {
@@ -535,6 +591,71 @@ function bindScript() {
     kind: 'regenerate_script',
     okMsg: '剧本调整中',
   });
+  // 更换美术画风
+  // BGM 上传 / 更换 / 移除
+  const uploadBgm = async file => {
+    if (!file) return;
+    if (file.size > 50 * 1024 * 1024) return toast('BGM 文件不能超过 50MB', 'err');
+    const fd = new FormData();
+    fd.append('file', file);
+    toast('🎵 正在上传 BGM…', 'info');
+    try {
+      state.project = await api(`/api/projects/${state.project.id}/bgm`, {
+        method: 'POST', body: fd, raw: true,
+      });
+      toast('BGM 上传成功', 'ok');
+      renderWorkspace();
+    } catch (e) { toast('上传失败：' + e.message, 'err'); }
+  };
+  const bgmInput = $('#bgmFile');
+  if (bgmInput) bgmInput.onchange = () => uploadBgm(bgmInput.files[0]);
+  $('#bgmReplace')?.addEventListener('click', () => $('#bgmFile')?.click());
+  // “更换”在已有 BGM 时页面没有 input，需动态创建
+  if (!bgmInput) {
+    $('#bgmReplace')?.addEventListener('click', () => {
+      const inp = document.createElement('input');
+      inp.type = 'file';
+      inp.accept = 'audio/*,.mp3,.m4a,.aac,.wav,.flac,.ogg';
+      inp.onchange = () => uploadBgm(inp.files[0]);
+      inp.click();
+    });
+  }
+  $('#bgmRemove')?.addEventListener('click', async () => {
+    if (!await confirmBox('移除已上传的 BGM？', '移除后合成成片将只保留视频原始音频。')) return;
+    try {
+      state.project = await api(`/api/projects/${state.project.id}/bgm`, { method: 'DELETE' });
+      toast('BGM 已移除', 'ok');
+      renderWorkspace();
+    } catch (e) { toast('移除失败：' + e.message, 'err'); }
+  });
+  const chgGrid = $('#changeArtGrid');
+  if (chgGrid) {
+    if (!state.artStyles.length) {
+      api('/api/art_styles').then(list => {
+        state.artStyles = list;
+        renderArtGrid(chgGrid, list, state.project.art_style);
+      }).catch(() => {});
+    } else {
+      renderArtGrid(chgGrid, state.artStyles, state.project.art_style);
+    }
+    chgGrid.onclick = async e => {
+      const card = e.target.closest('[data-art]');
+      if (!card) return;
+      const id = card.dataset.art;
+      if (id === state.project.art_style) return toast('已经是当前画风', 'info');
+      const ok = await confirmBox(
+        `更换为「${artStyleLabel(id)}」画风？`,
+        '将重新生成全部角色定妆照，已有视频片段和成片会作废（文件保留），需重新生成片段后再合成。');
+      if (!ok) return;
+      try {
+        const job = await api(
+          `/api/projects/${state.project.id}/art_style`,
+          { method: 'POST', body: JSON.stringify({ art_style: id }) });
+        toast('🎨 画风更换任务已提交', 'ok');
+        openLogDrawer(job.id);
+      } catch (e) { toast('提交失败：' + e.message, 'err'); }
+    };
+  }
 }
 
 // 角色
@@ -1064,7 +1185,7 @@ function viewFinal(p) {
          <p class="muted" style="margin-top:14px">📁 ${esc(p.final_video)}</p>`
       : `<div class="final-empty">
            <div class="big">🎬</div>
-           <p class="muted" style="margin-bottom:20px">还没有成片。所有片段就绪后即可合成（片头片尾 + 转场 + 对白对齐 + BGM）。</p>
+           <p class="muted" style="margin-bottom:20px">还没有成片。所有片段就绪后即可合成（片头片尾 + 转场；可在剧本页上传自备 BGM）。</p>
            <button class="btn primary" id="btnCompose" style="margin-right:10px">🎞 合成成片</button>
            <button class="btn violet" id="btnComposeAll">⚡ 补齐缺失并合成</button>
          </div>`}`;

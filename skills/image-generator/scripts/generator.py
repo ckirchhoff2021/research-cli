@@ -12,6 +12,15 @@ load_dotenv()
 
 
 def pil_to_base64_with_prefix(image: Image.Image, fmt='jpeg') -> str:
+    fmt = fmt.lower()
+    if fmt == 'jpg':
+        fmt = 'jpeg'
+    if fmt == 'jpeg' and image.mode != 'RGB':
+        # JPEG 不支持透明通道/调色板模式：统一铺白底后转 RGB
+        rgba = image.convert('RGBA')
+        bg = Image.new('RGB', rgba.size, (255, 255, 255))
+        bg.paste(rgba, mask=rgba.split()[-1])
+        image = bg
     output_buffer = BytesIO()
     image.save(output_buffer, format=fmt)
     byte_data = output_buffer.getvalue()
@@ -133,4 +142,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

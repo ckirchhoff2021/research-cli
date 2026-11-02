@@ -7,7 +7,9 @@ import sys
 import uuid
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Request
+import tempfile
+
+from fastapi import FastAPI, HTTPException, Request, UploadFile, File
 from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -43,7 +45,7 @@ def _media_url(value: str) -> str:
     return url
 
 
-_PATH_FIELDS = {"ref_image", "video_file", "final_video", "voice_file"}
+_PATH_FIELDS = {"ref_image", "video_file", "final_video", "voice_file", "bgm_file"}
 
 
 def to_dto(obj):
@@ -106,6 +108,14 @@ def voice_catalog():
     return [{"id": vid, "label": label} for vid, label in seen.items()]
 
 
+@app.get("/api/art_styles")
+def art_style_catalog():
+    """可选的非真人美术画风目录。"""
+    sys.path.insert(0, str(pipeline.SKILL_SCRIPTS))
+    from artstyles import style_choices
+    return style_choices()
+
+
 # ── 项目列表/详情 ─────────────────────────────────────
 @app.get("/api/projects")
 def get_projects():
@@ -127,6 +137,7 @@ class CreateProjectBody(BaseModel):
     ratio: str = "16:9"
     resolution: str = "1080p"
     style: str = "gufeng"
+    art_style: str = "3d_cartoon"
 
 
 @app.post("/api/projects")
@@ -289,6 +300,79 @@ def reorder_shots(project_id: str, body: ReorderShotsBody):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e)) from e
     pipeline.save(p)
+    return to_dto(p)
+
+
+# ── 更换非真人美术画风 ───────────────────────────────
+class ArtStyleBody(BaseModel):
+    art_style: str
+
+
+@app.post("/api/projects/{project_id}/art_style")
+def change_art_style(project_id: str, body: ArtStyleBody):
+    _guard(project_id)
+    try:
+        pipeline.load(project_id)
+    except FileNotFoundError as e:
+        raise HTTPException(404, str(e))
+    if jobs.has_running(project_id):
+        raise HTTPException(409, "该项目已有任务在执行")
+    art_id = body.art_style
+
+    def fn(j, log):
+        p = pipeline.load(project_id)
+        pipeline.change_art_style(p, art_id, log)
+
+    job = jobs.submit("change_art_style", f"更换画风", fn, project_id=project_id)
+    return jobs.job_snapshot(job)
+
+
+# ── BGM 上传 / 删除（用户自备 BGM，不做生成） ─────────
+MAX_BGM_SIZE = 50 * 1024 * 1024
+
+
+@app.post("/api/projects/{project_id}/bgm")
+async def upload_bgm(project_id: str, file: UploadFile = File(...)):
+    _guard(project_id)
+    try:
+        p = pipeline.load(project_id)
+    except FileNotFoundError as e:
+        raise HTTPException(404, str(e))
+    # 先落临时文件，校验通过再归档到项目目录
+    suffix = Path(file.filename or "").suffix
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
+    size = 0
+    try:
+        while True:
+            chunk = await file.read(1024 * 1024)
+            if not chunk:
+                break
+            size += len(chunk)
+            if size > MAX_BGM_SIZE:
+                raise HTTPException(413, "BGM 文件过大（上限 50MB）")
+            tmp.write(chunk)
+        tmp.close()
+        try:
+            pipeline.save_bgm(p, tmp.name, file.filename or f"bgm{suffix}")
+        except ValueError as e:
+            raise HTTPException(400, str(e))
+    finally:
+        tmp.close()
+        try:
+            Path(tmp.name).unlink()
+        except OSError:
+            pass
+    return to_dto(pipeline.load(project_id))
+
+
+@app.delete("/api/projects/{project_id}/bgm")
+def delete_bgm(project_id: str):
+    _guard(project_id)
+    try:
+        p = pipeline.load(project_id)
+    except FileNotFoundError as e:
+        raise HTTPException(404, str(e))
+    pipeline.remove_bgm(p)
     return to_dto(p)
 
 
