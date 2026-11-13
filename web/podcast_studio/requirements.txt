@@ -1,0 +1,12 @@
+# Podcast Studio · AI 播客创作工坊依赖
+# 安装：pip install -r web/podcast_studio/requirements.txt
+
+# ── Web 层：FastAPI 工作台 ──
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+python-dotenv>=1.0
+
+# ── TTS API 调用 + ffmpeg 音频拼接 ──
+requests>=2.31
+imageio-ffmpeg>=0.4.9

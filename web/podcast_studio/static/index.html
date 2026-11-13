@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🎙 Podcast Studio · AI 播客工坊</title>
+<link rel="stylesheet" href="styles.css?v=20261113a" />
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand"><span class="logo">🎙</span><div><b>Podcast Studio</b><small>文本转语音 · 多主播对话 · 一键成片</small></div></div>
+    <nav class="tabs">
+      <button class="tab active" data-view="create">🎙 播客创作</button>
+      <button class="tab" data-view="voices">🎧 音色库</button>
+      <button class="tab" data-view="library">📚 音频库</button>
+    </nav>
+    <div class="top-right">
+      <span id="workerPill" class="pill">● 就绪</span>
+      <small class="fe-build" title="前端版本">v20261111a</small>
+      <button class="icon-btn" id="logBtn" title="任务日志">📜</button>
+    </div>
+  </header>
+
+  <main id="view"><!-- 视图由 app.js 渲染 --></main>
+</div>
+
+<div id="toastBox"></div>
+
+<!-- AI 编剧弹窗 -->
+<div id="aiModal" class="modal-mask" hidden>
+  <div class="modal">
+    <div class="modal-head"><h2>🤖 AI 播客编剧</h2><button class="icon-btn" id="aiClose">✕</button></div>
+    <div class="modal-body">
+      <p class="muted" style="font-size:12.5px">输入一个主题，AI 自动写好标题和主播对白，载入后可直接生成节目。</p>
+      <label class="field"><span>节目主题</span>
+        <textarea id="aiTopic" rows="2" placeholder="例如：AI 会不会取代人类的工作；年轻人为什么爱上 Citywalk；聊聊太空探索的意义…"></textarea>
+      </label>
+
+      <div class="field"><span>节目形式</span>
+        <div class="seg" id="aiModeSeg">
+          <button data-mode="dialogue" class="active">👫 双人对谈</button>
+          <button data-mode="monologue">🧑 单人讲述</button>
+        </div>
+      </div>
+
+      <div class="field"><span>语言风格</span>
+        <div class="chips" id="aiStyleChips"></div>
+      </div>
+
+      <div class="field"><span>篇幅</span>
+        <div class="seg" id="aiTurnSeg">
+          <button data-turns="8">简短 · 约8段</button>
+          <button data-turns="12" class="active">标准 · 约12段</button>
+          <button data-turns="20">长篇 · 约20段</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" id="aiCancel">取消</button>
+      <button class="btn primary" id="aiSubmit">✨ 生成对白</button>
+    </div>
+  </div>
+</div>
+
+<!-- 日志抽屉 -->
+<div id="logDrawer" hidden>
+  <div class="log-head"><b>任务日志</b><button class="icon-btn" id="logClose">✕</button></div>
+  <pre id="logBody"></pre>
+</div>
+
+<script src="app.js?v=20261113a"></script>
+</body>
+</html>
